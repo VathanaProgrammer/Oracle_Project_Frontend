@@ -54,7 +54,7 @@
         <!-- Export Button aligned right -->
         <button
           @click="exportResults"
-          class="bg-blue-600 hover:bg-blue-700 text-white text-md font-medium py-2 px-4 rounded-md flex-shrink-0"
+          class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 px-4 rounded-md flex-shrink-0"
         >
           Export to Excel
         </button>
