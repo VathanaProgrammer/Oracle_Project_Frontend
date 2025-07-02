@@ -76,7 +76,20 @@ export default{
                     email: "bunthan@gmail.com",
                     password: "123",
                     role: "teacher",
-                }
+                },{
+                    id: "FDGD33F",
+                    name: "Hak Vuttey",
+                    email: "tey@gmail.com",
+                    password: "123",
+                    role: "student"
+                },
+                {
+                    id: "FDGD33G",
+                    name: "Yann sreyvin",
+                    email: "vin@gmail.com",
+                    password: "123",
+                    role: "student"
+                },
             ]
         }
     },
