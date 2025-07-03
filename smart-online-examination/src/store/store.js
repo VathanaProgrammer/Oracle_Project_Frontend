@@ -10,6 +10,7 @@ export const useUserStore = defineStore('user', {
     },
     logout() {
       this.user = null
-    }
-  }
+    },
+  },
+  persist: true,  
 })

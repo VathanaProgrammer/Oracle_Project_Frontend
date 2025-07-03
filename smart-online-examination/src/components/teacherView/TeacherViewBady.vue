@@ -10,7 +10,7 @@
         <div class="flex flex-col">
           <p class="text-lg font-normal text-gray-600">
             Welcome back,
-            <span class="text-xl font-semibold text-gray-700">Bunthan!</span>
+            <span class="text-xl font-semibold text-gray-700">{{userStore.user.lastname}}!</span>
           </p>
           <p class="pt-2 text-sm font-normal text-gray-500">
             Your progress this week is Awesome. Let’s keep it up
@@ -165,6 +165,7 @@ import TimeSpentChart from "../studentView/TimeSpentChart.vue";
 import Multiselect from "@vueform/multiselect";
 import DropDownHover from "./DropDownHover.vue";
 import StudentChat from "./StudentChat.vue";
+import { useUserStore } from "@/store/store";
 
 export default {
   components: {
@@ -175,8 +176,15 @@ export default {
     DropDownHover,
     StudentChat,
   },
+  setup(){
+    const userStore = useUserStore();
+    return {
+      userStore,
+    };
+  },
   data() {
     return {
+      
       selectedAssignment: "",
       assignments: [
         {
@@ -255,6 +263,7 @@ export default {
   computed: {},
   methods: {
     formatAssignment(assign) {
+      
       return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} - (${assign.shiftTime})`;
     },
     selectRole(role) {

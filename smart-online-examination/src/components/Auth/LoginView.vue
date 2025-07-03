@@ -69,6 +69,8 @@
 import { API_BASE_URL } from "@/config/useWebSocket";
 import axios from "axios";
 import { useUserStore } from "@/store/store";
+import { useRouter } from "vue-router";
+
 export default {
   data() {
     return {
@@ -164,6 +166,16 @@ export default {
             });
             userStore.setUser(userRes.data); // save user to store
             console.log("User logged in:", userStore.user);
+            console.log("User role:", userRes.data.role);
+            if(userRes.data.role === 'ADMIN') {
+              this.$router.push('/teacher-dashboard');
+            } else if(userRes.data.role === 'TEACHER') {
+              this.$router.push('/teacher-dashboard');
+            } else if(userRes.data.role === 'STUDENT') {
+              this.$router.push({ name: '/student-dashboard' });
+            } else {
+              console.error("Unknown role:", userRes.data.role);
+            }
           }
         } catch (err) {
           console.error("Login error:", err.response?.data || err.message);
