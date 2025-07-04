@@ -1,7 +1,7 @@
 <template>
     <div class="xl:h-44 h-auto flex flex-col md:flex-row mt-12">
         <div class="text-session-course-hour md:w-2/3 w-full pe-4">
-            <p class="text-lg font-normal text-gray-600">Welcome back, <span class="text-xl font-semibold text-gray-700">Vathana!</span></p>
+            <p class="text-lg font-normal text-gray-600">Welcome back, <span class="text-xl font-semibold text-gray-700">{{ userStore.user.lastname }}!</span></p>
             <p class="pt-3 text-sm font-normal text-gray-500">Your progress this week is Awesome. let's keep it up </p>
             <p class="pt-2 text-sm font-normal  text-gray-500">and get a lot of points reward!</p>
             <div class="time-spent-and-result-session flex flex-col md:flex-row gap-5 justify-between items-stretch mt-4 xs:mb-8 sm:mb-8">
@@ -194,6 +194,7 @@ import LaptopIcon from '../icons/LaptopIcon.vue';
 import GrapView from './GrapView.vue';
 import TimeSpentChart from './TimeSpentChart.vue';
 import SmallCycleChat from './SmallCycleChat.vue';
+import { useUserStore } from '@/store/store';
 export default {
     components: {
         LaptopIcon,
@@ -201,6 +202,12 @@ export default {
         TimeSpentChart,
         SmallCycleChat
     },
+    setup(){
+    const userStore = useUserStore();
+    return {
+      userStore,
+    };
+  },
     data(){
         return{
             exams: [

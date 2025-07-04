@@ -172,7 +172,7 @@ export default {
             } else if(userRes.data.role === 'TEACHER') {
               this.$router.push('/teacher-dashboard');
             } else if(userRes.data.role === 'STUDENT') {
-              this.$router.push({ name: '/student-dashboard' });
+              this.$router.push("/student-dashboard");
             } else {
               console.error("Unknown role:", userRes.data.role);
             }
