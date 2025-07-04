@@ -13,6 +13,8 @@ import TeacherViewBady from '@/components/teacherView/TeacherViewBady.vue'
 import ExamManagement from '@/components/teacherView/ExamManagement.vue'
 import NewExam from '@/components/teacherView/NewExam.vue'
 import StudentResult from '@/components/teacherView/StudentResult.vue'
+import AdminDashborad from '@/components/adminView/AdminDashborad.vue'
+import AdminViewBody from '@/components/adminView/AdminViewBody.vue'
  const routes = [
     {
       path: '/',
@@ -79,6 +81,18 @@ import StudentResult from '@/components/teacherView/StudentResult.vue'
           path: "student-results",
           name: "studentResults",
           component: StudentResult
+        }
+      ]
+    },
+    {
+      path: "/admin-dashboard",
+      name: "adminDashboard",
+      component: AdminDashborad,
+      children: [
+        {
+          path: "",
+          name: "adminBody",
+          component: AdminViewBody
         }
       ]
     }

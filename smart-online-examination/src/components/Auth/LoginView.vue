@@ -168,7 +168,7 @@ export default {
             console.log("User logged in:", userStore.user);
             console.log("User role:", userRes.data.role);
             if(userRes.data.role === 'ADMIN') {
-              this.$router.push('/teacher-dashboard');
+              this.$router.push('/admin-dashboard');
             } else if(userRes.data.role === 'TEACHER') {
               this.$router.push('/teacher-dashboard');
             } else if(userRes.data.role === 'STUDENT') {
