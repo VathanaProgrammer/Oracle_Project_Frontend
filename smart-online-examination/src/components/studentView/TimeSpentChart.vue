@@ -4,7 +4,7 @@
       width="150"
       type="donut"
       :options="chartOptions"
-      :series="series"
+      :series="weeklyHours"
     />
   </div>
 </template>
@@ -17,28 +17,28 @@ export default {
   components: {
     apexchart: VueApexCharts,
   },
-  data() {
-    const timeData = [6, 4, 3.5, 5, 7, 2.5, 4] // Time spent
-    const maxTime = Math.max(...timeData)
-
-    // Green base: 40% to 100% opacity depending on time spent
-    const getGreenWithOpacity = (time) => {
-      const alpha = 0.4 + (time / maxTime) * 0.6 // Range: 0.4 - 1
-      return `rgba(40, 199, 111, ${alpha.toFixed(2)})` // #28c76f in rgba
+  props: {
+    weeklyHours: {
+      type: Array,
+      required: true
     }
+  },
+  computed: {
+    maxTime() {
+      return Math.max(...this.weeklyHours)
+    },
+    chartOptions() {
+      const getGreenWithOpacity = (time) => {
+        const alpha = 0.4 + (time / this.maxTime) * 0.6
+        return `rgba(40, 199, 111, ${alpha.toFixed(2)})`
+      }
 
-    return {
-      series: timeData,
-      chartOptions: {
-        chart: {
-          type: 'donut',
-        },
-        dataLabels: {
-          enabled: false
-        },
-        stroke: {
-          width: 0
-        },
+      const total = this.weeklyHours.reduce((sum, val) => sum + val, 0)
+
+      return {
+        chart: { type: 'donut' },
+        dataLabels: { enabled: false },
+        stroke: { width: 0 },
         plotOptions: {
           pie: {
             donut: {
@@ -59,33 +59,22 @@ export default {
                   fontSize: '12px',
                   fontWeight: 400,
                   color: '#6E6B7B',
-                  formatter: () => {
-                    const total = timeData.reduce((sum, val) => sum + val, 0)
-                    return `${total} hrs`
-                  }
+                  formatter: () => `${Math.floor(total)} hrs`
                 }
               }
             }
           }
         },
-        labels: Array(timeData.length).fill(''),
-        legend: {
-          show: false
-        },
+        labels: Array(this.weeklyHours.length).fill(''),
+        legend: { show: false },
         tooltip: {
-          y: {
-            formatter: val => `${val} hrs`
-          }
+          y: { formatter: val => `${val} hrs` }
         },
-        colors: timeData.map(getGreenWithOpacity),
+        colors: this.weeklyHours.map(getGreenWithOpacity),
         responsive: [
           {
             breakpoint: 480,
-            options: {
-              chart: {
-                width: 250
-              }
-            }
+            options: { chart: { width: 250 } }
           }
         ]
       }

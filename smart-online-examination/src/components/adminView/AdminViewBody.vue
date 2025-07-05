@@ -1,315 +1,384 @@
 <template>
-    <div class="xl:h-44 h-auto flex flex-col md:flex-row mt-12">
-        <div class="text-session-course-hour md:w-2/3 w-full pe-4">
-            <p class="text-lg font-normal text-gray-600">Welcome back, <span class="text-xl font-semibold text-gray-700">Vathana!</span></p>
-            <p class="pt-3 text-sm font-normal text-gray-500">Your progress this week is Awesome. let's keep it up </p>
-            <p class="pt-2 text-sm font-normal  text-gray-500">and get a lot of points reward!</p>
-            <div class="time-spent-and-result-session flex flex-col md:flex-row gap-5 justify-between items-stretch mt-4 xs:mb-8 sm:mb-8">
-                <div class="flex">
-                    <div class="bg-[#4895ef] bg-opacity-20 rounded-lg me-3">
-                        <LaptopIcon class="text-[#8C09F4] h-16 w-16 p-2 " />
-                    </div>
-                    <p class="procent-and-text flex flex-col">
-                        <span class="text-sm font-medium text-gray-600">Time spent today</span>
-                        <span class="text-2xl font-semibold text-[#8C09F4] mt-auto">3h 45m</span>
-                    </p>
-                </div>
+  <div class="xl:h-44 h-auto flex flex-col md:flex-row mt-12">
+    <div class="text-session-course-hour md:w-2/3 w-full pe-4">
+      <p class="text-lg font-normal text-gray-600">
+        Welcome back,
+        <span class="text-xl font-semibold text-gray-700"
+          >{{ userStore.user?.lastname || "Unknow user" }}!</span
+        >
+      </p>
+      <p class="pt-3 text-sm font-normal text-gray-500">
+        Your progress this week is Awesome. let's keep it up
+      </p>
+      <p class="pt-2 text-sm font-normal text-gray-500">
+        and get a lot of points reward!
+      </p>
+      <div
+        class="time-spent-and-result-session flex flex-col md:flex-row gap-5 justify-between items-stretch mt-4 xs:mb-8 sm:mb-8"
+      >
+        <div class="flex">
+          <div class="bg-[#4895ef] bg-opacity-20 rounded-lg me-3">
+            <LaptopIcon class="text-[#8C09F4] h-16 w-16 p-2" />
+          </div>
+          <p class="procent-and-text flex flex-col">
+            <span class="text-sm font-medium text-gray-600"
+              >Time spent today</span
+            >
+            <span class="text-2xl font-semibold text-[#8C09F4] mt-auto">{{
+              userStore.user?.timeSpentToday || "0h 0m"
+            }}</span>
+          </p>
+        </div>
 
-                <div class="flex">
-                    <div class="bg-[#4895ef] bg-opacity-20 rounded-lg me-3">
-                        <StudentIcon class="text-[#8C09F4] h-16 w-16 p-2 " />
-                    </div>
-                    <p class="procent-and-text flex flex-col">
-                        <span class="text-sm font-medium text-gray-600">Students</span>
-                        <span class="text-2xl font-semibold text-[#8C09F4] mt-auto">1275</span>
-                    </p>
-                </div>
-                
-                <div class="flex">
-                    <div class="bg-[#4895ef] bg-opacity-20 rounded-lg me-3">
-                        <PeopleRigular class="text-[#8C09F4] h-16 w-16 p-2 " />
-                    </div>
-                    <p class="procent-and-text flex flex-col">
-                        <span class="text-sm font-medium text-gray-600">Teachers</span>
-                        <span class="text-2xl font-semibold text-[#8C09F4] mt-auto">125</span>
-                    </p>
-                </div>
-            </div>
+        <div class="flex">
+          <div class="bg-[#4895ef] bg-opacity-20 rounded-lg me-3">
+            <StudentIcon class="text-[#8C09F4] h-16 w-16 p-2" />
+          </div>
+          <p class="procent-and-text flex flex-col">
+            <span class="text-sm font-medium text-gray-600">Students</span>
+            <span class="text-2xl font-semibold text-[#8C09F4] mt-auto"
+              >1275</span
+            >
+          </p>
         </div>
-       <div class="text-session-box w-full h-44 md:w-1/3 border-gray-400 p-4 flex
-             md:border-l-2 md:border-t-0 border-t-2 sm:border-t">
-            <div class="flex flex-col justify-between items- h-full w-full">
-                <div class="">
-                    <p class="text-xl font-semibold text-gray-700">Time Spending</p>
-                    <p class="text-sm font-normal text-gray-700">Weekly Report</p>
-                </div>
-                <div>
-                    <p class="text-2xl font-semibold text-gray-700">
-                        214 <span class="text-gray-700 text-opacity-50">h</span> 23 <span class="text-gray-700 text-opacity-50">min</span>
-                    </p>
-                </div>
-            </div>
-                <TimeSpentChart />
-            </div>
+
+        <div class="flex">
+          <div class="bg-[#4895ef] bg-opacity-20 rounded-lg me-3">
+            <PeopleRigular class="text-[#8C09F4] h-16 w-16 p-2" />
+          </div>
+          <p class="procent-and-text flex flex-col">
+            <span class="text-sm font-medium text-gray-600">Teachers</span>
+            <span class="text-2xl font-semibold text-[#8C09F4] mt-auto"
+              >125</span
+            >
+          </p>
+        </div>
+      </div>
     </div>
-    <div class="w-full mt-8 flex flex-col xl:flex-row gap-4">
-        <div class="graph-session min-h-[300px] w-full  xl:w-3/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] sm:me-1 xl:me-2 p-4">
-            <p class="text-lg font-normal text-gray-600">Your progress this week</p>
-            <TradingViewChart />
+    <div
+      class="text-session-box w-full h-44 md:w-1/3 border-gray-400 p-4 flex md:border-l-2 md:border-t-0 border-t-2 sm:border-t"
+    >
+      <div class="flex flex-col justify-between items- h-full w-full">
+        <div class="">
+          <p class="text-xl font-semibold text-gray-700">Time Spending</p>
+          <p class="text-sm font-normal text-gray-700">Weekly Report</p>
         </div>
-        <div class="upcoming-exam w-full md:w-5/5 xl:w-2/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] xl:ms-2 p-4 " >
-            <header class="h-10 mb-4 flex items-center">
-                <p class="text-lg font-normal text-gray-600 " >Upcoming exam</p>
-            </header>
-            <table class="w-full divide-y divide-gray-200 sm:text-center md:text-center">
-                <thead class="border-y-[1px] border-gray-500 border-opacity-30">
-                    <tr>
-                    <th class="text-gray-500 text-lg font-normal py-2">Subject & Teacher</th>
-                    <th class="text-gray-500 text-lg font-normal py-2">Date/Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                    v-for="(exam, index) in exams"
-                    :key="index"
-                    class="border-b border-gray-200"
+        <div>
+          <p class="text-2xl font-semibold text-gray-700">
+            {{ weeklyTime.hours }}
+            <span class="text-gray-700 text-opacity-50">h</span>
+            {{ weeklyTime.minutes }}
+            <span class="text-gray-700 text-opacity-50">min</span>
+          </p>
+        </div>
+      </div>
+      <TimeSpentChart :weeklyHours="weeklyHoursArray" />
+    </div>
+  </div>
+  <div class="w-full mt-8 flex flex-col xl:flex-row gap-4">
+    <div
+      class="graph-session min-h-[300px] w-full xl:w-3/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] sm:me-1 xl:me-2 p-4"
+    >
+      <TradingViewChart />
+    </div>
+    <div
+      class="upcoming-exam w-full md:w-5/5 xl:w-2/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] xl:ms-2 p-4"
+    >
+      <header class="h-10 mb-4 flex items-center">
+        <p class="text-lg font-normal text-gray-600">Upcoming exam</p>
+      </header>
+      <table
+        class="w-full divide-y divide-gray-200 sm:text-center md:text-center"
+      >
+        <thead class="border-y-[1px] border-gray-500 border-opacity-30">
+          <tr>
+            <th class="text-gray-500 text-lg font-normal py-2">
+              Subject & Teacher
+            </th>
+            <th class="text-gray-500 text-lg font-normal py-2">Date/Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(exam, index) in exams"
+            :key="index"
+            class="border-b border-gray-200"
+          >
+            <td class="py-2 px-4 whitespace-nowrap text-gray-700">
+              <div class="flex items-center space-x-3">
+                <img
+                  :src="exam.teacherImage"
+                  alt="Teacher photo"
+                  class="h-10 w-10 rounded-full object-cover"
+                />
+                <div class="flex flex-col">
+                  <span class="font-medium">{{ exam.teacher }}</span>
+                  <span class="text-sm text-gray-500">{{ exam.subject }}</span>
+                </div>
+              </div>
+            </td>
+            <td class="py-2 px-4 whitespace-nowrap text-gray-500">
+              {{ exam.datetime }}
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Teacher Messages or Announcements Exam completed section -->
+  <div class="w-full flex flex-col xl:flex-row gap-4 md:mt-4 sm:mt-4">
+    <div
+      class="upcoming-exam w-full xl:w-3/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] xl:me-2 sm:me-1 p-4"
+    >
+      <header class="h-10 mb-4 flex items-center">
+        <p class="text-lg font-normal text-gray-600">
+          Teacher Messages or Announcements
+        </p>
+      </header>
+      <table class="w-full divide-y divide-gray-200">
+        <thead class="border-y-[1px] border-gray-500 border-opacity-30">
+          <tr>
+            <th class="text-gray-500 text-lg font-normal py-2">
+              Message Details
+            </th>
+            <th class="text-gray-500 text-lg font-normal py-2 text-center">
+              Status
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="(teacher_message, index) in teacher_messages"
+            :key="index"
+            class="border-b border-gray-200"
+          >
+            <td class="py-3 px-4">
+              <div class="flex items-start space-x-3">
+                <img
+                  :src="teacher_message.teacherImage"
+                  alt="Teacher photo"
+                  class="h-10 w-10 rounded-full object-cover mt-1"
+                />
+                <div class="flex flex-col">
+                  <div class="flex items-center gap-2">
+                    <span class="font-medium text-gray-800">{{
+                      teacher_message.teacher
+                    }}</span>
+                    <span class="text-sm text-gray-500"
+                      >| {{ teacher_message.subject }}</span
                     >
-                    <td class="py-2 px-4 whitespace-nowrap text-gray-700">
-                        <div class="flex items-center space-x-3">
-                        <img 
-                            :src="exam.teacherImage" 
-                            alt="Teacher photo" 
-                            class="h-10 w-10 rounded-full object-cover"
-                        />
-                        <div class="flex flex-col">
-                            <span class="font-medium">{{ exam.teacher }}</span>
-                            <span class="text-sm text-gray-500">{{ exam.subject }}</span>
-                        </div>
-                        </div>
-                    </td>
-                    <td class="py-2 px-4 whitespace-nowrap text-gray-500">
-                        {{ exam.datetime }}
-                    </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <!-- Teacher Messages or Announcements Exam completed section -->
-    <div class="w-full flex flex-col xl:flex-row gap-4 md:mt-4 sm:mt-4">
-        <div class="upcoming-exam w-full xl:w-3/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] xl:me-2 sm:me-1 p-4 " >
-                    <header class="h-10 mb-4 flex items-center">
-                        <p class="text-lg font-normal text-gray-600 " >Teacher Messages or Announcements</p>
-                    </header>
-            <table class="w-full divide-y divide-gray-200">
-                    <thead class="border-y-[1px] border-gray-500 border-opacity-30">
-                        <tr>
-                        <th class="text-gray-500 text-lg font-normal py-2">Message Details</th>
-                        <th class="text-gray-500 text-lg font-normal py-2 text-center">Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                        v-for="(teacher_message, index) in teacher_messages"
-                        :key="index"
-                        class="border-b border-gray-200"
-                        >
-                        <td class="py-3 px-4">
-                            <div class="flex items-start space-x-3">
-                            <img
-                                :src="teacher_message.teacherImage"
-                                alt="Teacher photo"
-                                class="h-10 w-10 rounded-full object-cover mt-1"
-                            />
-                            <div class="flex flex-col">
-                                <div class="flex items-center gap-2">
-                                <span class="font-medium text-gray-800">{{ teacher_message.teacher }}</span>
-                                <span class="text-sm text-gray-500">| {{ teacher_message.subject }}</span>
-                                </div>
-                                <p class="text-sm text-gray-700 mt-1">{{ teacher_message.message }}</p>
-                                <span class="text-xs text-gray-400 mt-1">{{ teacher_message.datetime }}</span>
-                            </div>
-                            </div>
-                        </td>
-                        <td class="text-center px-4 whitespace-nowrap">
-                            <span
-                            :class="[
-                                'inline-block rounded-full px-3 py-1 text-sm font-medium',
-                                teacher_message.status.toLowerCase() === 'unread'
-                                ? 'bg-red-100 text-red-600'
-                                : 'bg-green-100 text-green-600'
-                            ]"
-                            >
-                            {{ teacher_message.status }}
-                            </span>
-                        </td>
-                        </tr>
-                    </tbody>
-            </table>
-        </div>
-        <div class="min-h-[300px] w-full xl:w-2/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] xl:ms-2 p-4">
-            <header class="h-10 mb-4 flex items-center">
-                <p class="text-lg font-normal text-gray-600 ">Completed exams</p>
-            </header>
-            <div class="space-y-4">
-                <div
-                    v-for="(exam, index) in completed_exams"
-                    :key="index"
-                    class="flex justify-between items-center p-4 rounded-md hover:-translate-y-2 hover:shadow-lg cursor-pointer transition-all duration-300 transition bg-white border border-gray-200"
-                >
-                    <!-- Left: Subject & Score -->
-                    <div class="flex items-center space-x-3">
-                    <SmallCycleChat />
-                    <div>
-                        <h4 class="text-md font-semibold text-gray-800">{{ exam.subject }}</h4>
-                        <p class="text-sm text-gray-500">Score: {{ exam.score }}</p>
-                    </div>
-                    </div>
-
-                    <!-- Center: Date -->
-                    <div class="text-sm text-gray-500 text-center w-32">
-                    {{ exam.datetime }}
-                    </div>
-
-                    <!-- Right: Status -->
-                    <div>
-                    <span
-                        :class="[
-                        'text-sm font-medium px-3 py-1 rounded-full',
-                        exam.status === 'Passed'
-                            ? 'bg-green-100 text-green-600'
-                            : 'bg-red-100 text-red-600'
-                        ]"
-                    >
-                        {{ exam.status }}
-                    </span>
-                    </div>
+                  </div>
+                  <p class="text-sm text-gray-700 mt-1">
+                    {{ teacher_message.message }}
+                  </p>
+                  <span class="text-xs text-gray-400 mt-1">{{
+                    teacher_message.datetime
+                  }}</span>
                 </div>
-            </div>
-        </div>
+              </div>
+            </td>
+            <td class="text-center px-4 whitespace-nowrap">
+              <span
+                :class="[
+                  'inline-block rounded-full px-3 py-1 text-sm font-medium',
+                  teacher_message.status.toLowerCase() === 'unread'
+                    ? 'bg-red-100 text-red-600'
+                    : 'bg-green-100 text-green-600',
+                ]"
+              >
+                {{ teacher_message.status }}
+              </span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
+    <div
+      class="min-h-[300px] w-full xl:w-2/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] xl:ms-2 p-4"
+    >
+      <header class="h-10 mb-4 flex items-center">
+        <p class="text-lg font-normal text-gray-600">Completed exams</p>
+      </header>
+      <div class="space-y-4">
+        <div
+          v-for="(exam, index) in completed_exams"
+          :key="index"
+          class="flex justify-between items-center p-4 rounded-md hover:-translate-y-2 hover:shadow-lg cursor-pointer transition-all duration-300 transition bg-white border border-gray-200"
+        >
+          <!-- Left: Subject & Score -->
+          <div class="flex items-center space-x-3">
+            <SmallCycleChat />
+            <div>
+              <h4 class="text-md font-semibold text-gray-800">
+                {{ exam.subject }}
+              </h4>
+              <p class="text-sm text-gray-500">Score: {{ exam.score }}</p>
+            </div>
+          </div>
+
+          <!-- Center: Date -->
+          <div class="text-sm text-gray-500 text-center w-32">
+            {{ exam.datetime }}
+          </div>
+
+          <!-- Right: Status -->
+          <div>
+            <span
+              :class="[
+                'text-sm font-medium px-3 py-1 rounded-full',
+                exam.status === 'Passed'
+                  ? 'bg-green-100 text-green-600'
+                  : 'bg-red-100 text-red-600',
+              ]"
+            >
+              {{ exam.status }}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 <script>
-import LaptopIcon from '../icons/LaptopIcon.vue';
-import TradingViewChart from './TradingViewChart.vue';
-import TimeSpentChart from './TimeSpentChart.vue';
-import SmallCycleChat from './SmallCycleChat.vue';
-import PeopleRigular from '../icons/PeopleRigular.vue';
-import StudentIcon from '../icons/StudentIcon.vue';
+import LaptopIcon from "../icons/LaptopIcon.vue";
+import TradingViewChart from "./TradingViewChart.vue";
+import TimeSpentChart from "./TimeSpentChart.vue";
+import SmallCycleChat from "./SmallCycleChat.vue";
+import PeopleRigular from "../icons/PeopleRigular.vue";
+import StudentIcon from "../icons/StudentIcon.vue";
+import { useUserStore } from "@/store/store";
 export default {
-    components: {
-        LaptopIcon,
-        TradingViewChart,
-        TimeSpentChart,
-        SmallCycleChat,
-        PeopleRigular,
-        StudentIcon
+  components: {
+    LaptopIcon,
+    TradingViewChart,
+    TimeSpentChart,
+    SmallCycleChat,
+    PeopleRigular,
+    StudentIcon,
+  },
+  setup() {
+    const userStore = useUserStore();
+    return { userStore };
+  },
+  data() {
+    return {
+      weeklyHoursData: [12, 4, 3.5, 5, 7, 2.5, 4],
+      exams: [
+        {
+          subject: "Data Structures",
+          teacher: "Dr. Smith",
+          teacherImage: "https://randomuser.me/api/portraits/men/32.jpg",
+          datetime: "2025-05-20 09:00 AM",
+        },
+        {
+          subject: "Operating Systems",
+          teacher: "Prof. Johnson",
+          teacherImage: "https://randomuser.me/api/portraits/women/44.jpg",
+          datetime: "2025-05-21 01:30 PM",
+        },
+        {
+          subject: "Algorithms",
+          teacher: "Dr. Lee",
+          teacherImage: "https://randomuser.me/api/portraits/men/65.jpg",
+          datetime: "2025-05-22 10:15 AM",
+        },
+        {
+          subject: "Database Systems",
+          teacher: "Prof. Brown",
+          teacherImage: "https://randomuser.me/api/portraits/women/12.jpg",
+          datetime: "2025-05-23 11:00 AM",
+        },
+        {
+          subject: "Computer Networks",
+          teacher: "Dr. Wilson",
+          teacherImage: "https://randomuser.me/api/portraits/men/88.jpg",
+          datetime: "2025-05-24 02:00 PM",
+        },
+      ],
+      teacher_messages: [
+        {
+          subject: "Data Structures",
+          teacher: "Dr. Smith",
+          teacherImage: "https://randomuser.me/api/portraits/men/32.jpg",
+          datetime: "2025-05-20 09:00 AM",
+          message: "We will move to Mondey because I am busy.",
+          status: "unread",
+        },
+        {
+          subject: "Operating Systems",
+          teacher: "Prof. Johnson",
+          teacherImage: "https://randomuser.me/api/portraits/women/44.jpg",
+          datetime: "2025-05-21 01:30 PM",
+          message: "We will move to Mondey because I am busy.",
+          status: "Read",
+        },
+        {
+          subject: "Algorithms",
+          teacher: "Dr. Lee",
+          teacherImage: "https://randomuser.me/api/portraits/men/65.jpg",
+          datetime: "2025-05-22 10:15 AM",
+          message: "We will move to Mondey because I am busy.",
+          status: "unread",
+        },
+        {
+          subject: "Database Systems",
+          teacher: "Prof. Brown",
+          teacherImage: "https://randomuser.me/api/portraits/women/12.jpg",
+          datetime: "2025-05-23 11:00 AM",
+          message: "We will move to Mondey because I am busy.",
+          status: "unread",
+        },
+        {
+          subject: "Computer Networks",
+          teacher: "Dr. Wilson",
+          teacherImage: "https://randomuser.me/api/portraits/men/88.jpg",
+          datetime: "2025-05-24 02:00 PM",
+          message: "We will move to Mondey because I am busy.",
+          status: "unread",
+        },
+      ],
+      completed_exams: [
+        {
+          subject: "Web Design",
+          score: 75,
+          datetime: "2025-05-22 10:15 AM",
+          status: "Passed",
+        },
+        {
+          subject: "C#",
+          score: 55,
+          datetime: "2025-05-22 10:15 AM",
+          status: "Failed",
+        },
+        {
+          subject: "Database (SQL SERVER)",
+          score: 82,
+          datetime: "2025-05-22 10:15 AM",
+          status: "Passed",
+        },
+        {
+          subject: "Java",
+          score: 55,
+          datetime: "2025-05-22 10:15 AM",
+          status: "Failed",
+        },
+      ],
+    };
+  },
+  computed: {
+    weeklyTime() {
+      const raw = this.userStore?.user?.timeSpentThisWeek || "0h 0m";
+      const [h, m] = raw.split(" ");
+      return {
+        hours: h.replace("h", ""),
+        minutes: m.replace("m", ""),
+      };
     },
-    data(){
-        return{
-            exams: [
-                {
-                    subject: "Data Structures",
-                    teacher: "Dr. Smith",
-                    teacherImage: "https://randomuser.me/api/portraits/men/32.jpg",
-                    datetime: "2025-05-20 09:00 AM",
-                },
-                {
-                    subject: "Operating Systems",
-                    teacher: "Prof. Johnson",
-                    teacherImage: "https://randomuser.me/api/portraits/women/44.jpg",
-                    datetime: "2025-05-21 01:30 PM",
-                },
-                {
-                    subject: "Algorithms",
-                    teacher: "Dr. Lee",
-                    teacherImage: "https://randomuser.me/api/portraits/men/65.jpg",
-                    datetime: "2025-05-22 10:15 AM",
-                },
-                {
-                    subject: "Database Systems",
-                    teacher: "Prof. Brown",
-                    teacherImage: "https://randomuser.me/api/portraits/women/12.jpg",
-                    datetime: "2025-05-23 11:00 AM",
-                },
-                {
-                    subject: "Computer Networks",
-                    teacher: "Dr. Wilson",
-                    teacherImage: "https://randomuser.me/api/portraits/men/88.jpg",
-                    datetime: "2025-05-24 02:00 PM",
-                },
-            ],
-            teacher_messages:[
-                {
-                    subject: "Data Structures",
-                    teacher: "Dr. Smith",
-                    teacherImage: "https://randomuser.me/api/portraits/men/32.jpg",
-                    datetime: "2025-05-20 09:00 AM",
-                    message: "We will move to Mondey because I am busy.",
-                    status: "unread"
-                },
-                {
-                    subject: "Operating Systems",
-                    teacher: "Prof. Johnson",
-                    teacherImage: "https://randomuser.me/api/portraits/women/44.jpg",
-                    datetime: "2025-05-21 01:30 PM",
-                    message: "We will move to Mondey because I am busy.",
-                    status: "Read"
-                },
-                {
-                    subject: "Algorithms",
-                    teacher: "Dr. Lee",
-                    teacherImage: "https://randomuser.me/api/portraits/men/65.jpg",
-                    datetime: "2025-05-22 10:15 AM",
-                    message: "We will move to Mondey because I am busy.",
-                    status: "unread"
-                },
-                {
-                    subject: "Database Systems",
-                    teacher: "Prof. Brown",
-                    teacherImage: "https://randomuser.me/api/portraits/women/12.jpg",
-                    datetime: "2025-05-23 11:00 AM",
-                    message: "We will move to Mondey because I am busy.",
-                    status: "unread"
-                },
-                {
-                    subject: "Computer Networks",
-                    teacher: "Dr. Wilson",
-                    teacherImage: "https://randomuser.me/api/portraits/men/88.jpg",
-                    datetime: "2025-05-24 02:00 PM",
-                    message: "We will move to Mondey because I am busy.",
-                    status: "unread"
-                },
-            ],
-            completed_exams:
-            [
-                {
-                    subject: "Web Design",
-                    score: 75,
-                    datetime: "2025-05-22 10:15 AM",
-                    status: "Passed"
-                },
-                {
-                    subject: "C#",
-                    score: 55,
-                    datetime: "2025-05-22 10:15 AM",
-                    status: "Failed"
-                },
-                                {
-                    subject: "Database (SQL SERVER)",
-                    score: 82,
-                    datetime: "2025-05-22 10:15 AM",
-                    status: "Passed"
-                },
-                {
-                    subject: "Java",
-                    score: 55,
-                    datetime: "2025-05-22 10:15 AM",
-                    status: "Failed"
-                },
-            ]
-
-        }
-    }
-}
+    weeklyHoursArray() {
+      // Example: just pass the total hours as a single element array
+      // You can adapt this to multiple days if you want more data points
+      return [this.weeklyTime.hours + this.weeklyTime.minutes / 60];
+    },
+  },
+};
 </script>
