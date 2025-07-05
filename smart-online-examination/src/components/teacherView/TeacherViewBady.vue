@@ -94,7 +94,7 @@
           <span class="text-gray-700 text-opacity-50">min</span>
         </p>
       </div>
-      <TimeSpentChart />
+      <TimeSpentChart :weeklyHours="[12, 4, 3.5, 5, 7, 2.5, 4]" />
     </div>
   </div>
 
