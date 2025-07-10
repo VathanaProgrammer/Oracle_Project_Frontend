@@ -15,6 +15,7 @@ import NewExam from '@/components/teacherView/NewExam.vue'
 import StudentResult from '@/components/teacherView/StudentResult.vue'
 import AdminDashborad from '@/components/adminView/AdminDashborad.vue'
 import AdminViewBody from '@/components/adminView/AdminViewBody.vue'
+import ExamDetailsAndEdit from '@/components/adminView/ExamDetailsAndEdit.vue'
  const routes = [
     {
       path: '/',
@@ -93,6 +94,11 @@ import AdminViewBody from '@/components/adminView/AdminViewBody.vue'
           path: "",
           name: "adminBody",
           component: AdminViewBody
+        },
+        {
+          path: "exam-details/:id",
+          name: "ExamDetailsAndEdit",
+          component: ExamDetailsAndEdit
         }
       ]
     }

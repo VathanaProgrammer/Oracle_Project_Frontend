@@ -1,5 +1,6 @@
 <template>
   <div class="h-screen w-screen bg-gray-100 flex">
+    
     <!-- Overlay: fades only -->
     <transition name="overlay-fade">
       <div
@@ -257,7 +258,7 @@
     <div class="w-full px-3 overflow-y-auto h-screen">
       <!-- Header -->
       <header
-        class="flex items-center justify-between bg-white shadow-md rounded-md px-4 py-3 my-4 sticky top-3"
+        class="flex items-center justify-between bg-white shadow-md rounded-md px-4 py-3 my-4 sticky top-[16px]"
       >
         <!-- Left: Hamburger + Search -->
         <div class="flex items-center gap-2">

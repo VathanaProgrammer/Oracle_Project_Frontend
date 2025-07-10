@@ -1,75 +1,71 @@
-import { Client } from '@stomp/stompjs'
-import SockJS from 'sockjs-client'
-import { ref } from 'vue'
+
 export const API_BASE_URL = 'http://localhost:8080'
 export const API_BASE_FILE_URL = `${API_BASE_URL}/api/files`
-export function useWebSocket(handlers = {}) {
-  let stompClient = null
-  const isConnected = ref(false)
+// src/composables/useWebSocketHandler.js
+import { Client } from '@stomp/stompjs'
+import SockJS from 'sockjs-client'
 
-  function connect() {
-    console.log('🔌 Connecting to WebSocket…')
-    stompClient = new Client({
-      webSocketFactory: () => new SockJS(`${API_BASE_URL}/ws`),
-      reconnectDelay: 5000,
+const API_BASE = 'http://localhost:8080'
+let stompClient = null
+let isConnected = false
+const topicHandlers = {}
 
-      onConnect: () => {
-        console.log('✅ Connected')
-
-        isConnected.value = true
-
-        // Subscribe to all topics you provide
-        Object.entries(handlers).forEach(([topic, callback]) => {
-          stompClient.subscribe(topic, (message) => {
-            try {
-              const data = JSON.parse(message.body)
-              callback(data)
-            } catch (err) {
-              console.error(`❌ Failed to parse message on ${topic}`, err)
-            }
-          })
-        })
-      },
-
-      onStompError: (frame) => {
-        console.error('❌ STOMP error:', frame.headers['message'])
-      },
-
-      onWebSocketClose: () => {
-        console.log('⚠️ WebSocket closed')
-        isConnected.value = false
+export function registerHandler(topic, callback) {
+  topicHandlers[topic] = callback
+  if (isConnected && stompClient) {
+    stompClient.subscribe(topic, (message) => {
+      try {
+        const data = JSON.parse(message.body)
+        callback(data)
+      } catch (e) {
+        console.error('Failed to parse message on topic:', topic, e)
       }
     })
-
-    stompClient.activate()
   }
+}
 
-  function disconnect() {
-    if (stompClient && stompClient.active) {
-      stompClient.deactivate()
-      isConnected.value = false
-      console.log('🛑 Disconnected')
-    }
-  }
+export function connectWebSocket() {
+  if (stompClient && stompClient.active) return
 
-  function send(destination, payload) {
-    if (stompClient && stompClient.active && isConnected.value) {
-      stompClient.publish({
-        destination,
-        body: JSON.stringify(payload)
+  stompClient = new Client({
+    webSocketFactory: () => new SockJS(`${API_BASE}/ws`),
+    reconnectDelay: 5000,
+
+    onConnect: () => {
+      console.log('✅ WebSocket connected')
+      isConnected = true
+      Object.entries(topicHandlers).forEach(([topic, callback]) => {
+        stompClient.subscribe(topic, (message) => {
+          try {
+            const data = JSON.parse(message.body)
+            callback(data)
+          } catch (err) {
+            console.error(`❌ Failed to parse message on ${topic}`, err)
+          }
+        })
       })
-      console.log(`📤 Sent to ${destination}:`, payload)
-    } else {
-      console.warn('⚠️ Cannot send, not connected')
-    }
-  }
+    },
 
-  return {
-    connect,
-    disconnect,
-    send,
-    isConnected,
-    API_BASE_URL,
-    API_BASE_FILE_URL
+    onStompError: (frame) => {
+      console.error('❌ STOMP error:', frame.headers['message'])
+    },
+
+    onWebSocketClose: () => {
+      console.warn('⚠️ WebSocket connection closed')
+      isConnected = false
+    }
+  })
+
+  stompClient.activate()
+}
+
+export function sendMessage(destination, payload) {
+  if (stompClient && stompClient.active && isConnected) {
+    stompClient.publish({
+      destination,
+      body: JSON.stringify(payload)
+    })
+  } else {
+    console.warn('Cannot send message. Not connected.')
   }
 }
