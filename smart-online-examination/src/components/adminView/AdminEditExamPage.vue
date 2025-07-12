@@ -33,7 +33,7 @@
           <input
             type="datetime-local"
             v-model="startTime"
-            class="w-full p-3 border rounded-md"
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
           />
         </div>
         <div>
@@ -43,7 +43,7 @@
           <input
             type="datetime-local"
             v-model="endTime"
-            class="w-full p-3 border rounded-md"
+            class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
           />
         </div>
       </div>
@@ -53,7 +53,6 @@
       </p>
     </section>
 
-    <!-- Title / Type / Description -->
     <!-- Title / Type / Description / Status -->
     <section class="space-y-6">
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -119,7 +118,10 @@
         {{ isEditing ? "Edit Question" : "Add Question" }}
       </h3>
 
-      <select v-model="questionType" class="w-full p-3 border rounded-md">
+      <select
+        v-model="questionType"
+        class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+      >
         <option disabled value="">-- Select Question Type --</option>
         <option value="true_false">True / False</option>
         <option value="multiple_choice">Multiple Choice</option>
@@ -131,7 +133,7 @@
         v-if="questionType !== 'file_exam'"
         v-model="questionText"
         placeholder="Enter question"
-        class="w-full p-3 border rounded-md"
+        class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
       />
 
       <div class="grid grid-cols-2 gap-6">
@@ -140,9 +142,12 @@
           type="number"
           min="1"
           placeholder="Score"
-          class="w-full p-3 border rounded-md"
+          class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
         />
-        <select v-model="autoScore" class="w-full p-3 border rounded-md">
+        <select
+          v-model="autoScore"
+          class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+        >
           <option :value="true">Automatic</option>
           <option :value="false">Manual</option>
         </select>
@@ -150,7 +155,10 @@
 
       <!-- True / False -->
       <div v-if="questionType === 'true_false'">
-        <select v-model="trueFalseAnswer" class="w-full p-3 border rounded-md">
+        <select
+          v-model="trueFalseAnswer"
+          class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
+        >
           <option value="true">True</option>
           <option value="false">False</option>
         </select>
@@ -165,7 +173,7 @@
         >
           <input
             v-model="multipleChoiceOptions[index]"
-            class="flex-1 p-2 border rounded-md"
+            class="flex-1 p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
             placeholder="Option"
           />
           <input type="radio" v-model="correctMCIndex" :value="index" />
@@ -187,7 +195,7 @@
         <input
           v-model="shortAnswer"
           placeholder="Expected Answer"
-          class="w-full p-3 border rounded-md"
+          class="w-full p-3 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
         />
       </div>
 
@@ -198,7 +206,7 @@
           @change="handleFileChange($event)"
           multiple
           accept=".pdf,.doc,.docx"
-          class="w-full p-2 border rounded-md"
+          class="w-full p-2 border rounded-md focus:outline-none focus:ring focus:ring-blue-300"
         />
         <div
           v-for="(fileItem, index) in fileExams"
@@ -214,13 +222,13 @@
           <input
             v-model="fileItem.title"
             placeholder="Title"
-            class="w-full p-2 border rounded mt-2"
+            class="w-full p-2 border rounded mt-2 focus:outline-none focus:ring focus:ring-blue-300"
           />
           <textarea
             v-model="fileItem.description"
             placeholder="Description"
             rows="2"
-            class="w-full p-2 border rounded mt-2"
+            class="w-full p-2 border rounded mt-2 focus:outline-none focus:ring focus:ring-blue-300"
           ></textarea>
         </div>
       </div>
@@ -242,6 +250,7 @@
       </div>
     </section>
 
+    <!-- Question Preview -->
     <section v-if="questions.length" class="space-y-6">
       <h3 class="text-lg font-semibold text-gray-800">Questions Preview</h3>
       <div
@@ -308,41 +317,35 @@
     </section>
 
     <!-- Submit -->
-    <div class="flex justify-end pt-10">
+    <div class="flex justify-end pt-5">
       <button
         @click="submitAll"
-        class="bg-green-600 hover:bg-green-700 text-white text-lg px-6 py-3 rounded-md"
+        class="bg-green-600 hover:bg-green-700 text-white text-lg px-4 py-2 rounded-md"
       >
-        Submit Exam
+        Save
       </button>
     </div>
   </div>
 </template>
+
 <script>
 import axios from "axios";
 import { API_BASE_URL } from "../../config/useWebSocket";
-import { useUserStore } from "@/store/store";
 let nextId = 1;
 export default {
   data() {
     return {
-      examTypeAssign: ["midterm", "final", "quiz"],
-
-      assignedId: "",
+      examId: this.$route.params.id,
+      currectAssignTo: "",
       assignments: [],
+      assignedId: "",
       startTime: "",
       endTime: "",
-
+      currentTeacherId: "",
       type: "",
+      status: "",
       examTitle: "",
       examDescription: "",
-      status: "",
-
-      durationDays: 0,
-      durationHours: 0,
-      durationMinutes: 0,
-      durationUnit: "minutes",
-
       questionType: "",
       questionText: "",
       score: 1,
@@ -352,74 +355,89 @@ export default {
       correctMCIndex: 0,
       shortAnswer: "",
       fileExams: [],
-
       questions: [],
       isEditing: false,
       editingIndex: -1,
     };
   },
-   setup(){
-    const userStore = useUserStore();
-    return {
-      userStore,
-    };
-  },
   computed: {
     calculatedDuration() {
       if (!this.startTime || !this.endTime) return null;
-
-      const parse = (str) => {
-        const [date, time] = str.split("T");
-        const [y, m, d] = date.split("-").map(Number);
-        const [h, min] = time.split(":").map(Number);
-        return new Date(y, m - 1, d, h, min);
-      };
-
-      const start = parse(this.startTime);
-      const end = parse(this.endTime);
+      const start = new Date(this.startTime);
+      const end = new Date(this.endTime);
       const ms = end - start;
-      if (ms <= 0) return "Invalid time range";
-
+      if (ms <= 0) return "Invalid time";
       const totalMinutes = Math.floor(ms / 60000);
-      const d = Math.floor(totalMinutes / 1440);
-      const h = Math.floor((totalMinutes % 1440) / 60);
-      const m = totalMinutes % 60;
-
-      return `${d ? `${d} day(s) ` : ""}${h ? `${h} hour(s) ` : ""}${
-        m ? `${m} min(s)` : ""
-      }`.trim();
-    },
-    totalDurationInMinutes() {
-      return (
-        this.durationDays * 24 * 60 +
-        this.durationHours * 60 +
-        this.durationMinutes
-      );
+      const hrs = Math.floor(totalMinutes / 60);
+      const mins = totalMinutes % 60;
+      return hrs > 0 ? `${hrs} hr ${mins} min` : `${mins} min`;
     },
   },
   mounted() {
-    this.fetchAssignments()
-    console.log(this.userStore.user)
+    this.loadExam();
+    this.fetchAssignments();
   },
   methods: {
-    async fetchAssignments() {
+    async loadExam() {
       try {
-        const teacherId = 1;
-        const response = await axios.get(
-          `${API_BASE_URL}/api/assignments/teacher/${teacherId}`,
+        const res = await axios.get(
+          `${API_BASE_URL}/api/exams/forAdmin/${this.examId}`,
           {
             withCredentials: true,
           }
         );
-
-        this.assignments = response.data;
-        console.log(this.assignments);
-      } catch (e) {
-        console.log(e);
+        const exam = res.data;
+        console.log("Exam data:", exam);
+        console.log("exam id", this.examId);
+        this.examId = exam.id;
+        this.examTitle = exam.title;
+        this.currentTeacherId = exam.teacherId;
+        this.examDescription = exam.description;
+        this.type = exam.type.toLowerCase();
+        this.startTime = exam.startTime;
+        this.endTime = exam.endTime;
+        this.status = exam.status;
+        this.currectAssignTo = exam.assignedToDTO || "";
+        this.assignedId = exam.assignedToDTO.id || "";
+        this.questions = exam.questions.map((q) => ({
+          ...q,
+          id: nextId++,
+        }));
+      } catch (err) {
+        alert("❌ Failed to load exam.");
+        console.error(err);
       }
     },
+    async fetchAssignments() {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/assignments`, {
+          withCredentials: true,
+        });
+        this.assignments = res.data;
+      } catch (err) {
+        console.error("Failed to fetch assignments:", err);
+      }
+    },
+    getDurationInMinutes() {
+      if (!this.startTime || !this.endTime) return 0;
+
+      const parseLocalDateTime = (datetimeLocalStr) => {
+        const [datePart, timePart] = datetimeLocalStr.split("T");
+        const [year, month, day] = datePart.split("-").map(Number);
+        const [hour, minute] = timePart.split(":").map(Number);
+        return new Date(year, month - 1, day, hour, minute);
+      };
+
+      const start = parseLocalDateTime(this.startTime);
+      const end = parseLocalDateTime(this.endTime);
+
+      const diffMs = end - start;
+      if (diffMs <= 0) return 0;
+
+      return Math.floor(diffMs / 60000);
+    },
     formatAssignment(assign) {
-      return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} (${assign.shiftTime})`;
+      return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} - (${assign.shiftTime})`;
     },
     handleFileChange(e) {
       const files = Array.from(e.target.files);
@@ -427,32 +445,155 @@ export default {
         this.fileExams.push({ fileUrl: file, title: "", description: "" });
       });
     },
+    addMCOption() {
+      this.multipleChoiceOptions.push("");
+    },
+    removeMCOption(i) {
+      this.multipleChoiceOptions.splice(i, 1);
+    },
+    removeFile(i) {
+      this.fileExams.splice(i, 1);
+    },
+    addQuestion() {
+      const question = {
+        id: nextId++,
+        type: this.questionType,
+        content: this.questionText,
+        score: this.score,
+        autoScore: this.autoScore,
+      };
+      if (question.type === "true_false") {
+        question.correctAnswer = this.trueFalseAnswer;
+      } else if (question.type === "multiple_choice") {
+        question.options = [...this.multipleChoiceOptions];
+        question.correctAnswerIndex = this.correctMCIndex;
+      } else if (question.type === "short_answer") {
+        question.correctAnswer = this.shortAnswer;
+      } else if (question.type === "file_exam") {
+        question.fileExams = this.fileExams.map((f) => ({
+          title: f.title,
+          description: f.description,
+          fileUrl: f.fileUrl,
+        }));
+      }
+      this.questions.push(question);
+      this.clearQuestionForm();
+    },
+    editQuestion(index) {
+      const q = this.questions[index];
+      console.log("Editing question:", q);
+      this.questionType = q.type;
+      this.questionText = q.content || "";
+      this.score = q.score;
+      this.autoScore = q.autoScore;
+      this.isEditing = true;
+      this.editingIndex = index;
+      if (q.type === "true_false") {
+        this.trueFalseAnswer = q.correctAnswer;
+      } else if (q.type === "multiple_choice") {
+        this.multipleChoiceOptions = [...q.options];
+        this.correctMCIndex = q.correctAnswerIndex;
+      } else if (q.type === "short_answer") {
+        this.shortAnswer = q.correctAnswer;
+      } else if (q.type === "file_exam") {
+        this.fileExams = q.fileExams || [];
+      }
+    },
+    updateQuestion() {
+      const q = this.questions[this.editingIndex];
+      q.type = this.questionType;
+      q.content = this.questionText;
+      q.score = this.score;
+      q.autoScore = this.autoScore;
+      if (q.type === "true_false") {
+        q.correctAnswer = this.trueFalseAnswer;
+      } else if (q.type === "multiple_choice") {
+        q.options = [...this.multipleChoiceOptions];
+        q.correctAnswerIndex = this.correctMCIndex;
+      } else if (q.type === "short_answer") {
+        q.correctAnswer = this.shortAnswer;
+      } else if (q.type === "file_exam") {
+        q.fileExams = this.fileExams;
+      }
+      this.clearQuestionForm();
+    },
+    deleteQuestion(i) {
+      this.questions.splice(i, 1);
+    },
+    clearQuestionForm() {
+      this.questionType = "";
+      this.questionText = "";
+      this.score = 1;
+      this.autoScore = true;
+      this.trueFalseAnswer = "true";
+      this.multipleChoiceOptions = ["", ""];
+      this.correctMCIndex = 0;
+      this.shortAnswer = "";
+      this.fileExams = [];
+      this.isEditing = false;
+      this.editingIndex = -1;
+    },
     validateExamForm() {
       const errors = [];
-      const now = new Date();
+
       const start = new Date(this.startTime);
       const end = new Date(this.endTime);
+      const now = new Date();
+      if (start <= now) {
+        errors.push("Start time must be in the future (after now).");
+      }
 
-      if (!this.assignedId) errors.push("Assignment must be selected.");
-      if (!this.examTitle.trim()) errors.push("Exam title is required.");
-      if (!this.examDescription.trim())
+      if (end <= start) {
+        errors.push("End time must be after the start time.");
+      }
+      // Assignment check
+      if (!this.assignedId) {
+        errors.push("Assignment must be selected.");
+      }
+
+      // Title & description
+      if (!this.examTitle.trim()) {
+        errors.push("Exam title is required.");
+      }
+
+      if (!this.examDescription.trim()) {
         errors.push("Exam description is required.");
-      if (!this.type) errors.push("Exam type is required.");
-      if (!this.startTime || !this.endTime)
-        errors.push("Start and end time are required.");
-      if (start <= now) errors.push("Start time must be in the future.");
-      if (end <= start) errors.push("End time must be after start time.");
-      if (this.questions.length === 0)
-        errors.push("At least one question is required.");
+      }
 
+      // Type check
+      if (!this.type) {
+        errors.push("Exam type must be selected.");
+      }
+
+      // Time checks
+      if (!this.startTime || !this.endTime) {
+        errors.push("Start and end time must be selected.");
+      } else if (this.getDurationInMinutes() <= 0) {
+        errors.push("End time must be after start time.");
+      }
+
+      // Questions check
+      if (this.questions.length === 0) {
+        errors.push("At least one question must be added.");
+      }
+
+      // Per question validation (optional)
       this.questions.forEach((q, i) => {
-        if (q.type !== "file_exam" && !q.content)
+        if (q.type !== "file_exam" && !q.content) {
           errors.push(`Question ${i + 1} text is required.`);
-        if (!q.type) errors.push(`Question ${i + 1} type is required.`);
+        }
+        if (!q.type) {
+          errors.push(`Question ${i + 1} type is required.`);
+        }
         if (q.type === "multiple_choice") {
-          if (q.options.length < 2 || q.options.some((opt) => !opt.trim())) {
+          if (
+            q.options.length < 2 ||
+            q.options.some((opt) => opt.trim() === "")
+          ) {
             errors.push(
-              `Question ${i + 1} must have at least two valid options.`
+              `Question ${
+                i + 1
+              } must have at least two valid multiple choice options.`
             );
           }
         }
@@ -470,179 +611,71 @@ export default {
         alert("❌ Validation Error:\n\n" + errors.join("\n"));
         return false;
       }
+
       return true;
     },
-    addMCOption() {
-      this.multipleChoiceOptions.push("");
-    },
-    removeMCOption(index) {
-      this.multipleChoiceOptions.splice(index, 1);
-      if (this.correctMCIndex >= this.multipleChoiceOptions.length) {
-        this.correctMCIndex = 0;
-      }
-    },
-    removeFile(index) {
-      this.fileExams.splice(index, 1);
-    },
-    addQuestion() {
-      const q = {
-        id: nextId++,
-        type: this.questionType,
-        content: this.questionText,
-        score: this.score,
-        autoScore: this.autoScore,
-      };
-
-      if (q.type === "true_false") {
-        q.correctAnswer = this.trueFalseAnswer;
-      } else if (q.type === "multiple_choice") {
-        q.options = [...this.multipleChoiceOptions];
-        q.correctAnswerIndex = this.correctMCIndex;
-      } else if (q.type === "short_answer") {
-        q.correctAnswer = this.shortAnswer;
-      } else if (q.type === "file_exam") {
-        q.fileExams = this.fileExams.map((f) => ({
-          id: f.id,
-          title: f.title,
-          description: f.description,
-          fileUrl: f.fileUrl,
-        }));
-      }
-
-      this.questions.push(q);
-      this.clearQuestionForm();
-    },
-    editQuestion(index) {
-      const q = this.questions[index];
-      this.questionType = q.type;
-      this.questionText = q.content || "";
-      this.score = q.score;
-      this.autoScore = q.autoScore;
-      this.editingIndex = index;
-      this.isEditing = true;
-
-      if (q.type === "true_false") {
-        this.trueFalseAnswer = q.correctAnswer;
-      } else if (q.type === "multiple_choice") {
-        this.multipleChoiceOptions = [...q.options];
-        this.correctMCIndex = q.correctAnswerIndex;
-      } else if (q.type === "short_answer") {
-        this.shortAnswer = q.correctAnswer;
-      } else if (q.type === "file_exam") {
-        this.fileExams = q.fileExams.map((f) => ({
-          id: f.id,
-          title: f.title,
-          description: f.description,
-          fileUrl: f.fileUrl,
-        }));
-      }
-    },
-    updateQuestion() {
-      const q = this.questions[this.editingIndex];
-      q.type = this.questionType;
-      q.content = this.questionText;
-      q.score = this.score;
-      q.autoScore = this.autoScore;
-
-      if (q.type === "true_false") {
-        q.correctAnswer = this.trueFalseAnswer;
-      } else if (q.type === "multiple_choice") {
-        q.options = [...this.multipleChoiceOptions];
-        q.correctAnswerIndex = this.correctMCIndex;
-      } else if (q.type === "short_answer") {
-        q.correctAnswer = this.shortAnswer;
-      } else if (q.type === "file_exam") {
-        q.fileExams = this.fileExams.map((f) => ({
-          id: f.id,
-          title: f.title,
-          description: f.description,
-          fileUrl: f.fileUrl.name || f.fileUrl,
-        }));
-      }
-
-      this.clearQuestionForm();
-    },
-    deleteQuestion(index) {
-      this.questions.splice(index, 1);
-    },
-    clearQuestionForm() {
-      this.questionType = "";
-      this.questionText = "";
-      this.score = 1;
-      this.autoScore = true;
-      this.trueFalseAnswer = "true";
-      this.multipleChoiceOptions = ["", ""];
-      this.correctMCIndex = 0;
-      this.shortAnswer = "";
-      this.fileExams = [];
-      this.isEditing = false;
-      this.editingIndex = -1;
-    },
-    getDurationInMinutes() {
-      if (!this.startTime || !this.endTime) return 0;
-      const parse = (str) => {
-        const [d, t] = str.split("T");
-        const [y, m, day] = d.split("-").map(Number);
-        const [h, min] = t.split(":").map(Number);
-        return new Date(y, m - 1, day, h, min);
-      };
-      return Math.floor((parse(this.endTime) - parse(this.startTime)) / 60000);
-    },
     async submitAll() {
-      if (!this.validateExamForm()) return;
+      if (!this.validateExamForm()) {
+        return; // Stop if validation fails
+      }
 
       try {
         const formData = new FormData();
 
+        // 1. Build exam metadata to match your Spring Boot DTO
         const examMeta = {
-          assignTo: this.assignedId,
+          id: this.examId || null, // 👈 Use null for new exams
+          assignTo: this.assignedId, // 👈 AssignedTo ID
           startTime: this.startTime,
           endTime: this.endTime,
-          status: this.status,
-          type: this.type,
-          duration: this.getDurationInMinutes(),
+          status: this.status || "DRAFT", // 👈 You can change to "DRAFT" if needed
+          type: this.type, // 👈 "quiz", "midterm", etc.
+          duration: this.getDurationInMinutes(), // 👈 e.g. 60
           durationUnit: "minutes",
           title: this.examTitle,
           description: this.examDescription,
-          createdBy: 1, // user this later Tey tey userStore.user.id for real user who login
+          createdBy: this.currentTeacherId || 1, // 👈 Optional: dynamic user ID
           questions: this.questions.map((q) => ({
-            type: q.type,
-            content: q.content,
-            score: q.score,
-            autoScore: q.autoScore,
-            correctAnswer: q.correctAnswer,
-            correctAnswerIndex: q.correctAnswerIndex,
-            options: q.options,
+            ...q,
             fileExams: (q.fileExams || []).map((f) => ({
               title: f.title,
               description: f.description,
-              fileUrl: f.fileUrl.name || f.fileUrl,
+              fileUrl: f.fileUrl.name || f.fileUrl, // 👈 Handles File or existing string
             })),
           })),
         };
 
+        // 2. Append the examMeta JSON as text
         formData.append("examMeta", JSON.stringify(examMeta));
 
+        // 3. Append each real file used in file_exam questions
         this.questions.forEach((q) => {
           if (q.type === "file_exam") {
-            q.fileExams.forEach((f) => {
-              if (f.fileUrl instanceof File) {
-                formData.append("files", f.fileUrl);
+            (q.fileExams || []).forEach((fileObj) => {
+              if (fileObj.fileUrl instanceof File) {
+                formData.append("files", fileObj.fileUrl);
               }
             });
           }
         });
 
-        const res = await axios.post(`${API_BASE_URL}/api/exams`, formData, {
-          headers: { "Content-Type": "multipart/form-data" },
-          withCredentials: true
-        });
+        // 4. Submit via axios
+        const response = await axios.put(
+          `${API_BASE_URL}/api/exams/${this.examId}`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+            withCredentials: true,
+          }
+        );
 
-        console.log("✅ Exam Saved:", res.data);
+        console.log("✅ Exam Saved:", response.data);
         alert("✅ Exam saved successfully!");
-      } catch (err) {
-        console.error("❌ Save failed:", err);
-        alert("❌ Failed to save exam.");
+      } catch (error) {
+        console.error("❌ Failed to save exam:", error);
+        alert("❌ Error saving exam.");
       }
     },
   },

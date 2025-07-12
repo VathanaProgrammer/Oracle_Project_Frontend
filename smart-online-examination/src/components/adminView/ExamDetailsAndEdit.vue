@@ -67,12 +67,30 @@
               </p>
             </div>
 
-            <div class="mt-6">
+            <div class="mt-6 flex items-center gap-2">
               <button
+                v-if="exam.status === 'PUBLISHED'"
                 @click="endExam(exam)"
                 class="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
               >
                 End exam
+              </button>
+              <!-- Edit Button -->
+              <button v-if="exam.status === 'DRAFT'"
+                @click="editExam(exam.id)"
+                class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+              >
+                <i class="fas fa-edit"></i>
+                Edit exam
+              </button>
+
+              <!-- Delete Button -->
+              <button v-if="exam.status === 'DRAFT'"
+                @click="deleteExam(exam)"
+                class="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+              >
+                <i class="fas fa-trash-alt"></i>
+                Delete exam
               </button>
             </div>
           </div>
@@ -239,6 +257,7 @@ import { useUserStore } from "@/store/store";
 import CustomAlert from "../Custom/CustomAlert.vue";
 import { useToast } from "vue-toastification";
 import { showConfirmDialog } from "../utils/confirmDialog";
+import { useRouter } from "vue-router";
 
 const toast = useToast();
 export default {
@@ -252,9 +271,10 @@ export default {
     };
   },
   setup() {
+    const router = useRouter();
     const userStore = useUserStore();
     if (!userStore.user || userStore.user.role !== "ADMIN") {
-      this.$router.push("/unauthorized");
+      router.push("/unauthorized");
     }
 
     return { userStore };
@@ -276,6 +296,9 @@ export default {
     this.fetchExamDetails();
   },
   methods: {
+    editExam(id){
+      this.$router.push({ name: "editExam", params: { id : id} })
+    },
     endExam(exam) {
       showConfirmDialog(
         () => {

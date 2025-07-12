@@ -16,11 +16,18 @@ import StudentResult from '@/components/teacherView/StudentResult.vue'
 import AdminDashborad from '@/components/adminView/AdminDashborad.vue'
 import AdminViewBody from '@/components/adminView/AdminViewBody.vue'
 import ExamDetailsAndEdit from '@/components/adminView/ExamDetailsAndEdit.vue'
+import UnauthorizedPage from '@/components/Auth/UnauthorizedPage.vue'
+import AdminEditExamPage from '@/components/adminView/AdminEditExamPage.vue'
  const routes = [
     {
       path: '/',
       component: LoginView,
       meta: { layout: 'auth' }
+    },
+    {
+      path: '/unauthorized',
+      name: 'unauthorized',
+      component: UnauthorizedPage
     },
     {
       path: '/student-dashboard',
@@ -99,6 +106,11 @@ import ExamDetailsAndEdit from '@/components/adminView/ExamDetailsAndEdit.vue'
           path: "exam-details/:id",
           name: "ExamDetailsAndEdit",
           component: ExamDetailsAndEdit
+        },
+        {
+          path: "edit-exam/:id",
+          name: "editExam",
+          component: AdminEditExamPage
         }
       ]
     }

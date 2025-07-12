@@ -325,6 +325,7 @@ import LogoutIcon from "../icons/LogoutIcon.vue";
 import { useUserStore } from "@/store/store";
 import axios from "axios";
 import { API_BASE_URL } from "@/config/useWebSocket";
+import { useRouter } from "vue-router"; // ✅ Add this
 export default {
   components: {
     EduIcon,
@@ -342,6 +343,12 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
+  const router = useRouter(); // ✅ Use this instead of this.$router
+
+  // Fix the logic also
+  if (!userStore.user || userStore.user.role !== "ADMIN") {
+    router.push("/unauthorized"); // ✅ Correct usage
+  }
     return { userStore };
   },
   data() {
@@ -364,6 +371,7 @@ export default {
           );
           // this.userStore.logout();
           this.$router.push("/");
+          this.userStore.user = null; // Clear user from store
           console.log("Logout successful:", this.userStore.user);
           console.log("Logout response:", response.data); 
         } catch (error) {

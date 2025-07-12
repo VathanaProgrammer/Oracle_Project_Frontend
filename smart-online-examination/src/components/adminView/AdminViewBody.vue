@@ -299,9 +299,9 @@
       </div>
     </div>
   </div>
-  <div class="w-full flex flex-col xl:flex-row gap-4 md:mt-4 sm:mt-4 mb-4">
+  <div class="w-full flex flex-col xl:flex-row gap-6 md:mt-4 sm:mt-4 mb-4">
     <div
-      class="upcoming-exam w-full md:w-5/5 xl:w-3/5 bg-white rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4"
+      class="upcoming-exam flex-1 min-h-[400px] w-full xl:w-1/2 bg-white rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4"
     >
       <header class="h-10 mb-4 flex items-center justify-between">
         <p class="text-lg font-normal text-gray-600">Draft exam</p>
@@ -311,7 +311,7 @@
             v-model="searchDraftQuery"
             type="text"
             placeholder="Search by subject or teacher..."
-            class="w-full min-w-[300px] px-4 py-[6px] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c09f4]"
+            class="w-full min-w-[280px] px-4 py-[6px] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c09f4]"
           />
           <SearchIcon
             class="w-[38px] h-[38px] bg-[#8c09f4] shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-1 rounded-md ms-2"
@@ -385,7 +385,7 @@
       </table>
     </div>
    <div
-      class="upcoming-exam w-full md:w-5/5 xl:w-3/5 bg-white rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4"
+      class="upcoming-exam w-full flex-1 xl:w-1/2 bg-white rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4"
     >
       <header class="h-10 mb-4 flex items-center justify-between">
         <p class="text-lg font-normal text-gray-600">Completed exam</p>
@@ -393,8 +393,9 @@
         <div class="flex justify-end items-center">
           <input
             type="text"
+            v-model="searchCompletedQuery"
             placeholder="Search by subject or teacher..."
-            class="w-full min-w-[300px] px-4 py-[6px] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c09f4]"
+            class="w-full min-w-[280px] px-4 py-[6px] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c09f4]"
           />
           <SearchIcon
             class="w-[38px] h-[38px] bg-[#8c09f4] shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-1 rounded-md ms-2"
@@ -420,7 +421,7 @@
         <tbody>
           <tr
             @click="openExam(exam.id)"
-            v-for="(exam, index) in filterDraftExams"
+            v-for="(exam, index) in filterCompletedExams"
             :key="index"
             class="border-b border-gray-200 transition-transform duration-300 hover:scale-[1.02] hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] cursor-pointer"
           >
@@ -498,6 +499,10 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
+    if(!userStore.user || !userStore.user.role == "ADMIN") {
+      // Redirect to unauthorized page if not admin
+      this.$router.push("/unauthorized");
+    }
     return { userStore };
   },
   data() {
@@ -506,7 +511,10 @@ export default {
       socket: null,
       searchPublishedQuery: "",
       searchDraftQuery: "",
+      searchCompletedQuery: "",
       ativeExams: [],
+      draftExams: [],
+      completedExams: [],
       weeklyHoursData: [12, 4, 3.5, 5, 7, 2.5, 4],
       teacher_messages: [
       {
@@ -560,8 +568,20 @@ export default {
     filterDraftExams() {
       const query = this.searchDraftQuery.trim().toLowerCase();
 
-      return this.ativeExams.filter((exam) => {
+      return this.draftExams.filter((exam) => {
         const isDraftExam = exam.status == "Draft".toUpperCase();
+        const matchQuery =
+          exam.teacher.toLowerCase().includes(query) ||
+          exam.subject.toLowerCase().includes(query) ||
+          exam.type.toLowerCase().includes(query);
+        return isDraftExam && matchQuery;
+      });
+    },
+    filterCompletedExams() {
+      const query = this.searchCompletedQuery.trim().toLowerCase();
+
+      return this.completedExams.filter((exam) => {
+        const isDraftExam = exam.status == "EXPIRED".toUpperCase();
         const matchQuery =
           exam.teacher.toLowerCase().includes(query) ||
           exam.subject.toLowerCase().includes(query) ||
@@ -639,10 +659,36 @@ export default {
         console.log(e);
       }
     },
+    async fetchDraftExams() {
+      try {
+        const response = await axios.get(API_BASE_URL + "/api/exams/draft", {
+          withCredentials: true,
+        });
+
+        this.draftExams = response.data;
+        console.log("Draft Exams:", this.draftExams);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async fetchCompletedExams() {
+      try {
+        const response = await axios.get(API_BASE_URL + "/api/exams/completed", {
+          withCredentials: true,
+        });
+
+        this.completedExams = response.data;
+        console.log("Completed Exams:", this.completedExams);
+      } catch (e) {
+        console.log(e);
+      }
+    },
   },
   mounted() {
     this.fetchActiveExams();
     this.fetchRecentActions();
+    this.fetchDraftExams();
+    this.fetchCompletedExams();
     console.log(this.userStore.user);
 
     connectWebSocket(); // connect to WebSocket server
