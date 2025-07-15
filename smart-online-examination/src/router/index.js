@@ -18,6 +18,8 @@ import AdminViewBody from '@/components/adminView/AdminViewBody.vue'
 import ExamDetailsAndEdit from '@/components/adminView/ExamDetailsAndEdit.vue'
 import UnauthorizedPage from '@/components/Auth/UnauthorizedPage.vue'
 import AdminEditExamPage from '@/components/adminView/AdminEditExamPage.vue'
+import { User } from 'lucide-vue-next'
+import UserManagement from '@/components/adminView/UserManagement.vue'
  const routes = [
     {
       path: '/',
@@ -111,6 +113,11 @@ import AdminEditExamPage from '@/components/adminView/AdminEditExamPage.vue'
           path: "edit-exam/:id",
           name: "editExam",
           component: AdminEditExamPage
+        },
+        {
+          path: "user-management",
+          name: "userManagement",
+          component: UserManagement
         }
       ]
     }

@@ -85,10 +85,8 @@
     <div
       class="upcoming-exam max-h-[500px] overflow-auto bg-white w-full xl:w-3/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4"
     >
-      <header class="h-10 mb-4 flex items-center  scrollbar-thin">
-        <p class="text-lg font-normal text-gray-600">
-          Announcements
-        </p>
+      <header class="h-10 mb-4 flex items-center scrollbar-thin">
+        <p class="text-lg font-normal text-gray-600">Announcements</p>
       </header>
       <table class="w-full divide-y divide-gray-200">
         <thead class="border-y-[1px] border-gray-500 border-opacity-30">
@@ -344,7 +342,7 @@
             <td class="py-2 px-4 whitespace-nowrap text-gray-700">
               <div class="flex items-center space-x-3">
                 <img
-                  :src="exam.teacherImage"
+                  :src="API_BASE_PROFILE_URL+'/'+ exam.teacherImage"
                   alt="Teacher photo"
                   class="h-10 w-10 rounded-full object-cover"
                 />
@@ -384,7 +382,7 @@
         </tbody>
       </table>
     </div>
-   <div
+    <div
       class="upcoming-exam w-full flex-1 xl:w-1/2 bg-white rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4"
     >
       <header class="h-10 mb-4 flex items-center justify-between">
@@ -482,6 +480,7 @@ import { useUserStore } from "@/store/store";
 import axios from "axios";
 import { parseISO, format } from "date-fns";
 import { API_BASE_FILE_URL, API_BASE_URL } from "@/config/useWebSocket";
+import { API_BASE_PROFILE_URL } from "@/config/useWebSocket";
 import AccountIcon from "../icons/AccountIcon.vue";
 import { connectWebSocket, registerHandler } from "@/config/useWebSocket";
 import ActionIcon from "../icons/ActionIcon.vue";
@@ -499,7 +498,7 @@ export default {
   },
   setup() {
     const userStore = useUserStore();
-    if(!userStore.user || !userStore.user.role == "ADMIN") {
+    if (!userStore.user || !userStore.user.role == "ADMIN") {
       // Redirect to unauthorized page if not admin
       this.$router.push("/unauthorized");
     }
@@ -507,6 +506,9 @@ export default {
   },
   data() {
     return {
+      API_BASE_PROFILE_URL,
+      API_BASE_FILE_URL,
+      API_BASE_URL,
       userRecentActions: [],
       socket: null,
       searchPublishedQuery: "",
@@ -517,39 +519,40 @@ export default {
       completedExams: [],
       weeklyHoursData: [12, 4, 3.5, 5, 7, 2.5, 4],
       teacher_messages: [
-      {
-        teacher: "Mr. John Smith",
-        subject: "Mathematics",
-        message: "Reminder: The algebra exam starts in 30 minutes. Be ready!",
-        datetime: "2025-07-08 08:30 AM",
-        status: "Unread",
-        teacherImage: "https://randomuser.me/api/portraits/men/32.jpg"
-      },
-      {
-        teacher: "Ms. Emily Johnson",
-        subject: "History",
-        message: "Please revise Chapter 4 before the exam this afternoon.",
-        datetime: "2025-07-08 09:45 AM",
-        status: "Read",
-        teacherImage: "https://randomuser.me/api/portraits/women/45.jpg"
-      },
-      {
-        teacher: "Mr. David Lee",
-        subject: "Physics",
-        message: "The test is postponed to next Monday due to technical issues.",
-        datetime: "2025-07-07 04:10 PM",
-        status: "Read",
-        teacherImage: "https://randomuser.me/api/portraits/men/76.jpg"
-      },
-      {
-        teacher: "Mrs. Sophia Kim",
-        subject: "Chemistry",
-        message: "Lab session will be included in the upcoming quiz.",
-        datetime: "2025-07-07 06:20 PM",
-        status: "Unread",
-        teacherImage: "https://randomuser.me/api/portraits/women/66.jpg"
-      }
-    ]
+        {
+          teacher: "Mr. John Smith",
+          subject: "Mathematics",
+          message: "Reminder: The algebra exam starts in 30 minutes. Be ready!",
+          datetime: "2025-07-08 08:30 AM",
+          status: "Unread",
+          teacherImage: "https://randomuser.me/api/portraits/men/32.jpg",
+        },
+        {
+          teacher: "Ms. Emily Johnson",
+          subject: "History",
+          message: "Please revise Chapter 4 before the exam this afternoon.",
+          datetime: "2025-07-08 09:45 AM",
+          status: "Read",
+          teacherImage: "https://randomuser.me/api/portraits/women/45.jpg",
+        },
+        {
+          teacher: "Mr. David Lee",
+          subject: "Physics",
+          message:
+            "The test is postponed to next Monday due to technical issues.",
+          datetime: "2025-07-07 04:10 PM",
+          status: "Read",
+          teacherImage: "https://randomuser.me/api/portraits/men/76.jpg",
+        },
+        {
+          teacher: "Mrs. Sophia Kim",
+          subject: "Chemistry",
+          message: "Lab session will be included in the upcoming quiz.",
+          datetime: "2025-07-07 06:20 PM",
+          status: "Unread",
+          teacherImage: "https://randomuser.me/api/portraits/women/66.jpg",
+        },
+      ],
     };
   },
   computed: {
@@ -567,13 +570,19 @@ export default {
     },
     filterDraftExams() {
       const query = this.searchDraftQuery.trim().toLowerCase();
-
+      console.log("Draft query:", this.exam);
       return this.draftExams.filter((exam) => {
-        const isDraftExam = exam.status == "Draft".toUpperCase();
+        const isDraftExam = exam.status === "DRAFT";
+
+        const teacher = exam.teacher ? exam.teacher.toLowerCase() : "";
+        const subject = exam.subject ? exam.subject.toLowerCase() : "";
+        const type = exam.type ? exam.type.toLowerCase() : "";
+
         const matchQuery =
-          exam.teacher.toLowerCase().includes(query) ||
-          exam.subject.toLowerCase().includes(query) ||
-          exam.type.toLowerCase().includes(query);
+          teacher.includes(query) ||
+          subject.includes(query) ||
+          type.includes(query);
+
         return isDraftExam && matchQuery;
       });
     },
@@ -673,9 +682,12 @@ export default {
     },
     async fetchCompletedExams() {
       try {
-        const response = await axios.get(API_BASE_URL + "/api/exams/completed", {
-          withCredentials: true,
-        });
+        const response = await axios.get(
+          API_BASE_URL + "/api/exams/completed",
+          {
+            withCredentials: true,
+          }
+        );
 
         this.completedExams = response.data;
         console.log("Completed Exams:", this.completedExams);

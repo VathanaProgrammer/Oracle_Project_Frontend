@@ -130,15 +130,15 @@
         </RouterLink>
 
         <RouterLink
-          to="/student-dashboard/available-exam"
+          to="/admin-dashboard/user-management"
           class="w-full px-4 pb-2 mt-1"
         >
           <div
             class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
-            <ListIcon class="text-white w-5 h-5"></ListIcon>
+            <UserIcon class="text-white w-5 h-5"></UserIcon>
             <span class="text-lg text-white font-normal ps-2"
-              >Available Exam</span
+              >User Management</span
             >
             <RightPointerIcon
               :class="
@@ -296,7 +296,7 @@
             ></span>
           </button>
           <img
-            src="../../assets/images/85806da35744d137146ba5f57e4dcc1f.jpg"
+            :src="API_BASE_PROFILE_URL + '/' + userStore.user?.profile"
             alt="Profile"
             class="w-8 h-8 rounded-full object-cover"
           />
@@ -322,9 +322,10 @@ import MaterrialsIcon from "../icons/MaterrialsIcon.vue";
 import ResultIcon from "../icons/ResultIcon.vue";
 import SettingIcon from "../icons/SettingIcon.vue";
 import LogoutIcon from "../icons/LogoutIcon.vue";
+import UserIcon from "../icons/UserIcon.vue";
 import { useUserStore } from "@/store/store";
 import axios from "axios";
-import { API_BASE_URL } from "@/config/useWebSocket";
+import { API_BASE_URL, API_BASE_PROFILE_URL } from "@/config/useWebSocket";
 import { useRouter } from "vue-router"; // ✅ Add this
 export default {
   components: {
@@ -340,6 +341,7 @@ export default {
     ResultIcon,
     SettingIcon,
     LogoutIcon,
+    UserIcon
   },
   setup() {
     const userStore = useUserStore();
@@ -353,6 +355,8 @@ export default {
   },
   data() {
     return {
+      API_BASE_URL,
+      API_BASE_PROFILE_URL,
       sidebarVisible: false,
       showDashboardMenu: true,
     };
@@ -382,6 +386,9 @@ export default {
       }
     },
   },
+  mounted(){
+    console.log(this.userStore.user);
+  }
 };
 </script>
 

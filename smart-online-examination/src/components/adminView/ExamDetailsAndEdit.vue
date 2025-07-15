@@ -7,7 +7,7 @@
           class="lg:fixed sm:mx-auto bg-white min-h-[500px] sm:min-w-[400px] rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] transition duration-300 p-6 flex flex-col xl:flex-row items-center xl:items-start mb-6"
         >
           <img
-            src="https://i.pinimg.com/736x/cd/0e/a8/cd0ea8673c18ddbb6020e65e31f34641.jpg"
+            :src="API_BASE_PROFILE_URL + '/' + exam.teacherImage"
             alt="Teacher photo"
             class="h-16 w-16 rounded-full object-cover mr-6 mb-4 xl:mb-0"
           />
@@ -76,22 +76,31 @@
                 End exam
               </button>
               <!-- Edit Button -->
-              <button v-if="exam.status === 'DRAFT'"
-                @click="editExam(exam.id)"
+              <RippleButton
+              @click="editExam(exam.id)"
+                v-if="exam.status === 'DRAFT'"
+                label="Edit"
+                  
                 class="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
               >
-                <i class="fas fa-edit"></i>
-                Edit exam
-              </button>
+              <template #icon>
+                <EditIcon fillColor="white" />
+              </template>
+                Edit
+              </RippleButton>
 
               <!-- Delete Button -->
-              <button v-if="exam.status === 'DRAFT'"
+              <RippleButton
+              label="Delete"
+                v-if="exam.status === 'DRAFT'"
                 @click="deleteExam(exam)"
                 class="flex items-center gap-2 bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
               >
-                <i class="fas fa-trash-alt"></i>
-                Delete exam
-              </button>
+                <template #icon>
+                  <DeleteIcon fillColor="white" />
+                </template>
+                Delete
+              </RippleButton>
             </div>
           </div>
         </div>
@@ -251,19 +260,24 @@
 
 <script>
 import axios from "axios";
-import { API_BASE_URL, API_BASE_FILE_URL } from "../../config/useWebSocket";
+import { API_BASE_URL, API_BASE_FILE_URL, API_BASE_PROFILE_URL } from "../../config/useWebSocket";
 import { parseISO, format } from "date-fns";
 import { useUserStore } from "@/store/store";
 import CustomAlert from "../Custom/CustomAlert.vue";
 import { useToast } from "vue-toastification";
 import { showConfirmDialog } from "../utils/confirmDialog";
 import { useRouter } from "vue-router";
-
+import RippleButton from "../Custom/RippleButton.vue";
+import DeleteIcon from "../icons/DeleteIcon.vue";
+import EditIcon from "../icons/EditIcon.vue";
 const toast = useToast();
 export default {
-  components: { CustomAlert },
+  components: { CustomAlert, RippleButton, DeleteIcon, EditIcon },
   data() {
     return {
+      API_BASE_FILE_URL,
+      API_BASE_URL,
+      API_BASE_PROFILE_URL,
       exam: null,
       answers: {},
       uploadedFiles: {},
@@ -296,8 +310,8 @@ export default {
     this.fetchExamDetails();
   },
   methods: {
-    editExam(id){
-      this.$router.push({ name: "editExam", params: { id : id} })
+    editExam(id) {
+      this.$router.push({ name: "editExam", params: { id: id } });
     },
     endExam(exam) {
       showConfirmDialog(
