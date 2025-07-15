@@ -34,6 +34,16 @@ Each member contributed to different areas while learning and improving their de
 
 ---
 
+## 🔗 Backend Repository
+This frontend works with a **separate backend** using Spring Boot + Oracle Database.
+
+👉 **Backend GitHub Repo:**  
+https://github.com/VathanaProgrammer/Oracle_Project_Backend
+
+Make sure to clone and run the backend first.
+
+---
+
 ## 🎯 Main Objectives
 
 * Build a **modern web-based exam system**
