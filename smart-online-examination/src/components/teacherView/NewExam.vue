@@ -604,7 +604,7 @@ export default {
           durationUnit: "minutes",
           title: this.examTitle,
           description: this.examDescription,
-          createdBy: 1, // user this later Tey tey userStore.user.id for real user who login
+          createdBy: 23, // user this later Tey tey userStore.user.id for real user who login
           questions: this.questions.map((q) => ({
             type: q.type,
             content: q.content,

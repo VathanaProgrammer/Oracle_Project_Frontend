@@ -201,7 +201,15 @@
           />
         </div>
       </RouterLink>
-
+            <div class="mt-auto w-full px-4 pb-6">
+        <button
+          @click="logout"
+          class="flex items-center gap-2 w-full bg-red-500 hover:bg-red-600 text-white text-base py-2 px-4 rounded-[5px] transition-all duration-300"
+        >
+          <LogoutIcon class="w-5 h-5 text-white" />
+          <span>Logout</span>
+        </button>
+      </div>
     </aside>
     
 
@@ -227,7 +235,7 @@
               <NotifIcon class="w-5 h-5 text-gray-600" />
               <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
             </button>
-            <img src="../../assets/images/85806da35744d137146ba5f57e4dcc1f.jpg" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
+            <img :src="API_BASE_PROFILE_URL + '/' +userStore.user.profile" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
           </div>
       </header>
       <main class="mx-auto max-w-screen-xl">
@@ -249,6 +257,11 @@ import ListIcon from '../icons/ListIcon.vue';
 import MaterrialsIcon from '../icons/MaterrialsIcon.vue';
 import ResultIcon from '../icons/ResultIcon.vue';
 import SettingIcon from '../icons/SettingIcon.vue';
+import LogoutIcon from '../icons/LogoutIcon.vue';
+import axios from 'axios';
+import { API_BASE_URL } from '@/config/useWebSocket';
+import { API_BASE_PROFILE_URL } from '@/config/useWebSocket';
+import { useUserStore } from '@/store/store';
 export default {
   components: {
     EduIcon,
@@ -261,10 +274,19 @@ export default {
     ListIcon,
     MaterrialsIcon,
     ResultIcon,
-    SettingIcon
+    SettingIcon,
+    LogoutIcon
+  },
+  setup(){
+    const userStore=useUserStore()
+        return {
+      userStore,
+    };
   },
   data() {
     return {
+      API_BASE_PROFILE_URL,
+      API_BASE_URL,
       sidebarVisible: false,
       showDashboardMenu: true,
     };
@@ -272,6 +294,26 @@ export default {
   methods: {
     toggleDashboardMenu() {
       this.showDashboardMenu = !this.showDashboardMenu;
+    },
+        async logout() {
+      if (confirm("Are you sure you want to logout?")) {
+        try {
+          const response = await axios.post(
+            API_BASE_URL + "/api/user/logout",
+            {}, // empty body
+            { withCredentials: true } // ✅ put it here
+          );
+          // this.userStore.logout();
+          this.$router.push("/");
+          this.userStore.user = null; // Clear user from store
+          console.log("Logout successful:", this.userStore.user);
+          console.log("Logout response:", response.data); 
+        } catch (error) {
+          console.error("Logout failed:", error);
+        }
+      } else {
+        console.log("Logout cancelled.");
+      }
     },
   },
 };

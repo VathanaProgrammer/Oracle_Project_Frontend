@@ -149,6 +149,7 @@ export default {
             });
 
             userStore.setUser(userRes.data);
+            console.log(userRes.data)
 
             const role = userRes.data.role;
             if (role === "ADMIN") {

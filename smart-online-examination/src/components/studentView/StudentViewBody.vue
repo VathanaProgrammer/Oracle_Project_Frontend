@@ -1,7 +1,7 @@
 <template>
     <div class="xl:h-44 h-auto flex flex-col md:flex-row mt-12">
         <div class="text-session-course-hour md:w-2/3 w-full pe-4">
-            <p class="text-lg font-normal text-gray-600">Welcome back, <span class="text-xl font-semibold text-gray-700">{{ userStore.user.lastname }}!</span></p>
+            <p class="text-lg font-normal text-gray-600">Welcome back, <span class="text-xl font-semibold text-gray-700">{{ userStore.user?.lastname }}!</span></p>
             <p class="pt-3 text-sm font-normal text-gray-500">Your progress this week is Awesome. let's keep it up </p>
             <p class="pt-2 text-sm font-normal  text-gray-500">and get a lot of points reward!</p>
             <div class="time-spent-and-result-session flex flex-col md:flex-row gap-5 justify-between items-stretch mt-4 xs:mb-8 sm:mb-8">
@@ -11,7 +11,8 @@
                     </div>
                     <p class="procent-and-text flex flex-col">
                         <span class="text-sm font-medium text-gray-600">Time spent today</span>
-                        <span class="text-2xl font-semibold text-[#8C09F4] mt-auto">3h 45m</span>
+                        <span class="text-2xl font-semibold text-[#8C09F4] mt-auto">{{ userStore.user?.timeSpentToday
+ }}</span>
                     </p>
                 </div>
 
@@ -44,12 +45,15 @@
                     <p class="text-sm font-normal text-gray-700">Weekly Report</p>
                 </div>
                 <div>
-                    <p class="text-2xl font-semibold text-gray-700">
-                        214 <span class="text-gray-700 text-opacity-50">h</span> 23 <span class="text-gray-700 text-opacity-50">min</span>
-                    </p>
-                </div>
+          <p class="text-2xl font-semibold text-gray-700">
+            {{ weeklyTime.hours }}
+            <span class="text-gray-700 text-opacity-50">h</span>
+            {{ weeklyTime.minutes }}
+            <span class="text-gray-700 text-opacity-50">min</span>
+          </p>
+        </div>
             </div>
-                <TimeSpentChart />
+                <TimeSpentChart :weeklyHours="[12, 2, 4, 9, 3,4]"/>
             </div>
     </div>
     <div class="w-full mt-8 flex flex-col xl:flex-row gap-4">
@@ -313,6 +317,16 @@ export default {
             ]
 
         }
+    },
+    computed:{
+         weeklyTime() {
+      const raw = this.userStore?.user?.timeSpentThisWeek || "0h 0m";
+      const [h, m] = raw.split(" ");
+      return {
+        hours: h.replace("h", ""),
+        minutes: m.replace("m", ""),
+      };
+    },
     }
 }
 </script>
