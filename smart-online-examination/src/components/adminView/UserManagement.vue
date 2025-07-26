@@ -49,7 +49,7 @@
 
     <!-- Filter and search -->
     <section
-      class="filter-search-role-export-add-new-user rounded-md py-6 px-8 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-5 md:min-h-[500px]"
+      class="filter-search-role-export-add-new-user rounded-md py-6 px-8 bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-5 md:min-h-[600px]"
     >
       <h3 class="text-gray-700 text-md font-normal mb-2">Filter</h3>
 
@@ -106,6 +106,8 @@
         <div class="flex justify-end items-center w-full lg:max-w-[600px]">
           <input
             type="text"
+            v-model="searchQuery"
+            @input="handleSearch"
             placeholder="search for all user or role"
             class="w-full min-w-[280px] px-4 py-[6px] border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[#8c09f4]"
           />
@@ -173,44 +175,43 @@
           </RippleButton>
         </div>
         <div
-          class="mt-4 overflow-x-auto border-t-2 border-gray-200 rounded-md shadow-sm"
+          @click.self="openedUserId = null"
+          class="mt-4 overflow-visible border-t-2 border-gray-200 rounded-md shadow-sm"
         >
-          <table class="min-w-full divide-y divide-gray-200">
+          <table
+            class="min-w-full divide-y divide-gray-200 bg-white rounded-md shadow-md"
+          >
             <thead class="bg-gray-50">
               <tr>
                 <th
-                  class="px-4 py-3 text-left text-xs font-semibold text-gray-700 uppercase tracking-wider"
+                  class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
                 >
-                  <input
-                    class="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-2 focus:rounded focus:ring-blue-500"
-                    type="checkbox"
-                  />
+                  Select
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                  class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
                 >
                   User
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                  class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
                 >
                   Role
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                  class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
                 >
                   Phone
                 </th>
                 <th
-                  class="px-4 py-3 text-left text-sm font-semibold text-gray-700 uppercase tracking-wider"
+                  class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
                 >
-                  Actions
+                  Action
                 </th>
               </tr>
             </thead>
 
-            <tbody class="bg-white divide-y divide-gray-200">
-              <!-- Example row -->
+            <tbody class="divide-y divide-gray-200">
               <tr v-if="users.length === 0">
                 <td colspan="5" class="px-4 py-3 text-center text-gray-500">
                   No users found.
@@ -220,8 +221,8 @@
               <tr v-for="user in users" :key="user.id">
                 <td class="px-4 py-3">
                   <input
-                    class="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-2 focus:rounded focus:ring-blue-500"
                     type="checkbox"
+                    class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                   />
                 </td>
 
@@ -237,52 +238,254 @@
                       <span
                         v-if="user.id === userStore.user.id"
                         class="text-blue-500"
-                        >(You)</span
                       >
+                        (You)
+                      </span>
                     </p>
                     <p class="text-sm text-gray-500">{{ user.email }}</p>
                   </div>
                 </td>
 
-                <td class="px-4 py-3 text-sm font-[500] text-gray-500">
+                <td class="px-4 py-3 text-sm font-medium text-gray-500">
                   <div class="flex items-center space-x-1">
                     <template v-if="user.role === 'ADMIN'">
                       <AdminDisplayInTheTableIcon class="w-6 h-6 text-white" />
                     </template>
                     <template v-else-if="user.role === 'TEACHER'">
-                      <TeacherDisplayInTheTableIcon class="w-6 h-6 mb-2 text-white" />
+                      <TeacherDisplayInTheTableIcon
+                        class="w-6 h-6 text-white"
+                      />
                     </template>
                     <template v-else-if="user.role === 'STUDENT'">
-                      <StudentDisplayInTheTableIcon class="w-6 h-6 mb-2 text-white" />
+                      <StudentDisplayInTheTableIcon
+                        class="w-6 h-6 text-white"
+                      />
                     </template>
                     <span class="leading-none">{{ user.role }}</span>
                   </div>
                 </td>
 
-                <td class="px-4 py-3 text-sm font-[500] text-gray-500">
+                <td class="px-4 py-3 text-sm font-medium text-gray-500">
                   {{ formatPhone(user.phone) }}
                 </td>
 
                 <td
-                  class="flex px-4 py-3 text-sm font-[500] text-indigo-600 cursor-pointer hover:underline"
+                  class="relative px-4 py-3 text-sm font-medium text-gray-700"
                 >
-                  <RigularTrashIcon class="h-6 w-6 text-gray-700 me-3" />
-                  <RigularEyeIcon
-                    class="text-gray-700 h-[22px] w-[22px] mt-[1px] me-3"
-                  />
-                  <OptionIcon class="text-gray-700" />
+                  <div class="flex items-center space-x-3">
+                    <RigularTrashIcon
+                      class="h-6 w-6 text-gray-700 cursor-pointer"
+                      @click="handleDelete(user)"
+                    />
+                    <RigularEyeIcon
+                      class="h-6 w-6 text-gray-700 cursor-pointer"
+                      @click="handleView(user.id)"
+                    />
+                    <div class="relative">
+                      <button
+                        type="button"
+                        class="rounded-full focus:outline-none focus:bg-gray-400 focus:bg-opacity-50 p-1"
+                        @click.stop="toggleMenu(user.id)"
+                      >
+                        <OptionIcon class="h-6 w-6 text-gray-700" />
+                      </button>
+
+                      <transition name="fade">
+                        <div
+                          v-if="openedUserId === user.id"
+                          class="absolute right-0 top-8 w-32 bg-white border rounded-md shadow-lg z-50"
+                        >
+                          <button
+                            class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                            @click="handleView(user.id)"
+                          >
+                            View
+                          </button>
+                          <button
+                            class="w-full text-left px-4 py-2 text-sm hover:bg-gray-100"
+                            @click="handleEdit(user)"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            class="w-full text-left px-4 py-2 text-sm text-red-500 hover:bg-gray-100"
+                            @click="handleDelete(user)"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </transition>
+                    </div>
+                  </div>
                 </td>
               </tr>
-
-              <!-- Add your v-for loop here to populate more rows -->
             </tbody>
           </table>
         </div>
       </div>
     </section>
   </div>
+  <div
+    v-if="showEditModal"
+    class="fixed inset-0 p-2 bg-black bg-opacity-40 flex items-center justify-center z-50"
+  >
+    <div
+      class="bg-white w-full p-2 sm:p-6 max-w-md min-w-[55%] rounded-md shadow-lg"
+    >
+      <header
+        class="flex rounded-md flex-row justify-between items-center mb-3"
+      >
+        <h2 class="text-xl font-semibold text-gray-800">Edit Student Info</h2>
+        <CloseIcon
+          class="h-8 w-8 cursor-pointer"
+          @click="showEditModal = false"
+        />
+      </header>
+      <hr class="mb-2" />
+      <form class="mt-10 w-full" @submit.prevent="submitEditForm">
+        <div
+          class="w-full flex md:flex-row flex-col justify-between gap-3 my-5"
+        >
+          <div class="w-full">
+            <label for="firstname" class="text-gray-500 font-sm block mb-1"
+              >First name</label
+            >
+            <input
+              type="text"
+              v-model="editStudentForm.firstName"
+              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            />
+          </div>
+          <div class="w-full">
+            <label for="firstname" class="text-gray-500 font-sm block mb-1"
+              >Last name</label
+            >
+            <input
+              type="text"
+              v-model="editStudentForm.lastName"
+              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            />
+          </div>
+        </div>
+        <div
+          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
+        >
+          <div class="w-full">
+            <label for="firstname" class="text-gray-500 font-sm block mb-1"
+              >Phone number</label
+            >
+            <input
+              type="text"
+              v-model="editStudentForm.phone"
+              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            />
+          </div>
+          <div class="w-full">
+            <label for="firstname" class="text-gray-500 font-sm block mb-1"
+              >E-mail</label
+            >
+            <input
+              type="text"
+              v-model="editStudentForm.email"
+              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            />
+          </div>
+        </div>
+        <div
+          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
+        >
+          <!-- Gender Dropdown -->
+          <div class="w-full">
+            <label for="gender" class="text-gray-500 font-sm block mb-1"
+              >Gender</label
+            >
+            <select
+              id="gender"
+              v-model="editStudentForm.gender"
+              class="px-3 py-1.5 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            >
+              <option value="Male">Male</option>
+              <option value="Female">Female</option>
+            </select>
+          </div>
+
+          <!-- Major (Disabled) -->
+          <div class="w-full">
+            <label for="major" class="text-gray-500 font-sm block mb-1"
+              >Major</label
+            >
+            <input
+              disabled
+              v-model="editStudentForm.major"
+              type="text"
+              id="major"
+              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            />
+          </div>
+        </div>
+
+        <div
+          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
+        >
+          <div class="w-full">
+            <label for="firstname" class="text-gray-500 font-sm block mb-1"
+              >Batch</label
+            >
+            <input
+              type="text"
+              v-model="editStudentForm.batch"
+              disabled
+              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            />
+          </div>
+          <div class="w-full">
+            <label for="firstname" class="text-gray-500 font-sm block mb-1"
+              >Year</label
+            >
+            <input
+              type="text"
+              v-model="editStudentForm.year"
+              disabled
+              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+            />
+          </div>
+        </div>
+        <div>
+          <p
+            v-if="updateStudentModelError"
+            class="text-red-500 text-md font-normal"
+          >
+            {{ updateStudentModelError }}
+          </p>
+          <div class="flex items-center justify-center flex-col gap-2">
+            <SuccessIcon
+              v-if="updateStudentModelSuccess"
+              fill="#70e000"
+              class="w-6 h-6"
+            />
+            <p
+              v-if="updateStudentModelSuccess"
+              class="text-green-500 text-md font-normal"
+            >
+              {{ updateStudentModelSuccess }}
+            </p>
+          </div>
+        </div>
+        <div class="mt-6 flex justify-end gap-2">
+          <button
+            type="submit"
+            class="px-4 py-2 rounded bg-blue-600 text-white"
+          >
+            Save
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
 </template>
 <script>
+import CloseIcon from "../icons/CloseIcon.vue";
+import SuccessIcon from "../icons/SuccessIcon.vue";
 import SearchIcon from "../icons/SearchIcon.vue";
 import StudentIcon from "../icons/StudentIcon.vue";
 import TeacherIcon from "../icons/TeacherIcon.vue";
@@ -307,6 +510,8 @@ import {
 import axios from "axios";
 export default {
   components: {
+    CloseIcon,
+    SuccessIcon,
     Listbox,
     ListboxButton,
     ListboxOptions,
@@ -331,14 +536,29 @@ export default {
   },
   data() {
     return {
+      showEditModal: false,
+      editStudentForm: {
+        userId: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        email: "",
+        batch: "",
+        year: "",
+        gender: "",
+        major: "",
+      },
+      updateStudentModelError: "",
+      updateStudentModelSuccess: null,
       API_BASE_PROFILE_URL,
       API_BASE_URL,
       users: [],
-      roles: ["All Roles", "Students", "Teachers", "Admins"],
+      roles: ["All Roles", "STUDENT", "TEACHER", "ADMIN"], // Match backend roles
       selectedRole: "All Roles",
-
       limits: ["10", "20", "50", "100"],
       selectedLimit: "10",
+      searchQuery: "",
+      openedUserId: null,
     };
   },
   methods: {
@@ -346,24 +566,146 @@ export default {
       if (!phone) return "-";
       return phone.startsWith("0") ? "+855" + phone.substring(1) : phone;
     },
-    handleAddNew() {
-      // Logic to handle adding a new user
-      console.log("Add New User button clicked");
-    },
     async loadAllUsers() {
+      const params = {
+        role: this.selectedRole !== "All Roles" ? this.selectedRole : undefined,
+        limit: this.selectedLimit,
+        search: this.searchQuery || undefined,
+      };
+
       const response = await axios.get(API_BASE_URL + "/api/user/all", {
+        params,
         withCredentials: true,
       });
+
       if (response.status === 200) {
         this.users = response.data;
-        console.log("Users loaded successfully:", this.users);
-      } else {
-        console.error("Failed to load users:", response.statusText);
       }
+
+      console.log("Users loaded:", this.users);
+    },
+    async loadUserInfo(user) {
+      try {
+        if (user.role == "STUDENT") {
+          const response = await axios.get(
+            API_BASE_URL + "/api/students/" + user.id,
+            {
+              withCredentials: true,
+            }
+          );
+          this.editStudentForm = {
+            userId: response.data.data.userId,
+            firstName: response.data.data.firstname,
+            lastName: response.data.data.lastname,
+            phone: response.data.data.phone,
+            email: response.data.data.email,
+            major: response.data.data.major,
+            batch: response.data.data.batch,
+            year: response.data.data.year,
+            gender: response.data.data.gender,
+          };
+        } else {
+          this.updateStudentModelError =
+            response2.data.message || "User is not a student.";
+          this.updateStudentModelSuccess = "";
+        }
+
+        this.showEditModal = true;
+      } catch (error) {
+        this.updateStudentModelError =
+          "Error loading user info: " + error.message;
+        console.error("Error loading user info:", error);
+      }
+    },
+    async submitEditForm() {
+      try {
+        const response2 = await axios.put(
+          API_BASE_URL + "/api/students/update-for-admin",
+          this.editStudentForm,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (response2.data.success === true) {
+          this.updateStudentModelSuccess =
+            response2.data.message || "Student info updated successfully!";
+          this.updateStudentModelError = "";
+        } else {
+          this.updateStudentModelError =
+            response2.data.message || "Failed to update student info.";
+        }
+      } catch (error) {
+        this.updateStudentModelError = "Error updating user: " + error.message;
+        console.error("Error updating user:", error);
+      }
+    },
+    toggleMenu(id) {
+      this.openedUserId = this.openedUserId === id ? null : id;
+    },
+    async handleView(id) {
+      try {
+        const response = await axios.get(
+          API_BASE_URL + "/api/user/beforeDetail/" + id,
+          {
+            withCredentials: true,
+          }
+        );
+        console.log(response.data.data.role);
+
+        if (response.data.data.role == "STUDENT") {
+          this.$router.push({ name: "studentDetail", params: { id: id } });
+        }
+      } catch (e) {
+        console.log(e);
+      }
+      //this.$router.push({ name: "userDetails", params: { id: id}})
+    },
+    handleEdit(user) {
+      this.loadUserInfo(user);
+      this.openedUserId = null;
+    },
+    handleDelete(user) {
+      console.log("Delete", user);
+      this.openedUserId = null;
+    },
+    handleClickOutside(event) {
+      if (this.$refs.dropdown && !this.$refs.dropdown.contains(event.target)) {
+        this.closeMenu();
+      }
+    },
+    handleEsc(event) {
+      if (event.key === "Escape") {
+        this.closeMenu();
+      }
+    },
+    handleSearch() {
+      this.loadAllUsers();
+    },
+    openDetailPage(id) {
+      this.$router.push({ name: "studentDetail", params: { id: id } });
     },
   },
   mounted() {
     this.loadAllUsers();
   },
+  watch: {
+    selectedRole() {
+      this.loadAllUsers();
+    },
+    selectedLimit() {
+      this.loadAllUsers();
+    },
+  },
 };
 </script>
+<style scoped>
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+</style>

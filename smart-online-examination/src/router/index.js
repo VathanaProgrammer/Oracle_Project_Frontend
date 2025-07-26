@@ -20,6 +20,7 @@ import UnauthorizedPage from '@/components/Auth/UnauthorizedPage.vue'
 import AdminEditExamPage from '@/components/adminView/AdminEditExamPage.vue'
 import { User } from 'lucide-vue-next'
 import UserManagement from '@/components/adminView/UserManagement.vue'
+import StudentDetail from '@/components/adminView/StudentDetail.vue'
  const routes = [
     {
       path: '/',
@@ -118,6 +119,11 @@ import UserManagement from '@/components/adminView/UserManagement.vue'
           path: "user-management",
           name: "userManagement",
           component: UserManagement
+        }
+        ,{
+          path: 'user-management/student-details/:id',
+          name: 'studentDetail',
+          component: StudentDetail
         }
       ]
     }
