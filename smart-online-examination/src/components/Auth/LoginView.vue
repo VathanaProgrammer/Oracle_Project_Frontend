@@ -112,7 +112,6 @@ export default {
         return false;
       }
     },
-
     async getDeviceInfo() {
       const ua = navigator.userAgent;
       let browser = "Unknown";
@@ -136,11 +135,47 @@ export default {
       else if (/iPhone|iPad/.test(ua)) deviceType = "iOS";
 
       let location = "Unknown";
+
       try {
-        const ipInfo = await axios.get("https://ipapi.co/json/");
-        location = `${ipInfo.data.city}, ${ipInfo.data.country_name}`;
-      } catch (e) {
-        console.warn("Location lookup failed", e);
+        const pos = await new Promise((resolve, reject) =>
+          navigator.geolocation.getCurrentPosition(resolve, reject, {
+            enableHighAccuracy: true,
+            timeout: 7000,
+          })
+        );
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+
+        // Reverse geocode using OpenStreetMap
+        const geo = await axios.get(
+          "https://nominatim.openstreetmap.org/reverse",
+          {
+            params: {
+              lat,
+              lon,
+              format: "json",
+            },
+          }
+        );
+
+        const city =
+          geo.data.address.city ||
+          geo.data.address.town ||
+          geo.data.address.village ||
+          "";
+        const country = geo.data.address.country || "";
+
+        location = city ? `${city}, ${country}` : country;
+      } catch (err) {
+        // User denied or error occurred — fallback to IP location
+        try {
+          const ipRes = await axios.get("http://ip-api.com/json");
+          if (ipRes.data.status === "success") {
+            location = `${ipRes.data.city}, ${ipRes.data.country}`;
+          }
+        } catch (e) {
+          console.warn("Failed to get location from IP", e);
+        }
       }
 
       return {
@@ -151,7 +186,6 @@ export default {
         date: new Date().toISOString().slice(0, 16).replace("T", " "),
       };
     },
-
     validateEmail() {
       const pattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       if (!this.email) this.error.email = "Email is required";
@@ -203,6 +237,8 @@ export default {
             else console.error("Unknown role:", role);
           }
         } catch (err) {
+          this.error.email = "";
+          this.error.password = "Invalid email or password";
           console.error("Login error:", err.response?.data || err.message);
         }
       }

@@ -1,6 +1,5 @@
 <template>
   <div class="h-screen w-screen bg-gray-100 flex">
-    
     <!-- Overlay: fades only -->
     <transition name="overlay-fade">
       <div
@@ -31,7 +30,7 @@
         </div>
 
         <div class="w-full px-4 pb-2 mt-5">
-          <div
+          <RouterLink to="/admin-dashboard"
             @click="toggleDashboardMenu()"
             class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
@@ -52,7 +51,30 @@
                   : ['fill-white', 'ms-auto', 'w-7', 'h-7']
               "
             />
-          </div>
+          </RouterLink>
+
+          <RouterLink to="/admin-dashboard/user-management"
+            @click="toggleDashboardMenu()"
+            class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+          >
+            <UserIcon class="text-white w-5 h-5"></UserIcon>
+            <span class="text-lg text-white font-normal ps-2">User Management</span>
+            <RightPointerIcon
+              :class="
+                showDashboardMenu
+                  ? [
+                      'fill-white',
+                      'ms-auto',
+                      'w-7',
+                      'h-7',
+                      'rotate-90',
+                      'transition-transform',
+                      'duration-300',
+                    ]
+                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+              "
+            />
+          </RouterLink>
 
           <!-- <transition
             name="slide-fade"
@@ -327,6 +349,7 @@ import { useUserStore } from "@/store/store";
 import axios from "axios";
 import { API_BASE_URL, API_BASE_PROFILE_URL } from "@/config/useWebSocket";
 import { useRouter } from "vue-router"; // ✅ Add this
+import { UsersIcon } from "lucide-vue-next";
 export default {
   components: {
     EduIcon,
@@ -341,16 +364,16 @@ export default {
     ResultIcon,
     SettingIcon,
     LogoutIcon,
-    UserIcon
+    UserIcon,
   },
   setup() {
     const userStore = useUserStore();
-  const router = useRouter(); // ✅ Use this instead of this.$router
+    const router = useRouter(); // ✅ Use this instead of this.$router
 
-  // Fix the logic also
-  if (!userStore.user || userStore.user.role !== "ADMIN") {
-    router.push("/unauthorized"); // ✅ Correct usage
-  }
+    // Fix the logic also
+    if (!userStore.user || userStore.user.role !== "ADMIN") {
+      router.push("/unauthorized"); // ✅ Correct usage
+    }
     return { userStore };
   },
   data() {
@@ -377,7 +400,7 @@ export default {
           this.$router.push("/");
           this.userStore.user = null; // Clear user from store
           console.log("Logout successful:", this.userStore.user);
-          console.log("Logout response:", response.data); 
+          console.log("Logout response:", response.data);
         } catch (error) {
           console.error("Logout failed:", error);
         }
@@ -386,9 +409,9 @@ export default {
       }
     },
   },
-  mounted(){
+  mounted() {
     console.log(this.userStore.user);
-  }
+  },
 };
 </script>
 

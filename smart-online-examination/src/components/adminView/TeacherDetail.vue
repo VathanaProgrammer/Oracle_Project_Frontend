@@ -15,11 +15,10 @@
               @click="showModal = true"
               class="w-full h-full object-cover"
               :src="
-                API_BASE_PROFILE_URL + '/' + studentInfo.info.profilePicture
+                API_BASE_PROFILE_URL + '/' + teacherInfo.info.profilePicture
               "
-              alt="Student Avatar"
+              alt="Teacher Avatar"
             />
-
             <div
               v-if="showModal"
               class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
@@ -27,7 +26,7 @@
             >
               <img
                 :src="
-                  API_BASE_PROFILE_URL + '/' + studentInfo.info.profilePicture
+                  API_BASE_PROFILE_URL + '/' + teacherInfo.info.profilePicture
                 "
                 alt="Student Avatar"
                 class="max-w-full max-h-full rounded"
@@ -35,62 +34,60 @@
             </div>
           </div>
           <h2 class="text-3xl font-bold mt-2 text-[#03045e]">
-            {{ studentInfo.info?.name }}
+            {{ teacherInfo.info?.name }}
           </h2>
           <div class="text-section text-start space-y-1">
             <span class="block text-gray-600 font-semibold text-md">
               Full name:
               <span class="text-gray-600 text-md font-normal">
-                {{ studentInfo.info?.name }}
+                {{ teacherInfo.info?.name }}
               </span>
             </span>
 
             <span class="block text-gray-600 font-semibold text-md">
               Gender:
               <span class="text-gray-600 text-md font-normal">
-                {{ studentInfo.info?.gender }}
+                {{ teacherInfo.info?.gender }}
               </span>
             </span>
 
             <span class="block text-gray-600 font-semibold text-md">
               Role:
               <span class="text-gray-600 text-md font-normal">
-                {{ formatRole(studentInfo.info?.role) }}
+                {{ formatRole(teacherInfo.info?.role) }}
               </span>
             </span>
 
-            <span class="block text-gray-600 font-semibold text-md">
-              Batch:
+            <span
+              class="block text-gray-600 font-semibold text-md"
+              v-if="teacherInfo?.info.departments?.length"
+            >
+              Departments:
               <span class="text-gray-600 text-md font-normal">
-                {{ studentInfo.info?.batch }}
-              </span>
-            </span>
-
-            <span class="block text-gray-600 font-semibold text-md">
-              Year:
-              <span class="text-gray-600 text-md font-normal">
-                {{ studentInfo.info?.year }}
-              </span>
-            </span>
-
-            <span class="block text-gray-600 font-semibold text-md">
-              Major:
-              <span class="text-gray-600 text-md font-normal">
-                {{ studentInfo.info?.major }}
+                <span
+                  v-for="(dept, index) in teacherInfo.info.departments"
+                  :key="index"
+                >
+                  {{ dept.name
+                  }}<span
+                    v-if="index !== teacherInfo.info.departments.length - 1"
+                    >,
+                  </span>
+                </span>
               </span>
             </span>
 
             <span class="block text-gray-600 font-semibold text-md">
               Email:
               <span class="text-gray-600 text-md font-normal">
-                {{ studentInfo.info?.email }}
+                {{ teacherInfo.info?.email }}
               </span>
             </span>
 
             <span class="block text-gray-600 font-semibold text-md">
               Phone:
               <span class="text-gray-600 text-md font-normal">
-                {{ studentInfo.info?.phone }}
+                {{ teacherInfo.info?.phone }}
               </span>
             </span>
           </div>
@@ -122,7 +119,7 @@
           <section class="">
             <header class="flex flex-row justify-between items-center">
               <h2 class="text-2xl font-semibold text-gray-700 mb-4">
-                Upcoming & Recent Exams
+                Recent exams created
               </h2>
               <p class="text-sm text-gray-600 font-semibold">View all</p>
             </header>
@@ -154,11 +151,6 @@
                     >
                       STATUS
                     </th>
-                    <th
-                      class="px-4 py-3 text-left text-md font-semibold text-gray-600"
-                    >
-                      SCORE
-                    </th>
                   </tr>
                 </thead>
                 <tbody class="text-gray-700 bg-white">
@@ -180,9 +172,6 @@
                     >
                       {{ exam.status }}
                     </td>
-                    <td class="py-3 px-4">
-                      {{ exam.score !== null ? exam.score + "%" : "--" }}
-                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -199,11 +188,11 @@
             </header>
             <!-- Minimal Recent Activities (Icon + Description + Time) -->
             <div
-              v-if="studentInfo.recentActivities.length"
+              v-if="teacherInfo.recentActivities.length"
               class="space-y-3 max-h-[260px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-300"
             >
               <div
-                v-for="a in studentInfo.recentActivities"
+                v-for="a in teacherInfo.recentActivities"
                 :key="a.id"
                 class="flex items-start gap-3 p-3 rounded-md border border-gray-200 hover:-translate-y-1 hover:shadow-md transition"
               >
@@ -267,7 +256,7 @@
           <h2 class="text-xl font-normal text-gray-700 mb-4">
             Change password
           </h2>
-          <form @submit.prevent="handleChangePasswordOfThisUser()">
+          <form action="" @submit.prevent="handleChangePasswordOfThisUser()">
             <div
               class="w-full flex md:flex-row flex-col justify-between gap-3 my-5"
             >
@@ -310,12 +299,11 @@
             <div class="flex justify-start gap-3">
               <button
                 type="submit"
-                class="text-white bg-[#8C09F4] px-4 py-2 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)]"
+                class="text-white bg-[#8C09F4] px-4 py-2 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)]shadow-md"
               >
                 Save change
               </button>
               <button
-                type="button"
                 class="text-gray-600 bg-gray-600 bg-opacity-20 font-medium px-4 py-2 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)]"
               >
                 Cancel
@@ -363,7 +351,7 @@
               </thead>
               <tbody class="text-gray-700 bg-white">
                 <tr
-                  v-for="recent in studentInfo.recentDevices"
+                  v-for="recent in teacherInfo.recentDevices"
                   :key="recent.id"
                   class="border-t hover:bg-gray-100 transition"
                 >
@@ -385,168 +373,203 @@
     </div>
   </div>
 
-  <div
-    v-if="showEditModal"
-    class="fixed inset-0 p-2 bg-black bg-opacity-40 flex items-center justify-center z-50"
-  >
+  <transition name="fade">
     <div
-      class="bg-white w-full p-2 sm:p-6 max-w-md min-w-[55%] rounded-md shadow-lg"
+      v-if="showPanel"
+      class="fixed inset-0 bg-black bg-opacity-40 z-40"
+      @click.self="showPanel = false"
+    ></div>
+  </transition>
+
+  <transition name="slide">
+    <div
+      v-if="showPanel"
+      class="fixed top-0 right-0 h-full w-96 bg-white shadow-lg z-50"
     >
-      <header
-        class="flex rounded-md flex-row justify-between items-center mb-3"
-      >
-        <h2 class="text-xl font-semibold text-gray-800">Edit Student Info</h2>
-        <CloseIcon
-          class="h-8 w-8 cursor-pointer"
-          @click="showEditModal = false"
-        />
+      <header class="flex items-center justify-between py-5 px-5">
+        <h2 class="text-xl font-normal text-gray-700">Edit Teacher Info</h2>
+        <CloseIcon class="h-8 w-8 cursor-pointer" @click="showPanel = false" />
       </header>
-      <hr class="mb-2" />
-      <form class="mt-10 w-full" @submit.prevent="submitEditForm">
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-3 my-5"
+      <hr />
+
+      <div>
+        <form
+          @submit.prevent="submitEditTeacher"
+          class="flex-1 overflow-y-auto p-4 h-screen"
         >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >First name</label
-            >
+          <!-- First Name -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              First name
+            </label>
             <input
+              v-model="editTeacherForm.firstName"
               type="text"
-              v-model="editStudentForm.firstName"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Last name</label
-            >
+
+          <!-- Last Name -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Last name
+            </label>
             <input
+              v-model="editTeacherForm.lastName"
               type="text"
-              v-model="editStudentForm.lastName"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-        </div>
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Phone number</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.phone"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >E-mail</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.email"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <!-- Gender Dropdown -->
-          <div class="w-full">
-            <label for="gender" class="text-gray-500 font-sm block mb-1"
-              >Gender</label
-            >
+
+          <!-- Gender -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Gender
+            </label>
             <select
-              id="gender"
-              v-model="editStudentForm.gender"
-              class="px-3 py-1.5 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              v-model="editTeacherForm.gender"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             >
+              <option value="">Select gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
           </div>
 
-          <!-- Major (Disabled) -->
-          <div class="w-full">
-            <label for="major" class="text-gray-500 font-sm block mb-1"
-              >Major</label
-            >
+          <!-- Email -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Email
+            </label>
             <input
-              disabled
-              v-model="editStudentForm.major"
-              type="text"
-              id="major"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              v-model="editTeacherForm.email"
+              type="email"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-        </div>
 
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Batch</label
-            >
+          <!-- Phone -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Phone number
+            </label>
             <input
+              v-model="editTeacherForm.phone"
               type="text"
-              v-model="editStudentForm.batch"
-              disabled
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Year</label
+
+          <!-- Department(s) -->
+          <div class="mb-4 relative w-full">
+            <label class="block text-md font-medium text-gray-700 mb-1">
+              Department(s)
+            </label>
+            <div
+              class="w-full px-3 py-2 border border-gray-300 rounded-md bg-white text-gray-600 cursor-pointer focus-within:ring-1 focus-within:ring-purple-500"
+              @click="dropdownOpen = !dropdownOpen"
             >
-            <input
-              type="text"
-              v-model="editStudentForm.year"
-              disabled
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-        <div>
-          <p
-            v-if="updateStudentModelError"
-            class="text-red-500 text-md font-normal"
-          >
-            {{ updateStudentModelError }}
-          </p>
-          <div class="flex items-center justify-center flex-col gap-2">
-            <SuccessIcon
-              v-if="updateStudentModelSuccess"
-              fill="#70e000"
-              class="w-6 h-6"
-            />
-            <p
-              v-if="updateStudentModelSuccess"
-              class="text-green-500 text-md font-normal"
+              <span
+                class="text-gray-400"
+                v-if="selectedDepartments.length === 0"
+              >
+                Select department(s)
+              </span>
+              <span class="text-gray-700" v-else>
+                {{ selectedDepartments.length }} selected
+              </span>
+            </div>
+            <div
+              v-if="dropdownOpen"
+              class="absolute left-0 right-0 mt-2 max-h-48 overflow-y-auto bg-white border border-gray-300 rounded-md shadow z-50"
             >
-              {{ updateStudentModelSuccess }}
-            </p>
+              <ul>
+                <li
+                  v-for="dp in departments"
+                  :key="dp.id"
+                  @click.stop="toggleDepartment(dp.id)"
+                  class="flex items-center px-4 py-2 hover:bg-purple-50 cursor-pointer"
+                >
+                  <input
+                    type="checkbox"
+                    :checked="selectedDepartments.includes(dp.id)"
+                    class="mr-2"
+                    readonly
+                  />
+                  <span>{{ dp.name }}</span>
+                </li>
+              </ul>
+            </div>
           </div>
-        </div>
-        <div class="mt-6 flex justify-end gap-2">
-          <button
-            type="submit"
-            class="px-4 py-2 rounded bg-blue-600 text-white"
-          >
-            Save
-          </button>
-        </div>
-      </form>
+
+          <!-- Profile Picture -->
+          <div class="mb-4">
+            <label class="block text-md font-medium text-gray-700 mb-1">
+              Profile Picture
+            </label>
+            <div
+              @click="$refs.imageInput.click()"
+              class="relative flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-purple-500"
+            >
+              <input
+                ref="imageInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleFileChange"
+              />
+              <template v-if="imagePreview">
+                <img
+                  :src="imagePreview"
+                  class="h-64 w-full object-cover rounded-md shadow"
+                />
+                <p class="text-sm text-gray-500 mt-3">Click to change image</p>
+              </template>
+              <template v-else>
+                <svg
+                  class="w-14 h-14 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 15a4 4 0 01.88-2.51m0 0A4 4 0 017 11h10a4 4 0 014 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm0 0L4 9m0 0L4 5m0 0h16m0 0l-1 4m0 0l-1 4"
+                  />
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">
+                  Click or drag image to upload
+                </p>
+              </template>
+            </div>
+          </div>
+
+          <!-- Save button -->
+          <div class="flex gap-2">
+            <button
+              type="submit"
+              class="text-white bg-[#8C09F4] px-6 py-2 rounded-md"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              @click="showPanel = false"
+              class="text-red-500 bg-red-200 px-6 py-2 rounded-md"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
 import dayjs from "dayjs";
-import { useToast } from "vue-toastification";
 import SuccessIcon from "../icons/SuccessIcon.vue";
 import CloseIcon from "../icons/CloseIcon.vue";
 import MessageRigularIcon from "../icons/MessageRigularIcon.vue";
@@ -556,10 +579,8 @@ import ActionIcon from "../icons/ActionIcon.vue";
 import axios from "axios";
 import RippleButton from "../Custom/RippleButton.vue";
 import { API_BASE_PROFILE_URL, API_BASE_URL } from "@/config/useWebSocket";
-
-const toast = useToast();
 export default {
-  name: "StudentDetail",
+  name: "TeacherDetail",
   components: {
     MessageRigularIcon,
     ActionIcon,
@@ -571,29 +592,18 @@ export default {
   },
   data() {
     return {
-      imageFile: null,
-      showModal: false,
-      updateStudentModelError: "",
-      updateStudentModelSuccess: "",
-      editStudentForm: {
+      showPanel: false,
+      updateTeacherModelError: "",
+      updateTeacherModelSuccess: "",
+      selectedDepartments: [],
+      editTeacherForm: {
         firstName: "",
         lastName: "",
         email: "",
         gender: "",
-        batch: "",
-        year: "",
-        major: "",
+        departments: [],
+        profilePicture: null,
         phone: "",
-        email: "",
-      },
-      user: {
-        firstname: "Sieng",
-        lastname: "Vathana",
-        image: "https://randomuser.me/api/portraits/men/32.jpg",
-        email: "Siengvathana@gmail.com",
-        phoneNumber: "018239543",
-        batch: "8",
-        year: "2",
       },
       showEditModal: false,
       changePassSuccess: "",
@@ -603,7 +613,7 @@ export default {
       newPassword: "",
       API_BASE_PROFILE_URL,
       API_BASE_URL,
-      studentInfo: {
+      teacherInfo: {
         info: {},
         recentActivities: [],
         recentDevices: [],
@@ -660,13 +670,13 @@ export default {
       const days = Math.floor(hrs / 24);
       return `${days} d ago`;
     },
-    async loadStudentIfo() {
+    async loadTeacherIfo() {
       try {
         const response = await axios.get(
-          API_BASE_URL + "/api/students/" + this.userId,
+          API_BASE_URL + "/api/teachers/" + this.userId,
           { withCredentials: true }
         );
-        this.studentInfo.info = response.data.data;
+        this.teacherInfo.info = response.data.data;
         console.log(response.data);
       } catch (e) {
         console.log(e);
@@ -683,8 +693,8 @@ export default {
           { withCredentials: true }
         );
         const data = response.data.data;
-        this.studentInfo.recentDevices = data;
-        console.log(this.studentInfo.recentDevices);
+        this.teacherInfo.recentDevices = data;
+        console.log(this.teacherInfo.recentDevices);
       } catch (e) {
         console.log(e);
       }
@@ -696,7 +706,7 @@ export default {
           { withCredentials: true }
         );
         console.log(response.data);
-        this.studentInfo.recentActivities = response.data.data;
+        this.teacherInfo.recentActivities = response.data.data;
       } catch (e) {
         console.log(e);
       }
@@ -704,48 +714,57 @@ export default {
     async submitEditForm() {
       try {
         const response = await axios.put(
-          API_BASE_URL + "/api/students/update-for-admin",
-          this.editStudentForm,
+          API_BASE_URL + "/api/teachers/update-for-admin",
+          this.editTeacherForm,
           { withCredentials: true }
         );
-        console.log(this.editStudentForm);
+        console.log(this.editTeacherForm);
         if (response.data.success) {
-          this.updateStudentModelSuccess =
+          this.updateTeacherModelSuccess =
             response.data.message ||
-            "Student information updated successfully.";
-          this.loadStudentIfo(); // Reload student info after edit
+            "Teacher information updated successfully.";
+          this.loadTeacherIfo(); // Reload teacher info after edit
         } else {
-          this.updateStudentModelError =
-            response.data.message || "Failed to update student information.";
+          this.updateTeacherModelError =
+            response.data.message || "Failed to update teacher information.";
         }
       } catch (error) {
-        console.error("Error updating student info:", error);
+        console.error("Error updating teacher info:", error);
       }
     },
     // ...existing methods
     openEditModal() {
-      const s = this.studentInfo.info;
-      this.editStudentForm = {
-        userId: s.userId || "",
-        firstName: s.firstname || "",
-        lastName: s.lastname || "",
+      const s = this.teacherInfo.info;
+
+      // Fill the edit form
+      this.editTeacherForm = {
+        userId: s.teacherId || "",
+        firstName: s.firstName || "",
+        lastName: s.lastName || "",
+        profilePicture: s.profilePicture || null,
         gender: s.gender || "",
         email: s.email || "",
-        batch: s.batch || "",
-        year: s.year || "",
-        major: s.major || "",
         phone: s.phone || "",
-        email: s.email || "",
+        departments: s.departments || [],
       };
-      this.showEditModal = true;
+
+      // ✅ Pre-select department IDs for checkboxes
+      this.selectedDepartments = s.departments
+        ? s.departments.map((dep) => dep.id)
+        : [];
+
+      // ✅ Show existing profile picture in preview
+      this.imagePreview = s.profilePicture
+        ? `${this.API_BASE_PROFILE_URL}/${s.profilePicture}`
+        : null;
+
+      console.log("before edit form: ", JSON.stringify(this.editTeacherForm));
+      this.showPanel = true;
     },
     async handleChangePasswordOfThisUser() {
       if (this.newPassword !== this.confirmPassowrd) {
-        toast.error("new password and confirm password does not match!", {
-          position: "bottom-center",
-          closeOnClick: true,
-          pauseOnHover: true,
-        });
+        this.changePassError =
+          "New password and confirm password do not match.";
         return;
       }
       try {
@@ -761,19 +780,13 @@ export default {
         );
         console.log(response.data);
         if (response.data.success === true) {
-          toast.success(response.data.message, {
-            position: "bottom-center",
-            closeOnClick: true,
-            pauseOnHover: true,
-          });
+          this.changePassSuccess =
+            response.data.message || "Password changed successfully.";
           this.newPassword = "";
           this.confirmPassowrd = "";
         } else {
-          toast.error(response.data.message, {
-            position: "bottom-center",
-            closeOnClick: true,
-            pauseOnHover: true,
-          });
+          this.changePassError =
+            response.data.message || "Failed to change password.";
         }
       } catch (e) {
         console.log(e);
@@ -787,7 +800,7 @@ export default {
     },
   },
   mounted() {
-    this.loadStudentIfo();
+    this.loadTeacherIfo();
     this.fetchRecentDevices();
     this.fetchUserRecentAction();
   },
@@ -795,6 +808,45 @@ export default {
 </script>
 
 <style scoped>
+/* Gray background fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+
+/* Slide panel push in/out */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter-from {
+  transform: translateX(100%);
+}
+.slide-enter-to {
+  transform: translateX(0%);
+}
+.slide-leave-from {
+  transform: translateX(0%);
+}
+.slide-leave-to {
+  transform: translateX(100%);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 /* Optional: Custom Scrollbar */
 ::-webkit-scrollbar-track {
   background: #f0f0f0;

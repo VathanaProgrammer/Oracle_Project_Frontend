@@ -6,7 +6,7 @@ export const API_BASE_PROFILE_URL = `${API_BASE_URL}/api/upload/profile`
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'
 
-const API_BASE = 'http://localhost:8080'
+const API_BASE = API_BASE_URL;
 let stompClient = null
 let isConnected = false
 const topicHandlers = {}
