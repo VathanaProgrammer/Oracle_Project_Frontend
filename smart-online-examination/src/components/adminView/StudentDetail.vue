@@ -12,7 +12,7 @@
             class="w-32 h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 overflow-hidden rounded-full border-4 border-[#00b4d8] shadow-md"
           >
             <img
-              @click="showModal = true"
+              @click="showModalImage = true"
               class="w-full h-full object-cover"
               :src="
                 API_BASE_PROFILE_URL + '/' + studentInfo.info.profilePicture
@@ -21,9 +21,9 @@
             />
 
             <div
-              v-if="showModal"
+              v-if="showModalImage"
               class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-              @click.self="showModal = false"
+              @click.self="showModalImage = false"
             >
               <img
                 :src="
@@ -98,7 +98,7 @@
           <div class="flex flex-row gap-3 mt-4">
             <div class="flex flex-row">
               <button
-                @click="openEditModal"
+                @click="openEditModal()"
                 class="flex items-center gap-2 px-4 py-2 rounded-md shadow-md text-white bg-[#8C09F4] font-normal text-md"
               >
                 <EditIcon class="w-5 h-5" />
@@ -385,163 +385,237 @@
     </div>
   </div>
 
-  <div
-    v-if="showEditModal"
-    class="fixed inset-0 p-2 bg-black bg-opacity-40 flex items-center justify-center z-50"
-  >
+  <transition name="fade">
     <div
-      class="bg-white w-full p-2 sm:p-6 max-w-md min-w-[55%] rounded-md shadow-lg"
+      v-if="showPanel"
+      class="fixed inset-0 bg-black bg-opacity-40 z-40"
+      @click.self="showPanel = false"
+    ></div>
+  </transition>
+
+  <transition name="slide">
+    <div
+      v-if="showPanel"
+      class="fixed top-0 right-0 h-full w-96 bg-white shadow-lg z-50"
     >
-      <header
-        class="flex rounded-md flex-row justify-between items-center mb-3"
-      >
-        <h2 class="text-xl font-semibold text-gray-800">Edit Student Info</h2>
-        <CloseIcon
-          class="h-8 w-8 cursor-pointer"
-          @click="showEditModal = false"
-        />
+      <header class="flex items-center justify-between py-5 px-5">
+        <h2 class="text-xl font-normal text-gray-700">Edit Teacher Info</h2>
+        <CloseIcon class="h-8 w-8 cursor-pointer" @click="showPanel = false" />
       </header>
-      <hr class="mb-2" />
-      <form class="mt-10 w-full" @submit.prevent="submitEditForm">
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-3 my-5"
+      <hr />
+
+      <div>
+        <form
+          @submit.prevent="submitEditForm"
+          class="flex-1 overflow-y-auto p-4 h-screen"
         >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >First name</label
-            >
+          <!-- First Name -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              First name
+            </label>
             <input
-              type="text"
               v-model="editStudentForm.firstName"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              type="text"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Last name</label
-            >
+
+          <!-- Last Name -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Last name
+            </label>
             <input
-              type="text"
               v-model="editStudentForm.lastName"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Phone number</label
-            >
-            <input
               type="text"
-              v-model="editStudentForm.phone"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >E-mail</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.email"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <!-- Gender Dropdown -->
-          <div class="w-full">
-            <label for="gender" class="text-gray-500 font-sm block mb-1"
-              >Gender</label
-            >
+
+          <!-- Gender -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Gender
+            </label>
             <select
-              id="gender"
               v-model="editStudentForm.gender"
-              class="px-3 py-1.5 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             >
+              <option value="">Select gender</option>
               <option value="Male">Male</option>
               <option value="Female">Female</option>
             </select>
           </div>
 
-          <!-- Major (Disabled) -->
-          <div class="w-full">
-            <label for="major" class="text-gray-500 font-sm block mb-1"
-              >Major</label
-            >
+          <!-- Email -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Email
+            </label>
             <input
-              disabled
-              v-model="editStudentForm.major"
-              type="text"
-              id="major"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              v-model="editStudentForm.email"
+              type="email"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-        </div>
 
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Batch</label
-            >
+          <!-- Phone -->
+          <div class="mb-4">
+            <label class="text-md font-medium text-gray-600 mb-1 block">
+              Phone number
+            </label>
             <input
+              v-model="editStudentForm.phone"
               type="text"
-              v-model="editStudentForm.batch"
-              disabled
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md"
             />
           </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Year</label
+          <div class="mb-4">
+            <label
+              for="lastname"
+              class="text-md font-medium text-gray-600 mb-1 block"
             >
+              Year
+            </label>
             <input
-              type="text"
               v-model="editStudentForm.year"
               disabled
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
+              type="number"
+              id="phone"
+              placeholder="1"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
             />
           </div>
-        </div>
-        <div>
-          <p
-            v-if="updateStudentModelError"
-            class="text-red-500 text-md font-normal"
-          >
-            {{ updateStudentModelError }}
-          </p>
-          <div class="flex items-center justify-center flex-col gap-2">
-            <SuccessIcon
-              v-if="updateStudentModelSuccess"
-              fill="#70e000"
-              class="w-6 h-6"
-            />
-            <p
-              v-if="updateStudentModelSuccess"
-              class="text-green-500 text-md font-normal"
+          <div class="mb-4">
+            <label
+              for="lastname"
+              class="text-md font-medium text-gray-600 mb-1 block"
             >
-              {{ updateStudentModelSuccess }}
-            </p>
+              Batch
+            </label>
+            <input
+              v-model="editStudentForm.batch"
+              disabled
+              type="number"
+              id="phone"
+              placeholder="8"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
+            />
           </div>
-        </div>
-        <div class="mt-6 flex justify-end gap-2">
-          <button
-            type="submit"
-            class="px-4 py-2 rounded bg-blue-600 text-white"
-          >
-            Save
-          </button>
-        </div>
-      </form>
+          <div class="mb-4 relative">
+            <label
+              for="major"
+              class="text-md font-medium text-gray-600 mb-1 block"
+            >
+              Major
+            </label>
+            <select
+              v-model="selectedMajor"
+              id="gender"
+              class="w-full appearance-none px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-700 text-md font-normal focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition duration-300"
+            >
+              <option
+                value=""
+                class="text-gray-600 medium text-md"
+                disabled
+                selected
+              >
+                Select Major
+              </option>
+              <option
+                v-for="major in majors"
+                :key="major.id"
+                :value="major.id"
+                class="text-gray-600"
+              >
+                {{ major.name }}
+              </option>
+            </select>
+
+            <!-- Down arrow icon -->
+            <div
+              class="pointer-events-none absolute inset-y-0 right-3 top-6 flex items-center text-gray-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+
+          <!-- Profile Picture -->
+          <div class="mb-4">
+            <label class="block text-md font-medium text-gray-700 mb-1">
+              Profile Picture
+            </label>
+            <div
+              @click="$refs.imageInput.click()"
+              class="relative flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-purple-500"
+            >
+              <input
+                ref="imageInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleFileChange"
+              />
+              <template v-if="imagePreview">
+                <img
+                  :src="imagePreview"
+                  class="h-64 w-full object-cover rounded-md shadow"
+                />
+                <p class="text-sm text-gray-500 mt-3">Click to change image</p>
+              </template>
+              <template v-else>
+                <svg
+                  class="w-14 h-14 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 15a4 4 0 01.88-2.51m0 0A4 4 0 017 11h10a4 4 0 014 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm0 0L4 9m0 0L4 5m0 0h16m0 0l-1 4m0 0l-1 4"
+                  />
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">
+                  Click or drag image to upload
+                </p>
+              </template>
+            </div>
+          </div>
+
+          <!-- Save button -->
+          <div class="flex gap-2">
+            <button
+              type="submit"
+              class="text-white bg-[#8C09F4] px-6 py-2 rounded-md"
+            >
+              Save
+            </button>
+            <button
+              type="button"
+              @click="showPanel = false"
+              class="text-red-500 bg-red-200 px-6 py-2 rounded-md"
+            >
+              Cancel
+            </button>
+          </div>
+          <p class="mt-96"></p>
+        </form>
+      </div>
     </div>
-  </div>
+  </transition>
 </template>
 
 <script>
@@ -571,11 +645,16 @@ export default {
   },
   data() {
     return {
+      majors: [],
+      selectedMajor: null,
+      imagePreview: null,
+      showModalImage: false,
       imageFile: null,
-      showModal: false,
+      showPanel: false,
       updateStudentModelError: "",
       updateStudentModelSuccess: "",
       editStudentForm: {
+        profilePicture: null,
         firstName: "",
         lastName: "",
         email: "",
@@ -638,6 +717,17 @@ export default {
     };
   },
   methods: {
+    async fetchMajors() {
+      try {
+        const response = await axios.get(API_BASE_URL + "/api/majors/all", {
+          withCredentials: true,
+        });
+        this.majors = response.data.data;
+        console.log("Majors fetched:", this.majors);
+      } catch (error) {
+        console.error("Error fetching majors:", error);
+      }
+    },
     formatDate(dateStr) {
       return dayjs(dateStr).format("MMMM DD, YYYY hh:mm A");
     },
@@ -703,23 +793,57 @@ export default {
     },
     async submitEditForm() {
       try {
+        const formData = new FormData();
+        formData.append("userId", this.editStudentForm.userId);
+        formData.append("firstName", this.editStudentForm.firstName);
+        formData.append("lastName", this.editStudentForm.lastName);
+        formData.append("gender", this.editStudentForm.gender);
+        formData.append("email", this.editStudentForm.email);
+        formData.append("phone", this.editStudentForm.phone);
+        formData.append("year", this.editStudentForm.year);
+        formData.append("batch", this.editStudentForm.batch);
+        formData.append("majorId", this.selectedMajor); // from select
+
+        // Append new image only if selected
+        if (this.editStudentForm.profilePicture instanceof File) {
+          formData.append(
+            "profilePicture",
+            this.editStudentForm.profilePicture
+          );
+        }
+        // Debug
+        for (let [key, value] of formData.entries()) {
+          console.log(`${key}:`, value);
+        }
+
         const response = await axios.put(
           API_BASE_URL + "/api/students/update-for-admin",
-          this.editStudentForm,
-          { withCredentials: true }
+          formData,
+          {
+            withCredentials: true,
+          }
         );
-        console.log(this.editStudentForm);
+
         if (response.data.success) {
-          this.updateStudentModelSuccess =
-            response.data.message ||
-            "Student information updated successfully.";
-          this.loadStudentIfo(); // Reload student info after edit
+          toast.success("Student updated successfully!", {
+            position: "bottom-center",
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+          this.loadStudentIfo();
         } else {
-          this.updateStudentModelError =
-            response.data.message || "Failed to update student information.";
+          toast.error("Filed to update student!", {
+            position: "bottom-center",
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
         }
       } catch (error) {
-        console.error("Error updating student info:", error);
+        toast.error("Filed to update student!", {
+          position: "bottom-center",
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
       }
     },
     // ...existing methods
@@ -737,7 +861,26 @@ export default {
         phone: s.phone || "",
         email: s.email || "",
       };
-      this.showEditModal = true;
+
+      console.log("Opening edit modal for student:", this.editStudentForm);
+      // set dropdown selection
+      // 🔹 Find matching major ID from name
+      const foundMajor = this.majors.find((m) => m.name === s.major);
+      this.selectedMajor = foundMajor ? foundMajor.id : null;
+
+      // Show profile picture preview
+      this.imagePreview = s.profilePicture
+        ? `${this.API_BASE_PROFILE_URL}/${s.profilePicture}`
+        : null;
+
+      this.showPanel = true;
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.editStudentForm.profilePicture = file; // store file object for upload
+        this.imagePreview = URL.createObjectURL(file); // show preview
+      }
     },
     async handleChangePasswordOfThisUser() {
       if (this.newPassword !== this.confirmPassowrd) {
@@ -788,6 +931,7 @@ export default {
   },
   mounted() {
     this.loadStudentIfo();
+    this.fetchMajors();
     this.fetchRecentDevices();
     this.fetchUserRecentAction();
   },
@@ -795,6 +939,45 @@ export default {
 </script>
 
 <style scoped>
+/* Gray background fade */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+.fade-enter-to,
+.fade-leave-from {
+  opacity: 1;
+}
+
+/* Slide panel push in/out */
+.slide-enter-active,
+.slide-leave-active {
+  transition: transform 0.3s ease;
+}
+.slide-enter-from {
+  transform: translateX(100%);
+}
+.slide-enter-to {
+  transform: translateX(0%);
+}
+.slide-leave-from {
+  transform: translateX(0%);
+}
+.slide-leave-to {
+  transform: translateX(100%);
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.15s ease;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
 /* Optional: Custom Scrollbar */
 ::-webkit-scrollbar-track {
   background: #f0f0f0;

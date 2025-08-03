@@ -184,9 +184,9 @@
           <div
             class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
-            <ResultIcon class="text-white w-5 h-5"></ResultIcon>
+            <AcademicIcon class="text-white w-5 h-5"></AcademicIcon>
             <span class="text-lg text-white font-normal ps-2"
-              >Exam Results</span
+              >Academic</span
             >
             <RightPointerIcon
               :class="
@@ -244,7 +244,7 @@
           >
             <SettingIcon class="text-white w-5 h-5"></SettingIcon>
             <span class="text-lg text-white font-normal ps-2"
-              >Profile Settings</span
+              >Settings</span
             >
             <RightPointerIcon
               :class="
@@ -349,7 +349,7 @@ import { useUserStore } from "@/store/store";
 import axios from "axios";
 import { API_BASE_URL, API_BASE_PROFILE_URL } from "@/config/useWebSocket";
 import { useRouter } from "vue-router"; // ✅ Add this
-import { UsersIcon } from "lucide-vue-next";
+import AcademicIcon from "../icons/AcademicIcon.vue";
 export default {
   components: {
     EduIcon,
@@ -365,6 +365,7 @@ export default {
     SettingIcon,
     LogoutIcon,
     UserIcon,
+    AcademicIcon
   },
   setup() {
     const userStore = useUserStore();

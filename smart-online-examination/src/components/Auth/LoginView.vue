@@ -4,6 +4,7 @@
       @submit.prevent="handleSubmit"
       class="w-full max-w-md h-[650px] bg-white p-12 rounded-xl shadow-lg mx-2 space-y-6"
     >
+      <!-- Header -->
       <header class="text-center">
         <h2
           class="flex items-center justify-center text-3xl font-bold text-gray-800 mb-2 space-x-2"
@@ -19,6 +20,7 @@
         </p>
       </header>
 
+      <!-- Email -->
       <div>
         <label for="email" class="block text-sm font-medium text-gray-700 mb-1"
           >Email</label
@@ -35,6 +37,7 @@
         </p>
       </div>
 
+      <!-- Password -->
       <div>
         <label
           for="password"
@@ -53,6 +56,7 @@
         </p>
       </div>
 
+      <!-- Remember + Forgot -->
       <div class="flex items-center justify-between text-sm">
         <label class="flex items-center space-x-2 text-gray-600">
           <input
@@ -70,11 +74,36 @@
         </router-link>
       </div>
 
+      <!-- Submit Button -->
       <button
         type="submit"
-        class="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold hover:bg-gray-800 transition"
+        :disabled="loading"
+        class="w-full bg-gray-900 text-white py-2 rounded-lg font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center"
       >
-        Sign In
+        <span v-if="!loading">Sign In</span>
+        <span v-else class="flex items-center space-x-2">
+          <svg
+            class="animate-spin h-5 w-5 text-white"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"
+            ></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+            ></path>
+          </svg>
+          <span>Signing in...</span>
+        </span>
       </button>
 
       <p class="text-center text-xs text-gray-400 mt-4">
@@ -97,6 +126,7 @@ export default {
       rememberMe: false,
       email: "",
       password: "",
+      loading: false, // 🔹 loading state
       error: {
         email: "",
         password: "",
@@ -105,7 +135,6 @@ export default {
   },
   methods: {
     async detectBrave() {
-      // Brave detection (async)
       try {
         return navigator.brave && (await navigator.brave.isBrave());
       } catch {
@@ -146,15 +175,10 @@ export default {
         const lat = pos.coords.latitude;
         const lon = pos.coords.longitude;
 
-        // Reverse geocode using OpenStreetMap
         const geo = await axios.get(
           "https://nominatim.openstreetmap.org/reverse",
           {
-            params: {
-              lat,
-              lon,
-              format: "json",
-            },
+            params: { lat, lon, format: "json" },
           }
         );
 
@@ -167,7 +191,6 @@ export default {
 
         location = city ? `${city}, ${country}` : country;
       } catch (err) {
-        // User denied or error occurred — fallback to IP location
         try {
           const ipRes = await axios.get("http://ip-api.com/json");
           if (ipRes.data.status === "success") {
@@ -193,54 +216,54 @@ export default {
         this.error.email = "Invalid email format";
       else this.error.email = "";
     },
-
     validatePassword() {
       if (!this.password) this.error.password = "Password is required";
       else if (this.password.length < 2)
         this.error.password = "Password must be at least 6 characters";
       else this.error.password = "";
     },
-
     async handleSubmit() {
+      if (this.loading) return; // Prevent multiple clicks
       this.validateEmail();
       this.validatePassword();
 
-      if (!this.error.email && !this.error.password) {
-        try {
-          const deviceInfo = await this.getDeviceInfo();
+      if (this.error.email || this.error.password) return;
 
-          const loginRes = await axios.post(
-            `${API_BASE_URL}/api/user/login`,
-            {
-              email: this.email.trim(),
-              password: this.password.trim(),
-              rememberMe: this.rememberMe,
-              ...deviceInfo,
-            },
-            { withCredentials: true }
-          );
+      this.loading = true; // Start loading
+      try {
+        const deviceInfo = await this.getDeviceInfo();
+        const loginRes = await axios.post(
+          `${API_BASE_URL}/api/user/login`,
+          {
+            email: this.email.trim(),
+            password: this.password.trim(),
+            rememberMe: this.rememberMe,
+            ...deviceInfo,
+          },
+          { withCredentials: true }
+        );
 
-          if (loginRes.data) {
-            const userStore = useUserStore();
-            const userRes = await axios.get(`${API_BASE_URL}/api/user/me`, {
-              withCredentials: true,
-            });
+        // ✅ Keep loading until success === true
+        if (loginRes.data && loginRes.data.success === true) {
+          const userStore = useUserStore();
+          const userRes = await axios.get(`${API_BASE_URL}/api/user/me`, {
+            withCredentials: true,
+          });
+          userStore.setUser(userRes.data);
 
-            userStore.setUser(userRes.data);
-            const role = userRes.data.role;
-
-            if (role === "ADMIN") this.$router.push("/admin-dashboard");
-            else if (role === "TEACHER")
-              this.$router.push("/teacher-dashboard");
-            else if (role === "STUDENT")
-              this.$router.push("/student-dashboard");
-            else console.error("Unknown role:", role);
-          }
-        } catch (err) {
-          this.error.email = "";
+          const role = userRes.data.role;
+          if (role === "ADMIN") this.$router.push("/admin-dashboard");
+          else if (role === "TEACHER") this.$router.push("/teacher-dashboard");
+          else if (role === "STUDENT") this.$router.push("/student-dashboard");
+        } else {
           this.error.password = "Invalid email or password";
-          console.error("Login error:", err.response?.data || err.message);
         }
+      } catch (err) {
+        this.error.password = "Invalid email or password";
+        console.error("Login error:", err.response?.data || err.message);
+      } finally {
+        // ✅ Stop loading only after the request finishes
+        this.loading = false;
       }
     },
   },

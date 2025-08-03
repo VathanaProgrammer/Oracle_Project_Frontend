@@ -94,7 +94,7 @@
             </div>
           </div>
         </div>
-        
+
         <!-- Admins -->
         <div
           class="bg-white shadow rounded-lg px-6 py-6 flex justify-between items-stretch w-full md:w-1/3 min-h-36"
@@ -268,7 +268,7 @@
             label="Add new user"
             bg-color="bg-green-600"
             hover-color="hover:bg-green-700"
-            @click="showPanel = true"
+            @click="openAddUserPanel()"
           >
           </RippleButton>
         </div>
@@ -424,163 +424,6 @@
       </div>
     </section>
   </div>
-  <div
-    v-if="showEditModal"
-    class="fixed inset-0 p-2 bg-black bg-opacity-40 flex items-center justify-center z-50"
-  >
-    <div
-      class="bg-white overflow-y-auto w-full p-2 sm:p-6 max-w-md min-w-[55%] rounded-md shadow-lg"
-    >
-      <header
-        class="flex rounded-md flex-row justify-between items-center mb-3"
-      >
-        <h2 class="text-xl font-semibold text-gray-800">Edit Student Info</h2>
-        <CloseIcon
-          class="h-8 w-8 cursor-pointer"
-          @click="showEditModal = false"
-        />
-      </header>
-      <hr class="mb-2" />
-      <form class="mt-10 w-full" @submit.prevent="submitEditForm">
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-3 my-5"
-        >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >First name</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.firstName"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Last name</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.lastName"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Phone number</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.phone"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >E-mail</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.email"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <!-- Gender Dropdown -->
-          <div class="w-full">
-            <label for="gender" class="text-gray-500 font-sm block mb-1"
-              >Gender</label
-            >
-            <select
-              id="gender"
-              v-model="editStudentForm.gender"
-              class="px-3 py-1.5 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            >
-              <option value="Male">Male</option>
-              <option value="Female">Female</option>
-            </select>
-          </div>
-
-          <!-- Major (Disabled) -->
-          <div class="w-full">
-            <label for="major" class="text-gray-500 font-sm block mb-1"
-              >Major</label
-            >
-            <input
-              disabled
-              v-model="editStudentForm.major"
-              type="text"
-              id="major"
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-
-        <div
-          class="w-full flex md:flex-row flex-col justify-between gap-2 my-5"
-        >
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Batch</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.batch"
-              disabled
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-          <div class="w-full">
-            <label for="firstname" class="text-gray-500 font-sm block mb-1"
-              >Year</label
-            >
-            <input
-              type="text"
-              v-model="editStudentForm.year"
-              disabled
-              class="px-3 py-1 w-full text-gray-600 font-sm font-normal placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-300 rounded-md focus:shadow-lg shadow-blue-500"
-            />
-          </div>
-        </div>
-        <div>
-          <p
-            v-if="updateStudentModelError"
-            class="text-red-500 text-md font-normal"
-          >
-            {{ updateStudentModelError }}
-          </p>
-          <div class="flex items-center justify-center flex-col gap-2">
-            <SuccessIcon
-              v-if="updateStudentModelSuccess"
-              fill="#70e000"
-              class="w-6 h-6"
-            />
-            <p
-              v-if="updateStudentModelSuccess"
-              class="text-green-500 text-md font-normal"
-            >
-              {{ updateStudentModelSuccess }}
-            </p>
-          </div>
-        </div>
-        <div class="mt-6 flex justify-end gap-2">
-          <button
-            type="submit"
-            class="px-4 py-2 rounded bg-blue-600 text-white"
-          >
-            Save
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
   <transition name="fade">
     <div
       v-if="showPanel"
@@ -595,7 +438,7 @@
     >
       <header>
         <div class="flex items-center justify-between py-5 px-5">
-          <h2 class="text-xl font-normal text-gray-700">Add New User</h2>
+          <h2 class="text-xl font-normal text-gray-700">{{ formTitle }}</h2>
           <CloseIcon
             class="h-8 w-8 cursor-pointer"
             @click="showPanel = false"
@@ -616,7 +459,7 @@
               First name
             </label>
             <input
-              v-model="addNewUserpayload.firstName"
+              v-model="userForm.firstName"
               type="text"
               id="firstname"
               placeholder="Sieng"
@@ -631,7 +474,7 @@
               Last name
             </label>
             <input
-              v-model="addNewUserpayload.lastName"
+              v-model="userForm.lastName"
               type="text"
               id="lastname"
               placeholder="Vathana"
@@ -646,7 +489,7 @@
               Gender
             </label>
             <select
-              v-model="addNewUserpayload.gender"
+              v-model="userForm.gender"
               id="gender"
               class="w-full appearance-none px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-700 text-md font-normal focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition duration-300"
             >
@@ -687,7 +530,7 @@
               Email
             </label>
             <input
-              v-model="addNewUserpayload.email"
+              v-model="userForm.email"
               type="text"
               id="email"
               placeholder="example@gmail.com"
@@ -702,7 +545,7 @@
               Phone number
             </label>
             <input
-              v-model="addNewUserpayload.phone"
+              v-model="userForm.phone"
               type="text"
               id="phone"
               placeholder="012345678"
@@ -717,12 +560,17 @@
               Password
             </label>
             <input
-              v-model="addNewUserpayload.password"
+              v-model="userForm.password"
               type="text"
               id="password"
+              :readonly="isEditMode"
               placeholder="*********"
               class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
             />
+            <p v-if="isEditMode" class="text-sm text-purple-600 mt-1">
+              Password cannot be changed here. Please use the password reset
+              feature.
+            </p>
           </div>
           <div class="mb-4 relative">
             <label
@@ -869,7 +717,7 @@
               Year
             </label>
             <input
-              v-model="addNewUserpayload.year"
+              v-model="userForm.year"
               type="number"
               id="phone"
               placeholder="1"
@@ -884,7 +732,7 @@
               Batch
             </label>
             <input
-              v-model="addNewUserpayload.batch"
+              v-model="userForm.batch"
               type="number"
               id="phone"
               placeholder="8"
@@ -949,15 +797,12 @@
               type="button"
               class="text-red-400 bg-red-400 bg-opacity-30 px-6 cursor-pointer py-2 text-md text-md font-medium rounded-md"
             >
-              Submit
+              Cancel
             </button>
           </div>
           <div>
-            <p
-              v-if="addNewUserpayloadError"
-              class="text-red-500 text-md font-normal"
-            >
-              {{ addNewUserpayloadError }}
+            <p v-if="userFormError" class="text-red-500 text-md font-normal">
+              {{ userFormError }}
             </p>
           </div>
           <p class="mb-96"></p>
@@ -1022,17 +867,11 @@ export default {
   },
   data() {
     return {
-      stats: {
-        totalStudents: 0,
-        totalTeachers: 0,
-        totalAdmins: 0,
-        teacherPics: [],
-        studentPics: [],
-        adminPics: [],
-      },
-      imageFile: null,
-      addNewUserpayloadError: "",
-      addNewUserpayload: {
+      isEditMode: false,
+      formTitle: "Add New User",
+      userForm: {
+        // single form used for both add & edit
+        userId: "",
         firstName: "",
         lastName: "",
         phone: "",
@@ -1046,26 +885,26 @@ export default {
         profilePicture: null,
         departments: [],
       },
+      selectedDepartments: [],
       selectedMajor: "",
+      showPanel: false,
+      stats: {
+        totalStudents: 0,
+        totalTeachers: 0,
+        totalAdmins: 0,
+        teacherPics: [],
+        studentPics: [],
+        adminPics: [],
+      },
+      imageFile: null,
+      userFormError: "",
       dropdownOpen: false,
       selectedDepartments: [],
       majors: [],
       departments: [],
       selectRoleModel: "",
       imagePreview: null,
-      showPanel: false,
       showEditModal: false,
-      editStudentForm: {
-        userId: "",
-        firstName: "",
-        lastName: "",
-        phone: "",
-        email: "",
-        batch: "",
-        year: "",
-        gender: "",
-        major: "",
-      },
       updateStudentModelError: "",
       updateStudentModelSuccess: null,
       API_BASE_PROFILE_URL,
@@ -1088,20 +927,28 @@ export default {
   },
   methods: {
     async submitNewUser() {
-      this.addNewUserpayload.departments = this.selectedDepartments;
-      this.addNewUserpayload.major = this.selectedMajor;
-      this.addNewUserpayload.role = this.selectRoleModel;
+      this.userForm.departments = this.selectedDepartments;
+      this.userForm.major = this.selectedMajor;
+      this.userForm.role = this.selectRoleModel;
 
       const formData = new FormData();
 
-      for (const key in this.addNewUserpayload) {
-        if (Array.isArray(this.addNewUserpayload[key])) {
-          this.addNewUserpayload[key].forEach((value) => {
-            formData.append(`${key}[]`, value);
-          });
+      for (const key in this.userForm) {
+        if (Array.isArray(this.userForm[key])) {
+          if (this.isEditMode && key === "departments") {
+            // Send JSON string for departments
+            formData.append(key, JSON.stringify(this.userForm[key]));
+          } else {
+            this.userForm[key].forEach((value) => {
+              formData.append(key, value);
+            });
+          }
         } else if (key !== "profilePicture") {
-          // skip profilePicture, it's a file
-          formData.append(key, this.addNewUserpayload[key]);
+          if (key === "major") {
+            formData.append("majorId", this.userForm[key] ?? "");
+          } else {
+            formData.append(key, this.userForm[key] ?? "");
+          }
         }
       }
 
@@ -1110,39 +957,82 @@ export default {
       }
 
       try {
-        const response = await axios.post(
-          `${this.API_BASE_URL}/api/user/register`,
-          formData,
-          {
-            withCredentials: true,
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
+        if (this.isEditMode) {
+          // EDIT mode - choose URL based on role
+          let url = "";
+          if (this.userForm.role === "STUDENT") {
+            url = `${this.API_BASE_URL}/api/students/update-for-admin`;
+          } else if (this.userForm.role === "TEACHER") {
+            url = `${this.API_BASE_URL}/api/teachers/update-for-admin`;
+          } else if (this.userForm.role === "ADMIN") {
+            url = `${this.API_BASE_URL}/api/users/update-for-admin`;
+          } else {
+            toast.error("Unknown user role for update.");
+            return;
           }
-        );
+          for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+          }
 
-        if (response.data.success) {
-          toast.success(response.data.message || "User added successfully", {
-            position: "bottom-center",
-            closeOnClick: true,
-            pauseOnHover: true,
+          const { data } = await axios.put(url, formData, {
+            withCredentials: true,
+            headers: { "Content-Type": "multipart/form-data" },
           });
-          this.loadAllUsers();
+
+          if (data.success) {
+            toast.success(data.message || "User updated successfully!", {
+              position: "bottom-center",
+              closeOnClick: true,
+              pauseOnHover: true,
+            });
+            this.loadAllUsers();
+            this.showPanel = false;
+          } else {
+            toast.error(data.message || "Failed to update user.", {
+              position: "bottom-center",
+              closeOnClick: true,
+              pauseOnHover: true,
+            });
+          }
         } else {
-          this.addNewUserpayloadError =
-            response.data.message || "Something went wrong";
-          toast.error(response.data.message || "Something went wrong", {
-            position: "bottom-center",
-            closeOnClick: true,
-            pauseOnHover: true,
-          });
+          for (const [key, value] of formData.entries()) {
+            console.log(`${key}: ${value}`);
+          }
+          //ADD new user
+          const { data } = await axios.post(
+            `${this.API_BASE_URL}/api/user/register`,
+            formData,
+            {
+              withCredentials: true,
+              headers: { "Content-Type": "multipart/form-data" },
+            }
+          );
+
+          if (data.success) {
+            toast.success(data.message || "User added successfully!", {
+              position: "bottom-center",
+              closeOnClick: true,
+              pauseOnHover: true,
+            });
+            this.loadAllUsers();
+            this.showPanel = false;
+          } else {
+            toast.error(data.message || "Failed to add user.", {
+              position: "bottom-center",
+              closeOnClick: true,
+              pauseOnHover: true,
+            });
+          }
         }
       } catch (error) {
-        console.error("Error:", error);
-        toast.error("Error creating user.");
+        console.error("Error submitting user:", error);
+        toast.error("Error submitting user", {
+          position: "bottom-center",
+          closeOnClick: true,
+          pauseOnHover: true,
+        });
       }
     },
-
     toggleDepartment(id) {
       const index = this.selectedDepartments.indexOf(id);
       if (index === -1) {
@@ -1156,6 +1046,35 @@ export default {
     formatPhone(phone) {
       if (!phone) return "-";
       return phone.startsWith("0") ? "+855" + phone.substring(1) : phone;
+    },
+    openAddUserPanel() {
+      this.isEditMode = false;
+      this.formTitle = "Add New User";
+
+      this.userForm = {
+        userId: "",
+        firstName: "",
+        lastName: "",
+        phone: "",
+        password: "",
+        email: "",
+        gender: "",
+        role: "",
+        major: "",
+        batch: "",
+        year: "",
+        profilePicture: null,
+        departments: [],
+      };
+
+      this.selectRoleModel = "";
+      this.selectedDepartments = [];
+      this.selectedMajor = "";
+      this.imagePreview = null;
+      this.imageFile = null;
+      this.addNewUserpayloadError = "";
+
+      this.showPanel = true;
     },
     async loadAllUsers() {
       const params = {
@@ -1176,59 +1095,77 @@ export default {
       console.log("Users loaded:", this.users);
     },
     async loadUserInfo(user) {
+      this.selectRoleModel = user.role;
       try {
-        if (user.role == "STUDENT") {
-          const response = await axios.get(
-            API_BASE_URL + "/api/students/" + user.id,
-            {
-              withCredentials: true,
-            }
+        this.isEditMode = true;
+        this.formTitle = "Edit User";
+
+        if (user.role === "STUDENT") {
+          const { data } = await axios.get(
+            `${API_BASE_URL}/api/students/${user.id}`,
+            { withCredentials: true }
           );
-          this.editStudentForm = {
-            userId: response.data.data.userId,
-            firstName: response.data.data.firstname,
-            lastName: response.data.data.lastname,
-            phone: response.data.data.phone,
-            email: response.data.data.email,
-            major: response.data.data.major,
-            batch: response.data.data.batch,
-            year: response.data.data.year,
-            gender: response.data.data.gender,
-          };
-        } else {
-          this.updateStudentModelError =
-            response2.data.message || "User is not a student.";
-          this.updateStudentModelSuccess = "";
+          console.log("Student data:", data);
+          Object.assign(this.userForm, {
+            userId: data.data.userId,
+            firstName: data.data.firstname,
+            lastName: data.data.lastname,
+            phone: data.data.phone,
+            email: data.data.email,
+            major: data.data.major, // make sure backend sends ID
+            batch: data.data.batch,
+            year: data.data.year,
+            gender: data.data.gender,
+            role: "STUDENT",
+          });
+          const foundMajor = this.majors.find(
+            (m) => m.name === data.data.major
+          );
+          this.selectedMajor = foundMajor ? foundMajor.id : null;
         }
 
-        this.showEditModal = true;
-      } catch (error) {
-        this.updateStudentModelError =
-          "Error loading user info: " + error.message;
-        console.error("Error loading user info:", error);
-      }
-    },
-    async submitEditForm() {
-      try {
-        const response2 = await axios.put(
-          API_BASE_URL + "/api/students/update-for-admin",
-          this.editStudentForm,
-          {
-            withCredentials: true,
-          }
-        );
-
-        if (response2.data.success === true) {
-          this.updateStudentModelSuccess =
-            response2.data.message || "Student info updated successfully!";
-          this.updateStudentModelError = "";
-        } else {
-          this.updateStudentModelError =
-            response2.data.message || "Failed to update student info.";
+        if (user.role === "TEACHER") {
+          const { data } = await axios.get(
+            `${API_BASE_URL}/api/teachers/${user.id}`,
+            { withCredentials: true }
+          );
+          Object.assign(this.userForm, {
+            userId: data.data.teacherId,
+            firstName: data.data.firstName,
+            lastName: data.data.lastName,
+            phone: data.data.phone,
+            email: data.data.email,
+            gender: data.data.gender,
+            role: "TEACHER",
+          });
+          this.selectedDepartments = (data.data.departments || []).map(
+            (d) => d.id
+          );
         }
-      } catch (error) {
-        this.updateStudentModelError = "Error updating user: " + error.message;
-        console.error("Error updating user:", error);
+
+        if (user.role === "ADMIN") {
+          const { data } = await axios.get(
+            `${API_BASE_URL}/api/admins/${user.id}`,
+            { withCredentials: true }
+          );
+          Object.assign(this.userForm, {
+            userId: data.data.id,
+            firstName: data.data.firstname,
+            lastName: data.data.lastname,
+            phone: data.data.phone,
+            email: data.data.email,
+            gender: data.data.gender,
+            role: "ADMIN",
+          });
+        }
+
+        this.imagePreview = user.profilePicture
+          ? `${this.API_BASE_PROFILE_URL}/${user.profilePicture}`
+          : null;
+
+        this.showPanel = true;
+      } catch (err) {
+        console.error("Error loading user info:", err);
       }
     },
     toggleMenu(id) {

@@ -12,7 +12,7 @@
             class="w-32 h-32 md:w-40 md:h-40 lg:w-44 lg:h-44 overflow-hidden rounded-full border-4 border-[#00b4d8] shadow-md"
           >
             <img
-              @click="showModal = true"
+              @click="showModalImage = true"
               class="w-full h-full object-cover"
               :src="
                 API_BASE_PROFILE_URL + '/' + teacherInfo.info.profilePicture
@@ -20,9 +20,9 @@
               alt="Teacher Avatar"
             />
             <div
-              v-if="showModal"
+              v-if="showModalImage"
               class="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50"
-              @click.self="showModal = false"
+              @click.self="showModalImage = false"
             >
               <img
                 :src="
@@ -394,7 +394,7 @@
 
       <div>
         <form
-          @submit.prevent="submitEditTeacher"
+          @submit.prevent="submitEditForm"
           class="flex-1 overflow-y-auto p-4 h-screen"
         >
           <!-- First Name -->
@@ -494,7 +494,6 @@
                     type="checkbox"
                     :checked="selectedDepartments.includes(dp.id)"
                     class="mr-2"
-                    readonly
                   />
                   <span>{{ dp.name }}</span>
                 </li>
@@ -562,6 +561,7 @@
               Cancel
             </button>
           </div>
+          <p class="mt-96"></p>
         </form>
       </div>
     </div>
@@ -579,6 +579,9 @@ import ActionIcon from "../icons/ActionIcon.vue";
 import axios from "axios";
 import RippleButton from "../Custom/RippleButton.vue";
 import { API_BASE_PROFILE_URL, API_BASE_URL } from "@/config/useWebSocket";
+import { POSITION, useToast } from "vue-toastification";
+
+const toast = useToast();
 export default {
   name: "TeacherDetail",
   components: {
@@ -592,6 +595,9 @@ export default {
   },
   data() {
     return {
+      showModalImage: false,
+      imagePreview: null,
+      dropdownOpen: false,
       showPanel: false,
       updateTeacherModelError: "",
       updateTeacherModelSuccess: "",
@@ -605,6 +611,7 @@ export default {
         profilePicture: null,
         phone: "",
       },
+      departments: [],
       showEditModal: false,
       changePassSuccess: "",
       changePassError: "",
@@ -713,30 +720,67 @@ export default {
     },
     async submitEditForm() {
       try {
+        this.editTeacherForm.departments = this.selectedDepartments;
+
+        const formData = new FormData();
+        formData.append("userId", this.editTeacherForm.userId);
+        formData.append("firstName", this.editTeacherForm.firstName);
+        formData.append("lastName", this.editTeacherForm.lastName);
+        formData.append("gender", this.editTeacherForm.gender);
+        formData.append("email", this.editTeacherForm.email);
+        formData.append("phone", this.editTeacherForm.phone);
+        formData.append(
+          "departments",
+          JSON.stringify(this.editTeacherForm.departments)
+        );
+
+        if (this.editTeacherForm.profilePicture instanceof File) {
+          formData.append(
+            "profilePicture",
+            this.editTeacherForm.profilePicture
+          );
+        }
+
+        // Debug
+        for (let [key, value] of formData.entries()) {
+          console.log(`${key}:`, value);
+        }
+
         const response = await axios.put(
           API_BASE_URL + "/api/teachers/update-for-admin",
-          this.editTeacherForm,
-          { withCredentials: true }
+          formData,
+          {
+            withCredentials: true,
+          }
         );
-        console.log(this.editTeacherForm);
+
         if (response.data.success) {
-          this.updateTeacherModelSuccess =
-            response.data.message ||
-            "Teacher information updated successfully.";
-          this.loadTeacherIfo(); // Reload teacher info after edit
+          toast.success("Teacher updated successfully!", {
+            position: "bottom-center",
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
+          this.loadTeacherIfo();
         } else {
-          this.updateTeacherModelError =
-            response.data.message || "Failed to update teacher information.";
+          toast.error("Failed to update teacher!", {
+            position: "bottom-center",
+            closeOnClick: true,
+            pauseOnHover: true,
+          });
         }
       } catch (error) {
         console.error("Error updating teacher info:", error);
       }
     },
     // ...existing methods
-    openEditModal() {
+    async openEditModal() {
+      // Ensure latest teacher data is loaded
+      await this.loadTeacherIfo();
+      // Ensure all departments list is loaded
+      await this.fetchDepartments();
+
       const s = this.teacherInfo.info;
 
-      // Fill the edit form
       this.editTeacherForm = {
         userId: s.teacherId || "",
         firstName: s.firstName || "",
@@ -748,18 +792,31 @@ export default {
         departments: s.departments || [],
       };
 
-      // ✅ Pre-select department IDs for checkboxes
-      this.selectedDepartments = s.departments
-        ? s.departments.map((dep) => dep.id)
-        : [];
+      // Preselect department IDs
+      this.selectedDepartments = (s.departments || []).map((dep) => dep.id);
 
-      // ✅ Show existing profile picture in preview
+      // Show profile picture preview
       this.imagePreview = s.profilePicture
         ? `${this.API_BASE_PROFILE_URL}/${s.profilePicture}`
         : null;
 
-      console.log("before edit form: ", JSON.stringify(this.editTeacherForm));
       this.showPanel = true;
+    },
+    toggleDepartment(depId) {
+      if (this.selectedDepartments.includes(depId)) {
+        this.selectedDepartments = this.selectedDepartments.filter(
+          (id) => id !== depId
+        );
+      } else {
+        this.selectedDepartments.push(depId);
+      }
+    },
+    handleFileChange(event) {
+      const file = event.target.files[0];
+      if (file) {
+        this.editTeacherForm.profilePicture = file; // store file object for upload
+        this.imagePreview = URL.createObjectURL(file); // show preview
+      }
     },
     async handleChangePasswordOfThisUser() {
       if (this.newPassword !== this.confirmPassowrd) {
@@ -798,8 +855,20 @@ export default {
         }
       }
     },
+    async fetchDepartments() {
+      try {
+        const response = await axios.get(
+          API_BASE_URL + "/api/departments/all",
+          { withCredentials: true }
+        );
+        this.departments = response.data.data;
+      } catch (error) {
+        console.error("Error fetching departments:", error);
+      }
+    },
   },
   mounted() {
+    this.fetchDepartments();
     this.loadTeacherIfo();
     this.fetchRecentDevices();
     this.fetchUserRecentAction();
