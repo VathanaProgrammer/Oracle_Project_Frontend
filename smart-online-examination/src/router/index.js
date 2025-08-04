@@ -21,6 +21,9 @@ import TeacherDetail from "@/components/adminView/TeacherDetail.vue";
 import UserManagement from "@/components/adminView/UserManagement.vue";
 import StudentDetail from "@/components/adminView/StudentDetail.vue";
 import AdminDetail from "@/components/adminView/AdminDetail.vue";
+import { Edit } from "lucide-vue-next";
+import EditExam from "@/components/teacherView/EditExam.vue";
+import Exam from "@/components/studentView/Exam.vue";
 const routes = [
   {
     path: "/",
@@ -52,6 +55,11 @@ const routes = [
         component: ViewMaterial,
       },
       {
+        path: "exam/:id",
+        name:"StartExam",
+        component: Exam,
+      },
+      {
         path: "settings",
         component: Setting,
         children: [
@@ -63,6 +71,7 @@ const routes = [
             path: "security",
             component: SettingSecurity,
           },
+
         ],
       },
     ],
@@ -93,6 +102,11 @@ const routes = [
         name: "studentResults",
         component: StudentResult,
       },
+      {
+        path: "edit/:id",
+        name: "editExams",
+        component: EditExam,
+      }
     ],
   },
   {

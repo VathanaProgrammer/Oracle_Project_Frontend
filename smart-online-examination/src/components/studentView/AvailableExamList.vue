@@ -42,7 +42,7 @@
         class="bg-white rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_20px_rgba(0,0,0,0.1)] transition duration-300 p-6 flex flex-col xl:flex-row items-center xl:items-start"
       >
         <img
-          :src="exam.teacherImage"
+          :src="`${API_BASE_PROFILE_URL}/${exam.teacherImage}`"
           alt="Teacher photo"
           class="h-16 w-16 rounded-full object-cover mr-6 mb-4 xl:mb-0"
         />
@@ -73,20 +73,20 @@
           </div>
 
           <div class="mt-6">
-            <button
-              v-if="exam.type === 'quiz'"
-              @click="startExam(exam)"
-              class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-            >
-              Start Quiz
-            </button>
 
             <button
-              v-else-if="exam.type === 'startable'"
-              @click="startExam(exam)"
-              class="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition"
+              v-if="exam.type"
+              @click="startExam(exam.id)"
+              :class="['bg-blue-600 text-white px-4 py-2 rounded-lg transition',
+              exam.type.toLowerCase() === 'final' ? 'bg-blue-600 hover:bg-blue-500':
+              exam.type.toLowerCase() === 'mid' ? 'bg-green-600 hover:bg-green-500':
+                                                  'bg-red-600 hover:bg-red-500'
+              ]"
             >
-              Start Exam
+             {{ exam.type.toLowerCase() === 'final' ? 'Start Final' :
+                exam.type.toLowerCase() === 'mid' ? 'Start Midterm':
+                'Start quiz'
+              }}
             </button>
 
             <div v-else-if="exam.type === 'file'" class="space-x-2">
@@ -119,50 +119,24 @@
 </template>
 
 <script>
+import { AwardIcon } from 'lucide-vue-next';
+import { API_BASE_URL } from '@/config/useWebSocket';
+import { API_BASE_PROFILE_URL } from '@/config/useWebSocket';
+import axios from 'axios';
+
 export default {
   data() {
     return {
+      API_BASE_URL,
+      API_BASE_PROFILE_URL,
       searchQuery: '',
       availableExams: [
-        {
-          subject: "Data Structures",
-          teacher: "Dr. Smith",
-          teacherImage: "https://randomuser.me/api/portraits/men/32.jpg",
-          datetime: "2025-05-20 09:00 AM",
-          duration: "90 mins",
-          deadline: "2025-05-20 10:30 AM",
-          type: "quiz",
-        },
-        {
-          subject: "Research Assignment",
-          teacher: "Prof. Jane",
-          teacherImage: "https://randomuser.me/api/portraits/women/44.jpg",
-          datetime: "2025-05-22 01:30 PM",
-          duration: "Open Deadline",
-          deadline: "2025-05-30 11:59 PM",
-          type: "file",
-          fileUrl: "https://example.com/assignment1.pdf",
-        },
-        {
-          subject: "Algorithms Quiz",
-          teacher: "Dr. Lee",
-          teacherImage: "https://randomuser.me/api/portraits/men/65.jpg",
-          datetime: "2025-05-23 10:15 AM",
-          duration: "60 mins",
-          deadline: "2025-05-23 11:15 AM",
-          type: "quiz",
-        },
-        {
-          subject: "Final Term Exam",
-          teacher: "Prof. Alice",
-          teacherImage: "https://randomuser.me/api/portraits/women/48.jpg",
-          datetime: "2025-05-25 02:00 PM",
-          duration: "120 mins",
-          deadline: "2025-05-25 04:30 PM",
-          type: "startable",
-        },
+       
       ],
     };
+  },
+  mounted(){
+      this.getAllExam();
   },
   computed: {
     filteredExams() {
@@ -174,12 +148,25 @@ export default {
     },
   },
   methods: {
-    startExam(exam) {
-      alert(`Starting ${exam.type === 'quiz' ? 'Quiz' : 'Exam'}: ${exam.subject}`);
+    startExam(id) {
+      console.log(id)
+      this.$router.push({name:"StartExam", params :{id:id}})
     },
     uploadAnswer(exam) {
       alert(`Uploading answer for: ${exam.subject}`);
     },
+   async getAllExam(){
+    try{
+       const response = await axios.get(`${API_BASE_URL}/api/exams/all`,{
+            withCredentials: true
+       });
+       this.exam = response.data;
+       this.availableExams = this.exam.filter(e => e.status.toLowerCase() ==='published')     
+    }catch(error){
+      console.error("Error fetching exams", error);
+    }
+   }
+
   },
 };
 </script>

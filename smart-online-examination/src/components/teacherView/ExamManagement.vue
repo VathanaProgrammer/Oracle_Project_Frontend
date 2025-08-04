@@ -8,26 +8,19 @@
         </h2>
 
         <!-- Search input -->
-        <input
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search title or description..."
-          class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#57cc99] flex-grow max-w-md"
-        />
+        <input v-model="searchQuery" type="text" placeholder="Search title or description..."
+          class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#57cc99] flex-grow max-w-md" />
 
         <RouterLink to="/teacher-dashboard/exam-management/new">
           <button
-            class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 px-4 rounded-sm hover:bg-[#48b57f] flex-shrink-0"
-          >
+            class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 px-4 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
             New Exam
           </button>
         </RouterLink>
       </header>
 
       <!-- Exam List -->
-      <div
-        class="bg-white rounded-md p-4 shadow-[0_4px_20px_rgba(0,0,0,0.1)] overflow-x-visible min-h-56"
-      >
+      <div class="bg-white rounded-md p-4 shadow-[0_4px_20px_rgba(0,0,0,0.1)] overflow-x-visible min-h-56">
         <table class="min-w-full table-auto border-collapse relative">
           <thead>
             <tr class="bg-gray-100 text-left text-sm font-medium text-gray-700">
@@ -37,40 +30,26 @@
               <th class="py-2 px-4 text-gray-500 font-normal">Start Time</th>
               <th class="py-2 px-4 text-gray-500 font-normal">End Time</th>
               <th class="py-2 px-4 text-gray-500 font-normal">Duration</th>
-              <th
-                class="py-2 px-4 text-gray-500 font-normal relative cursor-pointer select-none"
-                @click="toggleStatusDropdown"
-              >
+              <th class="py-2 px-4 text-gray-500 font-normal relative cursor-pointer select-none"
+                @click="toggleStatusDropdown">
                 Status
-                <span
-                  class="inline-block ml-1 text-gray-600 transition-transform duration-200"
-                  :class="{ 'rotate-180': statusDropdownOpen }"
-                >
+                <span class="inline-block ml-1 text-gray-600 transition-transform duration-200"
+                  :class="{ 'rotate-180': statusDropdownOpen }">
                   ▼
                 </span>
 
                 <!-- Dropdown menu -->
-                <div
-                  v-if="statusDropdownOpen"
-                  class="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-300 rounded shadow-lg z-30"
-                >
+                <div v-if="statusDropdownOpen"
+                  class="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-300 rounded shadow-lg z-30">
                   <ul class="divide-y divide-gray-200 max-h-48 overflow-auto">
-                    <li
-                      class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      :class="{ 'font-semibold': statusFilter === '' }"
-                      @click="selectStatus('')"
-                    >
+                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      :class="{ 'font-semibold': statusFilter === '' }" @click="selectStatus('')">
                       All
                     </li>
-                    <li
-                      v-for="status in statuses"
-                      :key="status.value"
-                      class="px-4 py-2 hover:bg-gray-100 cursor-pointer capitalize"
-                      :class="{
+                    <li v-for="status in statuses" :key="status.value"
+                      class="px-4 py-2 hover:bg-gray-100 cursor-pointer capitalize" :class="{
                         'font-semibold': statusFilter === status.value,
-                      }"
-                      @click="selectStatus(status.value)"
-                    >
+                      }" @click="selectStatus(status.value)">
                       {{ status.label }}
                     </li>
                   </ul>
@@ -80,15 +59,10 @@
           </thead>
 
           <tbody>
-            <tr
-              v-for="(exam, index) in filteredExams"
-              :key="index"
-              :class="' group relative border-b hover:bg-gray-50 transition-colors duration-300'"
-            >
+            <tr v-for="(exam, index) in filteredExams" :key="exam.id"
+              :class="' group relative border-b hover:bg-gray-50 transition-colors duration-300'">
               <td class="py-3 px-4 text-gray-600">{{ index + 1 }}</td>
-              <td
-                class="py-3 px-4 whitespace-nowrap font-semibold text-blue-700"
-              >
+              <td class="py-3 px-4 whitespace-nowrap font-semibold text-blue-700">
                 {{ exam.title }}
               </td>
               <td class="py-3 px-4 text-gray-500 whitespace-nowrap">
@@ -101,7 +75,7 @@
                 {{ formatDate(exam.endTime) }}
               </td>
               <td class="py-3 px-4 text-gray-500 whitespace-nowrap">
-                {{ calculateDuration(exam.startTime, exam.endTime) }}
+                {{ formatDuration(exam.duration) }}
               </td>
               <td class="py-3 px-4 whitespace-nowrap capitalize">
                 {{ exam.status }}
@@ -109,17 +83,11 @@
 
               <!-- Floating Popup Buttons -->
               <td class="relative w-0">
-                <div
-                  class="popup-container py-2 px-2"
-                  style="white-space: nowrap"
-                >
-                  <button @click="editExam(index)" class="popup-btn edit-btn">
+                <div class="popup-container py-2 px-2" style="white-space: nowrap">
+                  <button @click="editExam(exam.id)" class="popup-btn edit-btn">
                     Edit
                   </button>
-                  <button
-                    @click="deleteExam(index)"
-                    class="popup-btn delete-btn"
-                  >
+                  <button @click="deleteExam(exam.id)" class="popup-btn delete-btn">
                     Delete
                   </button>
                   <div class="popup-arrow"></div>
@@ -139,41 +107,27 @@
 </template>
 
 <script>
+import axios from 'axios';
+import dayjs from 'dayjs';
+import { API_BASE_URL } from '@/config/useWebSocket';
 export default {
   name: "ExamManagement",
   data() {
     return {
+      API_BASE_URL,
       statusFilter: "",
       statusDropdownOpen: false,
       searchQuery: "",
       statuses: [
-        { label: "Pending", value: "pending" },
-        { label: "Ongoing", value: "ongoing" },
-        { label: "Completed", value: "completed" },
-        { label: "Cancelled", value: "cancelled" },
+      { label: "Pending", value: "pending" },
+      { label: "Ongoing", value: "ongoing" },
+      { label: "Cancelled", value: "cancelled" },
+      { label: "Expired", value: "expired" },
+      { label: "Draft", value: "draft" },
+      { label: "Published", value: "published" },
+      { label: "Ended", value: "ended" },
       ],
       exams: [
-        {
-          title: "Mathematics Final Exam",
-          description: "Final exam for semester 2",
-          startTime: "2025-06-01T09:00:00",
-          endTime: "2025-06-01T11:00:00",
-          status: "pending",
-        },
-        {
-          title: "Physics Midterm",
-          description: "Midterm assessment on motion & force",
-          startTime: "2025-06-02T10:30:00",
-          endTime: "2025-06-02T11:30:00",
-          status: "ongoing",
-        },
-        {
-          title: "Chemistry Quiz",
-          description: "Quick quiz covering acids and bases",
-          startTime: "2025-06-03T13:00:00",
-          endTime: "2025-06-03T13:30:00",
-          status: "completed",
-        },
       ],
     };
   },
@@ -202,13 +156,18 @@ export default {
       this.statusDropdownOpen = !this.statusDropdownOpen;
     },
     selectStatus(status) {
-      this.statusFilter = status;
+      this.statusFilter = status.toUpperCase();
       this.statusDropdownOpen = false;
     },
-    formatDate(isoString) {
-      const date = new Date(isoString);
-      return date.toLocaleString();
-    },
+   formatDate(dateString) {
+      return dayjs(dateString).format('YYYY-MM-DD HH:mm A') // or 'MMM D, YYYY h:mm A'
+   },
+    formatDuration(durationStr) {
+  const totalMins = parseInt(durationStr); // e.g., "1425 mins" → 1425
+  const hours = Math.floor(totalMins / 60);
+  const minutes = totalMins % 60;
+  return `${hours} hrs ${minutes} mins`;
+  },
     calculateDuration(start, end) {
       const startTime = new Date(start);
       const endTime = new Date(end);
@@ -219,40 +178,72 @@ export default {
       const hours = Math.floor(minutes / 60);
       const remainingMin = minutes % 60;
 
-      return `${hours} hr${hours > 1 ? "s" : ""}${
-        remainingMin ? ` ${remainingMin} min` : ""
-      }`;
+      return `${hours} hr${hours > 1 ? "s" : ""}${remainingMin ? ` ${remainingMin} min` : ""
+        }`;
     },
     statusClass(status) {
       switch (status) {
-        case "pending":
+        case "draft":
           return "bg-yellow-50";
-        case "ongoing":
+        case "published":
           return "bg-blue-50";
-        case "completed":
+        case "pending":[]
           return "bg-green-50";
-        case "cancelled":
+        case "expired":
+          return "bg-red-50";
+        case "canceled":
+          return "bg-red-50";
+        case "ended":
           return "bg-red-50";
         default:
           return "";
       }
     },
-    editExam(index) {
-      alert(`Edit exam at index ${index}`);
+    editExam(id) {
+        this.$router.push({ name: "editExams", params: { id: id } });
     },
-    deleteExam(index) {
-      if (confirm("Are you sure you want to delete this exam?")) {
-        this.exams.splice(index, 1);
-      }
-    },
+deleteExam(id) {
+  const index = this.exams.findIndex(exam => exam.id === id);
+  if (index === -1) {
+    alert("Exam not found.");
+    return;
+  }
+
+  if (confirm("Are you sure you want to cancel this exam?")) {
+    axios.put(`${API_BASE_URL}/api/exams/canceled/${id}`, null, {
+      withCredentials: true,   // if backend uses session cookies
+      // headers: { Authorization: 'Bearer <token>' } // if using JWT
+    })
+    .then(() => {
+      this.exams[index].status = 'CANCELED';
+      console.log(`Exam with id ${id} canceled`);
+    })
+    .catch(error => {
+      console.error("Failed to cancel exam:", error);
+      alert("Failed to cancel exam. Please try again.");
+    });
+  }
+},
     handleClickOutside(event) {
       const dropdown = this.$el.querySelector("th.relative");
       if (dropdown && !dropdown.contains(event.target)) {
         this.statusDropdownOpen = false;
       }
     },
+    async getAllExam(){
+      try{
+        const response = await axios.get(API_BASE_URL + "/api/exams/all",
+          {withCredentials:true}
+        );
+        console.log(response)
+        this.exams = response.data;
+      }catch(ex){
+            console.log(ex)
+      }
+    }
   },
   mounted() {
+    this.getAllExam();
     document.addEventListener("click", this.handleClickOutside);
   },
   beforeUnmount() {
@@ -313,20 +304,26 @@ tbody tr.group:hover .popup-container {
 
 /* Edit button */
 .edit-btn {
-  background-color: #2563eb; /* blue-600 */
+  background-color: #2563eb;
+  /* blue-600 */
 }
+
 .edit-btn:hover {
-  background-color: #1d4ed8; /* blue-700 */
+  background-color: #1d4ed8;
+  /* blue-700 */
   transform: scale(1.05);
   box-shadow: 0 0 8px #1d4ed8;
 }
 
 /* Delete button */
 .delete-btn {
-  background-color: #dc2626; /* red-600 */
+  background-color: #dc2626;
+  /* red-600 */
 }
+
 .delete-btn:hover {
-  background-color: #b91c1c; /* red-700 */
+  background-color: #b91c1c;
+  /* red-700 */
   transform: scale(1.05);
   box-shadow: 0 0 8px #b91c1c;
 }
@@ -334,7 +331,8 @@ tbody tr.group:hover .popup-container {
 /* Arrow under popup buttons */
 .popup-arrow {
   position: absolute;
-  bottom: -6px; /* just below the popup */
+  bottom: -6px;
+  /* just below the popup */
   right: 16px;
   width: 0;
   height: 0;
