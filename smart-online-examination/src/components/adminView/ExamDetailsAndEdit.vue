@@ -308,6 +308,7 @@ export default {
   },
   mounted() {
     this.fetchExamDetails();
+    
   },
   methods: {
     editExam(id) {

@@ -1,6 +1,5 @@
 <template>
-    <div
-        class="p-6 rounded-md min-h-[500px] w-full bg-white mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
+    <div class="p-6 rounded-md min-h-[500px] w-full bg-white mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
         <div v-if="exam">
             <header class="flex justify-between">
                 <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">
@@ -113,8 +112,7 @@ export default {
             API_BASE_PROFILE_URL,
             exam: null,
             answers: {},
-            uploadedFiles: {},
-            API_BASE_FILE_URL,
+            uploadedFiles: {}, // Store per-question uploaded files
         };
     },
     setup() {
@@ -201,18 +199,66 @@ export default {
             const file = event.target.files[0];
             if (file) {
                 this.uploadedFiles[questionId] = file;
+
+                // ✅ Push to `files` array for submission
+                this.files.push(file);
+
                 console.log(`File uploaded for question ${questionId}:`, file.name);
             }
         },
-        submitAnswers() {
-            console.log("Submitted answers:", this.answers);
-            console.log("Uploaded files:", this.uploadedFiles);
-            alert("Answers submitted!");
+        async submitAnswers() {
+            try {
+                const formData = new FormData();
+
+                // Transform answers object into array of DTOs
+                const answerArray = [];
+
+                for (const questionId in this.answers) {
+                    const question = this.exam.questions.find(q => q.id == questionId);
+                    const answerValue = this.answers[questionId];
+
+                    const dto = {
+                        questionId: parseInt(questionId),
+                        answerContent: null,
+                        answerTrueFalse: null,
+                    };
+
+                    if (question.type === "multiple_choice" || question.type === "short_answer") {
+                        dto.answerContent = answerValue;
+                    } else if (question.type === "true_false") {
+                        dto.answerTrueFalse = answerValue === "true";
+                    }
+
+                    answerArray.push(dto);
+                }
+
+                // Add answers JSON array
+                formData.append("answers", JSON.stringify(answerArray));
+
+                // Append files (if any)
+                for (const questionId in this.uploadedFiles) {
+                    formData.append("files", this.uploadedFiles[questionId]);
+                }
+
+                const response = await axios.post("http://localhost:8080/api/answers", formData, {
+                    withCredentials: true,
+                    headers: {
+                        "Content-Type": "multipart/form-data"
+                    }
+                });
+
+                console.log("Submitted successfully:", response.data);
+            } catch (error) {
+                if (error.response) {
+                    console.error("Submit error:", error.response.status, error.response.data);
+                } else {
+                    console.error("Submit error:", error.message);
+                }
+            }
         },
         formatDuration(durationStr) {
-            // durationStr = "1562 mins" — extract the number only
             if (!durationStr) return "";
-            const minutes = parseInt(durationStr); // parseInt will grab number at start of string
+            const minutes = parseInt(durationStr);
             if (isNaN(minutes)) return "";
             const hrs = Math.floor(minutes / 60);
             const mins = minutes % 60;

@@ -13,7 +13,7 @@ import NewExam from "@/components/teacherView/NewExam.vue";
 import StudentResult from "@/components/teacherView/StudentResult.vue";
 import EditExam from "@/components/teacherView/EditExam.vue";
 import Exam from "@/components/studentView/Exam.vue";
-
+import UnauthorizedPage from "@/components/Auth/UnauthorizedPage.vue";
 export default [
       {
     path: "/",
