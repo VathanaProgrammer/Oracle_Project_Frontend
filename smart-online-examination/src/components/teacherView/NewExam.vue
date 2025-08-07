@@ -404,7 +404,7 @@ export default {
   methods: {
     async fetchAssignments() {
       try {
-        const teacherId = 3;
+        const teacherId = this.userStore.user.id; // Use the logged-in teacher's ID
         const response = await axios.get(
           `${API_BASE_URL}/api/assignments/teacher/${teacherId}`,
           {
@@ -604,7 +604,7 @@ export default {
           durationUnit: "minutes",
           title: this.examTitle,
           description: this.examDescription,
-          createdBy: 3, // user this later Tey tey userStore.user.id for real user who login
+          createdBy: this.userStore.user.id, // user this later Tey tey userStore.user.id for real user who login
           questions: this.questions.map((q) => ({
             type: q.type,
             content: q.content,
