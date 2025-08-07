@@ -154,7 +154,6 @@ export default {
                 }
             );
         },
-
         async confirmEnd(exam) {
             // Just your logic here (update status, API call, etc.)
             const response = await axios.put(
