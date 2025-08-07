@@ -245,7 +245,6 @@ deleteExam(id) {
   mounted() {
     this.getAllExam();
     document.addEventListener("click", this.handleClickOutside);
-      console.log("Submitting with token:", this.userStore.token); 
   },
   beforeUnmount() {
     document.removeEventListener("click", this.handleClickOutside);
