@@ -30,7 +30,8 @@
         </div>
 
         <div class="w-full px-4 pb-2 mt-5">
-          <RouterLink to="/admin-dashboard"
+          <RouterLink
+            to="/admin-dashboard"
             @click="toggleDashboardMenu()"
             class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
@@ -53,12 +54,15 @@
             />
           </RouterLink>
 
-          <RouterLink to="/admin-dashboard/user-management"
+          <RouterLink
+            to="/admin-dashboard/user-management"
             @click="toggleDashboardMenu()"
             class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
             <UserIcon class="text-white w-5 h-5"></UserIcon>
-            <span class="text-lg text-white font-normal ps-2">User Management</span>
+            <span class="text-lg text-white font-normal ps-2"
+              >User Management</span
+            >
             <RightPointerIcon
               :class="
                 showDashboardMenu
@@ -74,6 +78,28 @@
                   : ['fill-white', 'ms-auto', 'w-7', 'h-7']
               "
             />
+          </RouterLink>
+          <RouterLink
+            to="/admin-dashboard/academic"
+            class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+          >
+              <AcademicIcon class="text-white w-5 h-5"></AcademicIcon>
+              <span class="text-lg text-white font-normal ps-2">Academic</span>
+              <RightPointerIcon
+                :class="
+                  showDashboardMenu
+                    ? [
+                        'fill-white',
+                        'ms-auto',
+                        'w-7',
+                        'h-7',
+                        'rotate-90',
+                        'transition-transform',
+                        'duration-300',
+                      ]
+                    : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+                "
+              />
           </RouterLink>
 
           <!-- <transition
@@ -180,14 +206,15 @@
           </div>
         </RouterLink>
 
-        <RouterLink class="w-full px-4 pb-2 mt-1">
+        <RouterLink
+          to="/admin-dashboard/academic"
+          class="w-full px-4 pb-2 mt-1"
+        >
           <div
             class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
             <AcademicIcon class="text-white w-5 h-5"></AcademicIcon>
-            <span class="text-lg text-white font-normal ps-2"
-              >Academic</span
-            >
+            <span class="text-lg text-white font-normal ps-2">Academic</span>
             <RightPointerIcon
               :class="
                 showDashboardMenu
@@ -243,9 +270,7 @@
             class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
             <SettingIcon class="text-white w-5 h-5"></SettingIcon>
-            <span class="text-lg text-white font-normal ps-2"
-              >Settings</span
-            >
+            <span class="text-lg text-white font-normal ps-2">Settings</span>
             <RightPointerIcon
               :class="
                 showDashboardMenu
@@ -365,7 +390,7 @@ export default {
     SettingIcon,
     LogoutIcon,
     UserIcon,
-    AcademicIcon
+    AcademicIcon,
   },
   setup() {
     const userStore = useUserStore();

@@ -6,6 +6,7 @@ import TeacherDetail from "@/components/adminView/TeacherDetail.vue";
 import UserManagement from "@/components/adminView/UserManagement.vue";
 import StudentDetail from "@/components/adminView/StudentDetail.vue";
 import AdminDetail from "@/components/adminView/AdminDetail.vue";
+import Academic from "@/components/adminView/Academic.vue";
 export default[
     
   {
@@ -48,6 +49,11 @@ export default[
         name: "adminDetail",
         component: AdminDetail,
       },
+      {
+        path: "academic",
+        name: "academic",
+        component: Academic,
+      }
     ],
   },
 ]
