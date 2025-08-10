@@ -18,7 +18,7 @@
                     <p class="font-semibold text-lg mb-3">
                         {{ index + 1 }}.
                         <span v-if="q.type === 'file_exam'">File Exam (<span style="color: green">{{ q.score
-                                }}pt</span>)</span>
+                        }}pt</span>)</span>
                         <span v-else>{{ q.content }} (<span style="color: green">{{ q.score }}pt</span>)</span>
                     </p>
 
@@ -27,8 +27,8 @@
                         <li v-for="(opt, i) in q.options" :key="i">
                             <label
                                 class="flex items-center space-x-3 cursor-pointer text-gray-700 hover:text-blue-600 transition">
-                                <input type="radio" :name="'q' + q.id" :value="opt" v-model="answers[q.id]"
-                                    class="form-radio text-blue-600" />
+                                <input type="radio" :name="'q' + q.id" :value="i" v-model="answers[q.id]"
+                                    @change="logAnswerChange(q.id)" class="form-radio text-blue-600" />
                                 <span>{{ opt }}</span>
                             </label>
                         </li>
@@ -49,9 +49,7 @@
                     <!-- file_exam -->
                     <div v-else-if="q.type === 'file_exam'" class="bg-gray-50 p-4 border rounded">
                         <div v-for="(file, i) in q.fileExams" :key="i" class="mb-3">
-                            <p class="font-semibold text-blue-700 mb-2">
-                                {{ file.title }}
-                            </p>
+                            <p class="font-semibold text-blue-700 mb-2">{{ file.title }}</p>
                             <p class="text-sm text-gray-600">{{ file.description }}</p>
                             <a :href="`${API_BASE_FILE_URL}/${file.fileUrl}`"
                                 class="text-blue-600 underline hover:text-blue-800" target="_blank" download>
@@ -73,7 +71,7 @@
                     </div>
                 </div>
 
-                <button v-if="userStore.user.role !== 'ADMIN'" :disabled="userStore.user.role == 'ADMIN'"
+                <button v-if="userStore.user.role !== 'ADMIN'" :disabled="userStore.user.role === 'ADMIN'"
                     class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold transition"
                     @click="submitAnswers">
                     Submit
@@ -90,35 +88,35 @@
         </div>
     </div>
 </template>
+
 <script>
 import axios from "axios";
-import { API_BASE_URL, API_BASE_FILE_URL, API_BASE_PROFILE_URL } from "../../config/useWebSocket";
+import { API_BASE_URL, API_BASE_FILE_URL } from "../../config/useWebSocket";
 import { parseISO, format } from "date-fns";
 import { useUserStore } from "@/store/store";
-import CustomAlert from "../Custom/CustomAlert.vue";
 import { useToast } from "vue-toastification";
 import { showConfirmDialog } from "../utils/confirmDialog";
 import { useRouter } from "vue-router";
-import RippleButton from "../Custom/RippleButton.vue";
-import DeleteIcon from "../icons/DeleteIcon.vue";
-import EditIcon from "../icons/EditIcon.vue";
+
 const toast = useToast();
+
 export default {
-    components: { CustomAlert, RippleButton, DeleteIcon, EditIcon },
+
     data() {
         return {
             API_BASE_FILE_URL,
             API_BASE_URL,
-            API_BASE_PROFILE_URL,
             exam: null,
+            files: [],
             answers: {},
-            uploadedFiles: {}, // Store per-question uploaded files
+            answersPayload: [],// store user's answers, e.g. answers[questionId] = answerValue
+            uploadedFiles: {}, // questionId -> File object
         };
     },
     setup() {
         const router = useRouter();
-        const userStore = useUserStore();
-        return { userStore };
+        const userStore = useUserStore()
+        return { userStore, router };
     },
     computed: {
         id() {
@@ -132,62 +130,27 @@ export default {
                 this.exam.questions.length > 0
             );
         },
+        questions() {
+            return this.exam ? this.exam.questions : [];
+        },
+        student() {
+            return this.userStore.user;
+        },
     },
     mounted() {
+        console.log(this.userStore.user?.lastname);
         this.fetchExamDetails();
     },
     methods: {
-        editExam(id) {
-            this.$router.push({ name: "editExam", params: { id: id } });
-        },
-        endExam(exam) {
-            showConfirmDialog(
-                () => {
-                    this.confirmEnd(exam);
-                },
-                {
-                    title: "End this exam?",
-                    text: "Once ended, students can no longer access it.",
-                    icon: "warning",
-                    confirmButtonText: "Yes, end it",
-                    cancelButtonText: "No",
-                }
-            );
-        },
-        async confirmEnd(exam) {
-            // Just your logic here (update status, API call, etc.)
-            const response = await axios.put(
-                API_BASE_URL + `/api/exams/${exam.id}/end`,
-                null,
-                { withCredentials: true }
-            );
-            if (response.data.success == true) {
-                toast.success(response.data.message, {
-                    position: "top-center",
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                });
-
-                this.$router.push("/admin-dashboard");
-            } else {
-                toast.error("Failed to end exam.", {
-                    position: "top-center",
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                });
-            }
-
-            console.log("Exam ended successfully:", response.data);
+        logAnswerChange(questionId) {
+            console.log(`Question ${questionId} selected value:`, this.answers[questionId]);
         },
         async fetchExamDetails() {
             try {
-                const response = await axios.get(
-                    `${API_BASE_URL}/api/exams/forAdmin/${this.id}`,
-                    {
-                        headers: { Accept: "application/json" },
-                        withCredentials: true,
-                    }
-                );
+                const response = await axios.get(`${API_BASE_URL}/api/exams/forAdmin/${this.id}`, {
+                    headers: { Accept: "application/json" },
+                    withCredentials: true,
+                });
                 this.exam = response.data;
                 console.log("Fetched exam details:", this.exam);
             } catch (error) {
@@ -197,62 +160,114 @@ export default {
         handleFileUpload(event, questionId) {
             const file = event.target.files[0];
             if (file) {
-                this.uploadedFiles[questionId] = file;
-
-                // ✅ Push to `files` array for submission
-                this.files.push(file);
-
+                this.uploadedFiles = { ...this.uploadedFiles, [questionId]: file };
                 console.log(`File uploaded for question ${questionId}:`, file.name);
             }
         },
         async submitAnswers() {
-            try {
-                const formData = new FormData();
-
-                // Transform answers object into array of DTOs
-                const answerArray = [];
-
-                for (const questionId in this.answers) {
-                    const question = this.exam.questions.find(q => q.id == questionId);
-                    const answerValue = this.answers[questionId];
-
-                    const dto = {
-                        questionId: parseInt(questionId),
-                        answerContent: null,
-                        answerTrueFalse: null,
-                    };
-
-                    if (question.type === "multiple_choice" || question.type === "short_answer") {
-                        dto.answerContent = answerValue;
-                    } else if (question.type === "true_false") {
-                        dto.answerTrueFalse = answerValue === "true";
-                    }
-
-                    answerArray.push(dto);
-                }
-
-                // Add answers JSON array
-                formData.append("answers", JSON.stringify(answerArray));
-
-                // Append files (if any)
-                for (const questionId in this.uploadedFiles) {
-                    formData.append("files", this.uploadedFiles[questionId]);
-                }
-
-                const response = await axios.post("http://localhost:8080/api/answers", formData, {
-                    withCredentials: true,
-                    headers: {
-                        "Content-Type": "multipart/form-data"
-                    }
+            if (!this.userStore.user.id || !this.userStore.user.id) {
+                toast.error("Student information not found.", {
+                    position: "bottom-center",
+                    closeOnClick: true,
+                    pauseOnHover: true,
                 });
+                return;
+            }
 
-                console.log("Submitted successfully:", response.data);
-            } catch (error) {
-                if (error.response) {
-                    console.error("Submit error:", error.response.status, error.response.data);
-                } else {
-                    console.error("Submit error:", error.message);
+            console.log("Submitting answers for student ID:", this.userStore.user.id);
+
+            const answersPayload = this.questions.map((question, index) => {
+                const userAnswer = this.answers[question.id]; // use question.id as key (not index)
+
+                let answerContent = null;
+                let answerTrueFalse = null;
+                let answerIndex = index;
+                let answerFilePath = null;
+
+                if (question.type === "short_answer") {
+                    answerContent = userAnswer || "";
+                } else if (question.type === "true_false") {
+                    // If you stored true/false as string, convert to boolean
+                    answerTrueFalse = userAnswer === "true" ? true : (userAnswer === "false" ? false : null);
+                } else if (question.type === "multiple_choice") {
+                    // If your answers[q.id] stores selected choice index or value, assign it here
+                    answerIndex = userAnswer || 0;
                 }
+                // For file_exam, file is handled separately
+
+                return {
+                    answerContent,
+                    answerTrueFalse,
+                    answerIndex,
+                    answerFilePath,
+                    studentDTO: { id: this.userStore.user.id },
+                    questionDTO: { id: question.id },
+                };
+            });
+            const formData = new FormData();
+            //   files.forEach(file => {
+            //   formData.append("files", file, `${file.questionId}_${file.name}`);
+            // });
+            formData.append("answers", JSON.stringify(answersPayload));
+            answersPayload.forEach((item, index) => {
+                console.log(index, item);
+            });
+            formData.forEach((value, key) => {
+                console.log("Key:", key);
+                console.log("Value:", value);
+            });
+            for (const q of this.questions) {
+                const userAnswer = this.answers[q.id];
+                const file = this.uploadedFiles[q.id];
+
+                switch (q.type) {
+                    case "multiple_choice":
+                        if (!userAnswer) {
+                            toast.error(`Please select an option for question ${q.id}.`);
+                            return;
+                        }
+                        break;
+
+                    case "true_false":
+                        if (userAnswer !== "true" && userAnswer !== "false") {
+                            toast.error(`Please select True or False for question ${q.id}.`);
+                            return;
+                        }
+                        break;
+
+                    case "short_answer":
+                        if (!userAnswer || userAnswer.trim() === "") {
+                            toast.error(`Please provide an answer for question ${q.id}.`);
+                            return;
+                        }
+                        break;
+
+                    case "file_exam":
+                        if (!file) {
+                            toast.error(`Please upload a file for question ${q.id}.`);
+                            return;
+                        }
+                        break;
+
+                    default:
+                        toast.error(`Unknown question type for question ${q.id}.`);
+                        return;
+                }
+
+                if (file) {
+                    formData.append("files", file, `${q.id}_${file.name}`);
+                }
+            }
+
+            try {
+                const response = await axios.post(`${API_BASE_URL}/api/answers`, formData, {
+                    withCredentials: true,
+                });
+                toast.success("Answers submitted successfully!");
+                console.log("Submission response:", response.data);
+            } catch (error) {
+                toast.error(`Submit error: ${error.response?.data || error.message}`);
+                console.error("Submit error:", error);
             }
         },
         formatDuration(durationStr) {
@@ -267,7 +282,6 @@ export default {
         },
         formatDateTime(datetimeStr) {
             try {
-                // Replace space with 'T' for ISO parsing if needed
                 const dateObj = parseISO(datetimeStr.replace(" ", "T"));
                 return format(dateObj, "EEE, MMM d, yyyy • hh:mm a");
             } catch {
@@ -277,3 +291,7 @@ export default {
     },
 };
 </script>
+
+<style scoped>
+/* Add any custom styles if needed */
+</style>

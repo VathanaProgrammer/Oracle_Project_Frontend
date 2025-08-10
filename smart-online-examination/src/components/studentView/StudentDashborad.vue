@@ -263,6 +263,7 @@ import { API_BASE_URL } from '@/config/useWebSocket';
 import { API_BASE_PROFILE_URL } from '@/config/useWebSocket';
 import { useUserStore } from '@/store/store';
 export default {
+  
   components: {
     EduIcon,
     ExpaneIcon,
@@ -282,6 +283,7 @@ export default {
         return {
       userStore,
     };
+    
   },
   data() {
     return {
@@ -291,7 +293,12 @@ export default {
       showDashboardMenu: true,
     };
   },
+  mounted(){
+      const userStore=useUserStore()
+     console.log(userStore.user?.lastname);
+  },
   methods: {
+    
     toggleDashboardMenu() {
       this.showDashboardMenu = !this.showDashboardMenu;
     },
