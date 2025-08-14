@@ -74,9 +74,37 @@
             </span>
 
             <span class="block text-gray-600 font-semibold text-md">
+              Semester:
+              <span class="text-gray-600 text-md font-normal">
+                {{ studentInfo.info?.semester }}
+              </span>
+            </span>
+
+            <span class="block text-gray-600 font-semibold text-md">
               Major:
               <span class="text-gray-600 text-md font-normal">
                 {{ studentInfo.info?.major }}
+              </span>
+            </span>
+
+            <span class="block text-gray-600 font-semibold text-md">
+              Shift:
+              <span class="text-gray-600 text-md font-normal">
+                {{ studentInfo.info?.shiftName }}
+              </span>
+            </span>
+
+            <span class="block text-gray-600 font-semibold text-md">
+              Shift Time:
+              <span class="text-gray-600 text-md font-normal">
+                {{ studentInfo.info?.shiftTime }}
+              </span>
+            </span>
+
+            <span class="block text-gray-600 font-semibold text-md">
+              Location (class):
+              <span class="text-gray-600 text-md font-normal">
+                {{ studentInfo.info?.location }}
               </span>
             </span>
 
@@ -476,6 +504,21 @@
               for="lastname"
               class="text-md font-medium text-gray-600 mb-1 block"
             >
+              Batch
+            </label>
+            <input
+              v-model="editStudentForm.batch"
+              disabled
+              type="text"
+              id="phone"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
+            />
+          </div>
+          <div class="mb-4">
+            <label
+              for="lastname"
+              class="text-md font-medium text-gray-600 mb-1 block"
+            >
               Year
             </label>
             <input
@@ -492,16 +535,116 @@
               for="lastname"
               class="text-md font-medium text-gray-600 mb-1 block"
             >
-              Batch
+              Semester
             </label>
             <input
-              v-model="editStudentForm.batch"
+              v-model="editStudentForm.semester"
               disabled
               type="number"
               id="phone"
-              placeholder="8"
+              placeholder="1"
               class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
             />
+          </div>
+          <div class="mb-4 relative">
+            <label
+              for="major"
+              class="text-md font-medium text-gray-600 mb-1 block"
+            >
+              Shift
+            </label>
+            <select
+              v-model="selectedShift"
+              id="gender"
+              class="w-full appearance-none px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-700 text-md font-normal focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition duration-300"
+            >
+              <option
+                value=""
+                class="text-gray-600 medium text-md"
+                disabled
+                selected
+              >
+                Select shift
+              </option>
+              <option
+                v-for="shift in shifts"
+                :key="shift.id"
+                :value="shift.id"
+                class="text-gray-600"
+              >
+                {{ formateShift(shift.name, shift.startTime, shift.endTime) }}
+              </option>
+            </select>
+
+            <!-- Down arrow icon -->
+            <div
+              class="pointer-events-none absolute inset-y-0 right-3 top-6 flex items-center text-gray-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
+          </div>
+          <div class="mb-4 relative">
+            <label
+              for="major"
+              class="text-md font-medium text-gray-600 mb-1 block"
+            >
+              Location (class)
+            </label>
+            <select
+              v-model="selectedLocation"
+              id="gender"
+              class="w-full appearance-none px-2 py-1 border border-gray-300 rounded-md bg-white text-gray-700 text-md font-normal focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition duration-300"
+            >
+              <option
+                value=""
+                class="text-gray-600 medium text-md"
+                disabled
+                selected
+              >
+                Select location
+              </option>
+              <option
+                v-for="location in locations"
+                :key="location.id"
+                :value="location.id"
+                class="text-gray-600"
+              >
+                {{
+                  formateLocation(
+                    location.buildingName,
+                    location.floorNumber,
+                    location.romeName
+                  )
+                }}
+              </option>
+            </select>
+
+            <!-- Down arrow icon -->
+            <div
+              class="pointer-events-none absolute inset-y-0 right-3 top-6 flex items-center text-gray-400"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                viewBox="0 0 24 24"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              >
+                <path d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
           <div class="mb-4 relative">
             <label
@@ -645,6 +788,11 @@ export default {
   },
   data() {
     return {
+      selectedLocation: "",
+      selectedShift: "",
+
+      locations: [],
+      shifts: [],
       majors: [],
       selectedMajor: null,
       imagePreview: null,
@@ -660,6 +808,9 @@ export default {
         email: "",
         gender: "",
         batch: "",
+        semester: "",
+        location: "",
+        shiftId: "",
         year: "",
         major: "",
         phone: "",
@@ -757,7 +908,7 @@ export default {
           { withCredentials: true }
         );
         this.studentInfo.info = response.data.data;
-        console.log(response.data);
+        console.log("user info: ", response.data);
       } catch (e) {
         console.log(e);
       }
@@ -801,7 +952,8 @@ export default {
         formData.append("email", this.editStudentForm.email);
         formData.append("phone", this.editStudentForm.phone);
         formData.append("year", this.editStudentForm.year);
-        formData.append("batch", this.editStudentForm.batch);
+        formData.append("locationId", this.selectedLocation);
+        formData.append("shiftId", this.selectedShift)
         formData.append("majorId", this.selectedMajor); // from select
 
         // Append new image only if selected
@@ -831,8 +983,9 @@ export default {
             pauseOnHover: true,
           });
           this.loadStudentIfo();
+          this.showPanel = false;
         } else {
-          toast.error("Filed to update student!", {
+          toast.error(response.data.message || "Filed to update student!", {
             position: "bottom-center",
             closeOnClick: true,
             pauseOnHover: true,
@@ -860,20 +1013,25 @@ export default {
         major: s.major || "",
         phone: s.phone || "",
         email: s.email || "",
+        semester: s.semester || "",
+        location: s.locationId || "",
+        shiftId: s.shiftId || "",
       };
 
-      console.log("Opening edit modal for student:", this.editStudentForm);
       // set dropdown selection
       // 🔹 Find matching major ID from name
       const foundMajor = this.majors.find((m) => m.name === s.major);
       this.selectedMajor = foundMajor ? foundMajor.id : null;
-
+      this.selectedShift = this.editStudentForm.shiftId;
+      this.selectedLocation = this.editStudentForm.location;
       // Show profile picture preview
       this.imagePreview = s.profilePicture
         ? `${this.API_BASE_PROFILE_URL}/${s.profilePicture}`
         : null;
 
       this.showPanel = true;
+
+      console.log("Opening edit modal for student:", this.editStudentForm);
     },
     handleFileChange(event) {
       const file = event.target.files[0];
@@ -928,8 +1086,55 @@ export default {
         }
       }
     },
+    async fetchLocations() {
+      try {
+        const res = await axios.get(API_BASE_URL + "/api/locations", {
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          console.log("location load: ", res.data.data);
+          this.locations = res.data.data;
+        } else {
+          console.log(res.data.message);
+          toast.error("failed to fetch locations!", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error("Failed to fetch locations");
+      }
+    },
+    async fetchShifts() {
+      try {
+        const res = await axios.get(API_BASE_URL + "/api/shifts", {
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          this.shifts = res.data.data;
+
+          console.log("Shifts load: ", res.data.data);
+        } else {
+          console.log(res.data.message);
+          toast.error("failed to fetch shifts!", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error("Failed to fetch batchs");
+      }
+    },
+    formateShift(name, start, end) {
+      return `${name} (${start} - ${end})`;
+    },
+    formateLocation(buildingName, FloorNumber, romeName) {
+      return `Building: ${buildingName} Floor: ${FloorNumber} Room: ${romeName}`;
+    },
   },
   mounted() {
+    this.fetchLocations();
+    this.fetchShifts();
     this.loadStudentIfo();
     this.fetchMajors();
     this.fetchRecentDevices();

@@ -155,10 +155,7 @@
           <tbody>
             <tr v-for="dept in departments" :key="dept.id" class="border-b">
               <td class="py-2 px-3">
-                <input
-                  type="checkbox"
-                  aria-label="Select department"
-                />
+                <input type="checkbox" aria-label="Select department" />
               </td>
               <td class="py-2 px-3">{{ dept.name }}</td>
               <td class="py-2 px-3">{{ dept.teacherCount }}</td>
@@ -169,117 +166,76 @@
       </div>
 
       <!-- Majors Tab -->
-      <div v-if="currentTab === 'Majors'" class="bg-white shadow rounded p-4">
-        <h2 class="text-lg font-semibold mb-4">Majors</h2>
-        <button
-          class="mb-3 bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600"
-        >
-          Add Major
-        </button>
+      <div
+        v-if="currentTab === 'Majors'"
+        class="bg-white rounded-md shadow-sm p-4"
+      >
+        <header class="flex items-center justify-between">
+          <h2 class="text-lg font-semibold mb-4">Majors</h2>
+          <RippleButton
+            label="Add Major"
+            @click="openMajorPanel()"
+            class="mb-3 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
+          >
+            Add Major
+          </RippleButton>
+        </header>
+
         <table class="w-full text-sm">
-          <thead class="bg-gray-100">
+          <thead
+            class="bg-gray-50 sticky top-0 z-10 border-t-2 border-gray-200 border-b-[1px]"
+          >
             <tr>
-              <th class="py-2 px-3 text-left">Major Name</th>
-              <th class="py-2 px-3 text-left">Department</th>
+              <!-- Select all checkbox -->
+              <th class="px-3 py-3 flex justify-start">
+                <input type="checkbox" />
+              </th>
+              <th
+                class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+              >
+                Major Name
+              </th>
+              <th
+                class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+              >
+                Department
+              </th>
+              <th
+                class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+              >
+                Actions
+              </th>
             </tr>
           </thead>
+
           <tbody>
             <tr v-for="major in majors" :key="major.id" class="border-b">
+              <!-- Row checkbox -->
+              <td class="py-2 px-3">
+                <input
+                  type="checkbox"
+                  v-model="selectedMajors"
+                  :value="major.id"
+                />
+              </td>
               <td class="py-2 px-3">{{ major.name }}</td>
               <td class="py-2 px-3">{{ major.departmentName }}</td>
+              <td class="py-2 px-3 space-x-2">
+                <button
+                  class="text-yellow-500"
+                  @click="openEditMajorPanel(major)"
+                >
+                  Edit
+                </button>
+                <button class="text-red-500" @click="deleteMajor(major.id)">
+                  Delete
+                </button>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
-
-      <!-- Teaching Assignments Tab -->
-      <div
-        v-if="currentTab === 'Teaching Assignments'"
-        class="bg-white shadow rounded p-4"
-      >
-        <h2 class="text-lg font-semibold mb-4">Teaching Assignments</h2>
-
-        <label class="block font-medium mb-1">Select Department</label>
-        <select
-          v-model="selectedDepartment"
-          class="border rounded px-3 py-2 mb-4 w-full"
-        >
-          <option disabled value="">-- Choose Department --</option>
-          <option v-for="dept in departments" :key="dept.id" :value="dept.id">
-            {{ dept.name }}
-          </option>
-        </select>
-
-        <div class="grid grid-cols-2 gap-6">
-          <div>
-            <label class="block font-medium mb-1">Teachers</label>
-            <div
-              v-for="teacher in availableTeachers"
-              :key="teacher"
-              class="flex items-center space-x-2 mb-1"
-            >
-              <input
-                type="checkbox"
-                :value="teacher"
-                v-model="selectedTeachers"
-              />
-              <span>{{ teacher }}</span>
-            </div>
-          </div>
-          <div>
-            <label class="block font-medium mb-1">Subjects</label>
-            <div
-              v-for="subject in availableSubjects"
-              :key="subject"
-              class="flex items-center space-x-2 mb-1"
-            >
-              <input
-                type="checkbox"
-                :value="subject"
-                v-model="selectedSubjects"
-              />
-              <span>{{ subject }}</span>
-            </div>
-          </div>
-        </div>
-
-        <button
-          @click="saveAssignments"
-          class="mt-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-        >
-          Save Assignment
-        </button>
-      </div>
-
-      <!-- Assignment Overview Tab -->
-      <div
-        v-if="currentTab === 'Assignment Overview'"
-        class="bg-white shadow rounded p-4"
-      >
-        <h2 class="text-lg font-semibold mb-4">Assignment Overview</h2>
-        <table class="w-full text-sm">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="py-2 px-3 text-left">Department</th>
-              <th class="py-2 px-3 text-left">Teacher</th>
-              <th class="py-2 px-3 text-left">Subject</th>
-              <th class="py-2 px-3 text-left">Year/Semester</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr
-              v-for="(item, index) in assignmentOverview"
-              :key="index"
-              class="border-b"
-            >
-              <td class="py-2 px-3">{{ item.department }}</td>
-              <td class="py-2 px-3">{{ item.teacher }}</td>
-              <td class="py-2 px-3">{{ item.subject }}</td>
-              <td class="py-2 px-3">{{ item.semester }}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
+      <Assignment />
     </div>
   </div>
 
@@ -472,6 +428,96 @@
       </div>
     </div>
   </transition>
+
+  <!-- Major Form -->
+  <transition name="fade">
+    <div
+      v-if="showMajorPanel"
+      class="fixed inset-0 bg-black bg-opacity-40 z-40"
+      @click.self="showMajorPanel = false"
+    ></div>
+  </transition>
+
+  <transition name="slide">
+    <div
+      v-if="showMajorPanel"
+      class="fixed top-0 right-0 h-full w-96 bg-white shadow-lg z-50"
+    >
+      <header>
+        <div class="flex items-center justify-between py-5 px-5">
+          <h2 class="text-xl font-normal text-gray-700">
+            {{ formMajorTitle }}
+          </h2>
+          <CloseIcon
+            class="h-8 w-8 cursor-pointer"
+            @click="showMajorPanel = false"
+          />
+        </div>
+      </header>
+      <hr />
+
+      <div class="flex flex-col items-center justify-between py-5 px-5 h-full">
+        <form
+          class="w-full flex flex-col h-full"
+          @submit.prevent="submitMajorForm"
+        >
+          <!-- Major Name -->
+          <div>
+            <label class="block mb-2 text-sm font-medium text-gray-700">
+              Major Name
+            </label>
+            <input
+              type="text"
+              v-model="majorForm.name"
+              class="rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8c09f4] w-full px-3 py-2 mb-4"
+              placeholder="Enter major name"
+              required
+            />
+          </div>
+
+          <!-- Checkbox & Select Department -->
+          <div class="mb-4">
+            <label class="inline-flex items-center">
+              <input type="checkbox" v-model="includeDepartment" class="mr-2" />
+              Include Department?
+            </label>
+
+            <select
+              v-if="includeDepartment"
+              v-model="majorForm.departmentId"
+              class="mt-2 rounded border border-gray-300 focus:outline-none focus:ring-2 focus:ring-[#8c09f4] w-full px-3 py-2"
+            >
+              <option value="">-- Select Department --</option>
+              <option
+                v-for="dept in departments"
+                :key="dept.id"
+                :value="dept.id"
+              >
+                {{ dept.name }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Buttons -->
+          <div class="mt-auto mb-20 flex justify-between items-center">
+            <RippleButton
+              label="Cancel"
+              bg-color="bg-gray-600"
+              :icon="CloseIcon"
+              @click.prevent="showMajorPanel = false"
+              class="w-full bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mr-2"
+            />
+
+            <RippleButton
+              label="Save Major"
+              class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+              type="submit"
+            />
+          </div>
+        </form>
+      </div>
+    </div>
+  </transition>
 </template>
 
 <script>
@@ -486,6 +532,7 @@ import { API_BASE_URL } from "@/config/useWebSocket";
 import CloseIcon from "../icons/CloseIcon.vue";
 import Button from "../Custom/Button.vue";
 import Swal from "sweetalert2";
+import Assignment from "./Assignment.vue";
 const toast = useToast();
 
 export default {
@@ -497,10 +544,18 @@ export default {
     CloseIcon,
     RippleButton,
     Button,
+    Assignment
   },
   name: "AcademicManagement",
   data() {
     return {
+      includeDepartment: false,
+      majorForm: {
+        id: "",
+        name: "",
+        departmentId: null,
+      },
+
       departmentForm: {
         name: "",
         majorId: null,
@@ -534,8 +589,6 @@ export default {
         "Subjects",
         "Departments",
         "Majors",
-        "Teaching Assignments",
-        "Assignment Overview",
       ],
       currentTab: "Subjects",
 
@@ -543,17 +596,112 @@ export default {
       subjects: [],
       departments: [],
       majors: [],
-      assignmentOverview: [],
-
-      // selection data
-      availableTeachers: ["Alice", "Bob", "Charlie", "David"],
-      availableSubjects: ["Mathematics", "Physics", "Biology", "Chemistry"],
-      selectedDepartment: "",
-      selectedTeachers: [],
-      selectedSubjects: [],
     };
   },
   methods: {
+    async submitMajorForm() {
+      const payload = {
+        id: this.majorForm.id,
+        name: this.majorForm.name,
+        departmentId: this.includeDepartment
+          ? this.majorForm.departmentId
+          : null,
+      };
+
+      try {
+        let response;
+        if (this.isEditMajorMode && payload.id) {
+          // UPDATE
+          response = await axios.put(
+            `${API_BASE_URL}/api/admins/updateMajor`,
+            payload,
+            { withCredentials: true }
+          );
+        } else {
+          // CREATE
+          response = await axios.post(
+            `${API_BASE_URL}/api/admins/createMajor`,
+            payload,
+            { withCredentials: true }
+          );
+        }
+
+        if (response.data.success) {
+          toast.success(
+            this.isEditMajorMode
+              ? "Major updated successfully"
+              : "Major added successfully",
+            { position: "bottom-center" }
+          );
+          this.fetchMajors();
+          this.showMajorPanel = false;
+        } else {
+          toast.error(response.data.message || "Failed to save major", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        toast.error(e.response?.data?.message || "Failed to save major", {
+          position: "bottom-center",
+        });
+      }
+    },
+    async deleteMajor(id) {
+      const result = await Swal.fire({
+        title: "Are you sure?",
+        text: "You won't be able to revert this!",
+        icon: "warning",
+        showCancelButton: true,
+        confirmButtonText: "Yes, delete it!",
+        cancelButtonText: "No, cancel",
+      });
+
+      if (!result.isConfirmed) return;
+
+      try {
+        const response = await axios.delete(
+          API_BASE_URL + `/api/admins/deleteMajor/${id}`,
+          { withCredentials: true }
+        );
+        if (response.data.success) {
+          toast.success("Major deleted successfully", {
+            position: "bottom-center",
+          });
+          this.fetchMajors();
+        } else {
+          toast.error(response.data.message || "Failed to delete major", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        toast.error(e.response?.data?.message || "Failed to delete major", {
+          position: "bottom-center",
+        });
+      }
+    },
+    openMajorPanel() {
+      this.isEditMajorMode = false;
+      this.formMajorTitle = "Add New Major";
+      this.majorForm = { id: null, name: "", departmentId: null };
+      this.includeDepartment = false;
+      this.showMajorPanel = true;
+    },
+    openEditMajorPanel(major) {
+      this.isEditMajorMode = true;
+      this.formMajorTitle = "Edit Major";
+
+      this.majorForm = {
+        id: major.id,
+        name: major.name,
+        departmentId: major.departmentId ? Number(major.departmentId) : null,
+      };
+
+      this.includeDepartment = !!major.departmentId;
+      this.showMajorPanel = true;
+
+      console.log("major id: ", this.majorForm.id);
+      console.log("department id: ", this.majorForm.departmentId);
+    },
     async submitDepartmentForm() {
       // Prepare payload only if includeMajor/includeTeacher is checked
       const payload = {
@@ -564,29 +712,32 @@ export default {
 
       console.log("Submit department data:", payload);
 
-      try{
-        const response = await axios.post(API_BASE_URL+ "/api/admins/createDepartment", payload, { withCredentials: true});
-        if(response.data.success){ 
+      try {
+        const response = await axios.post(
+          API_BASE_URL + "/api/admins/createDepartment",
+          payload,
+          { withCredentials: true }
+        );
+        if (response.data.success) {
           toast.success("Department added successfully", {
             position: "bottom-center",
             closeOnClick: true,
-            pauseOnHover: true
-          })
-        }else{
+            pauseOnHover: true,
+          });
+        } else {
           toast.error(response.data.message || "failed to save department!", {
             position: "bottom-center",
             closeOnClick: true,
-            pauseOnHover: true
-          })
+            pauseOnHover: true,
+          });
         }
-      }catch(e)
-      {
-        console.log(e)
+      } catch (e) {
+        console.log(e);
         toast.error(e.response.data.message || "failed to save department", {
           position: "bottom-center",
           closeOnClick: true,
-          pauseOnHover: true
-        })
+          pauseOnHover: true,
+        });
       }
 
       // Make your API call here with payload

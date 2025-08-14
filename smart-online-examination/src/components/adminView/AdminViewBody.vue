@@ -191,7 +191,7 @@
             <td class="py-2 px-4 whitespace-nowrap text-gray-700">
               <div class="flex items-center space-x-3">
                 <img
-                  :src="exam.teacherImage"
+                  :src="API_BASE_PROFILE_URL + '/' + exam.teacherImage"
                   alt="Teacher photo"
                   class="h-10 w-10 rounded-full object-cover"
                 />

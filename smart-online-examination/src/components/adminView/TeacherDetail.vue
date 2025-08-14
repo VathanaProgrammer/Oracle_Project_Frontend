@@ -761,8 +761,9 @@ export default {
             pauseOnHover: true,
           });
           this.loadTeacherIfo();
+          this.showPanel = false;
         } else {
-          toast.error("Failed to update teacher!", {
+          toast.error( response.data.message || "Failed to update teacher!", {
             position: "bottom-center",
             closeOnClick: true,
             pauseOnHover: true,

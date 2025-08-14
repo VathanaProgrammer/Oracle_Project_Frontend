@@ -614,54 +614,6 @@
               </svg>
             </div>
           </div>
-          <div class="mb-4">
-            <label class="block text-md font-medium text-gray-700 mb-1"
-              >Profile Picture</label
-            >
-
-            <div
-              @dragover.prevent
-              @drop.prevent="handleDrop"
-              class="relative flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-purple-500 transition duration-200"
-              @click="$refs.imageInput.click()"
-            >
-              <input
-                ref="imageInput"
-                type="file"
-                accept="image/*"
-                class="hidden"
-                @change="handleFileChange"
-              />
-
-              <template v-if="imagePreview">
-                <img
-                  :src="imagePreview"
-                  alt="Preview"
-                  class="h-64 w-full object-cover rounded-md shadow"
-                />
-                <p class="text-sm text-gray-500 mt-3">Click to change image</p>
-              </template>
-
-              <template v-else>
-                <svg
-                  class="w-14 h-14 text-gray-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 15a4 4 0 01.88-2.51m0 0A4 4 0 017 11h10a4 4 0 014 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm0 0L4 9m0 0L4 5m0 0h16m0 0l-1 4m0 0l-1 4"
-                  />
-                </svg>
-                <p class="mt-2 text-sm text-gray-500">
-                  Click or drag image to upload
-                </p>
-              </template>
-            </div>
-          </div>
           <div
             class="mb-4 relative w-full"
             v-if="selectRoleModel === 'TEACHER'"
@@ -714,31 +666,41 @@
               for="lastname"
               class="text-md font-medium text-gray-600 mb-1 block"
             >
-              Year
+              Academic Year
             </label>
             <input
+              disabled
               v-model="userForm.year"
               type="number"
               id="phone"
               placeholder="1"
+              value="1"
               class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
             />
           </div>
+
+          <!-- batch selecttion -->
           <div class="mb-4" v-if="selectRoleModel === 'STUDENT'">
             <label
-              for="lastname"
+              for="batch"
               class="text-md font-medium text-gray-600 mb-1 block"
             >
               Batch
             </label>
-            <input
+            <select
               v-model="userForm.batch"
-              type="number"
-              id="phone"
-              placeholder="8"
+              id="batch"
               class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
-            />
+            >
+              <option value="" disabled>Select batch</option>
+              <option v-for="batch in batchs" :key="batch.id" :value="batch.id">
+                {{ batch.batchName }}
+              </option>
+            </select>
           </div>
+
+          <!-- major selection -->
+
           <div class="mb-4 relative" v-if="selectRoleModel === 'STUDENT'">
             <label
               for="major"
@@ -784,6 +746,100 @@
               >
                 <path d="M19 9l-7 7-7-7" />
               </svg>
+            </div>
+          </div>
+          <div class="mb-4" v-if="selectRoleModel === 'STUDENT'">
+            <label
+              for="shift"
+              class="text-md font-medium text-gray-600 mb-1 block"
+            >
+              Shift
+            </label>
+            <select
+              v-model="selectShift"
+              id="shift"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
+            >
+              <option value="" disabled>Select shift</option>
+              <option v-for="shift in shifts" :key="shift.id" :value="shift.id">
+                {{ formateShift(shift.name, shift.startTime, shift.endTime) }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-4" v-if="selectRoleModel === 'STUDENT'">
+            <label
+              for="shift"
+              class="text-md font-medium text-gray-600 mb-1 block"
+            >
+              Location
+            </label>
+            <select
+              v-model="selectLocation"
+              id="shift"
+              class="w-full px-2 py-1 border border-gray-300 rounded-md text-md font-normal text-gray-700 focus:outline-none focus:ring-1 focus:ring-[#8c09f4] focus:shadow-md transition-shadow duration-300"
+            >
+              <option value="" disabled>Select location (class)</option>
+              <option
+                v-for="location in locations"
+                :key="location.id"
+                :value="location.id"
+              >
+                {{
+                  formateLocation(
+                    location.buildingName,
+                    location.floorNumber,
+                    location.romeName
+                  )
+                }}
+              </option>
+            </select>
+          </div>
+          <div class="mb-4">
+            <label class="block text-md font-medium text-gray-700 mb-1"
+              >Profile Picture</label
+            >
+
+            <div
+              @dragover.prevent
+              @drop.prevent="handleDrop"
+              class="relative flex flex-col items-center justify-center border-2 border-dashed border-gray-300 rounded-xl p-6 cursor-pointer hover:border-purple-500 transition duration-200"
+              @click="$refs.imageInput.click()"
+            >
+              <input
+                ref="imageInput"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleFileChange"
+              />
+
+              <template v-if="imagePreview">
+                <img
+                  :src="imagePreview"
+                  alt="Preview"
+                  class="h-64 w-full object-cover rounded-md shadow"
+                />
+                <p class="text-sm text-gray-500 mt-3">Click to change image</p>
+              </template>
+
+              <template v-else>
+                <svg
+                  class="w-14 h-14 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 15a4 4 0 01.88-2.51m0 0A4 4 0 017 11h10a4 4 0 014 4v2a2 2 0 01-2 2H5a2 2 0 01-2-2v-2zm0 0L4 9m0 0L4 5m0 0h16m0 0l-1 4m0 0l-1 4"
+                  />
+                </svg>
+                <p class="mt-2 text-sm text-gray-500">
+                  Click or drag image to upload
+                </p>
+              </template>
             </div>
           </div>
           <div class="w-full d-flex justify-start">
@@ -870,7 +926,6 @@ export default {
       isEditMode: false,
       formTitle: "Add New User",
       userForm: {
-        // single form used for both add & edit
         userId: "",
         firstName: "",
         lastName: "",
@@ -880,11 +935,16 @@ export default {
         gender: "",
         role: "",
         major: "",
+        shift: "",
         batch: "",
+        location: "",
+        semester: "",
         year: "",
         profilePicture: null,
         departments: [],
       },
+      selectLocation: "",
+      selectShift: "",
       selectedDepartments: [],
       selectedMajor: "",
       showPanel: false,
@@ -899,6 +959,11 @@ export default {
       imageFile: null,
       userFormError: "",
       dropdownOpen: false,
+
+      locations: [],
+      shifts: [],
+      semesters: [],
+      batchs: [],
       selectedDepartments: [],
       majors: [],
       departments: [],
@@ -918,6 +983,11 @@ export default {
       openedUserId: null,
     };
   },
+  watch: {
+    "userForm.shift"(newVal) {
+      console.log("Shift changed to:", newVal, typeof newVal);
+    },
+  },
   computed: {
     selectedDepartmentsNames() {
       return this.departments
@@ -926,10 +996,18 @@ export default {
     },
   },
   methods: {
+    formateShift(name, start, end) {
+      return `${name} (${start} - ${end})`;
+    },
+    formateLocation(buildingName, FloorNumber, romeName) {
+      return `Building: ${buildingName} Floor: ${FloorNumber} Room: ${romeName}`;
+    },
     async submitNewUser() {
       this.userForm.departments = this.selectedDepartments;
       this.userForm.major = this.selectedMajor;
       this.userForm.role = this.selectRoleModel;
+      this.userForm.location = this.selectLocation;
+      this.userForm.shift = this.selectShift;
 
       const formData = new FormData();
 
@@ -1062,7 +1140,10 @@ export default {
         role: "",
         major: "",
         batch: "",
-        year: "",
+        year: 1,
+        location: "",
+        shift: "",
+        semester: 1,
         profilePicture: null,
         departments: [],
       };
@@ -1247,6 +1328,7 @@ export default {
         const response = await axios.get(API_BASE_URL + "/api/majors/all", {
           withCredentials: true,
         });
+        console.log("major load: ", response.data);
         this.majors = response.data.data;
       } catch (error) {
         console.error("Error fetching majors:", error);
@@ -1265,12 +1347,105 @@ export default {
         console.error(err);
       }
     },
+    async fetchSemesters() {
+      try {
+        const res = await axios.get(API_BASE_URL + "/api/semesters", {
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          this.semesters = res.data.data;
+        } else {
+          console.log(res.data.message);
+          toast.error("failed to fetch semester!", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error("Failed to fetch sememster");
+      }
+    },
+    async fetchBatchs() {
+      try {
+        const res = await axios.get(API_BASE_URL + "/api/batchs", {
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          this.batchs = res.data.data;
+          console.log("batch load: ", res.data.data);
+        } else {
+          console.log(res.data.message);
+          toast.error("failed to fetch batchs!", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error("Failed to fetch batchs");
+      }
+    },
+    async fetchShifts() {
+      try {
+        const res = await axios.get(API_BASE_URL + "/api/shifts", {
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          this.shifts = res.data.data;
+          if (!this.userForm.shift) {
+            this.userForm.shift = "";
+          }
+          console.log(
+            "userForm.shift:",
+            this.userForm.shift,
+            typeof this.userForm.shift
+          );
+          console.log(
+            "shifts[0].id:",
+            this.shifts[0].id,
+            typeof this.shifts[0].id
+          );
+
+          console.log("Shifts load: ", res.data.data);
+        } else {
+          console.log(res.data.message);
+          toast.error("failed to fetch shifts!", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error("Failed to fetch batchs");
+      }
+    },
+    async fetchLocations() {
+      try {
+        const res = await axios.get(API_BASE_URL + "/api/locations", {
+          withCredentials: true,
+        });
+        if (res.data.success) {
+          console.log("location load: ", res.data.data);
+          this.locations = res.data.data;
+        } else {
+          console.log(res.data.message);
+          toast.error("failed to fetch locations!", {
+            position: "bottom-center",
+          });
+        }
+      } catch (e) {
+        console.log(e);
+        toast.error("Failed to fetch locations");
+      }
+    },
   },
   mounted() {
     this.fetchMajors();
+    this.fetchBatchs();
     this.loadAllUsers();
     this.fetchDepartments();
     this.fetchUserCounts();
+    this.fetchSemesters();
+    this.fetchLocations();
+    this.fetchShifts();
   },
   watch: {
     selectedRole() {
