@@ -9,22 +9,13 @@
       </h2>
 
       <!-- Filters + search + export button row -->
-      <div
-        class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6"
-      >
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
         <!-- Assignment Dropdown -->
         <div class="w-full md:w-[350px]">
-          <select
-            v-model="selectedAssignment"
-            class="w-full truncate rounded-md px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
+          <select v-model="selectedAssignment"
+            class="w-full truncate rounded-md px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
             <option disabled value="">Select Assignment</option>
-            <option
-              v-for="assign in assignments"
-              :key="assign.id"
-              :value="assign"
-              :title="formatAssignment(assign)"
-            >
+            <option v-for="assign in assignments" :key="assign.id" :value="assign" :title="formatAssignment(assign)">
               {{ formatAssignment(assign) }}
             </option>
           </select>
@@ -32,10 +23,8 @@
 
         <!-- Exam Dropdown -->
         <div class="w-full md:w-[250px]">
-          <select
-            v-model="selectedExamId"
-            class="w-full rounded-md px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          >
+          <select v-model="selectedExamId"
+            class="w-full rounded-md px-3 py-2 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-400">
             <option disabled value="">Select Exam</option>
             <option v-for="exam in exams" :key="exam.id" :value="exam.id">
               {{ exam.title }}
@@ -44,18 +33,12 @@
         </div>
 
         <!-- Search Input grows -->
-        <input
-          v-model="search"
-          type="text"
-          placeholder="Search student..."
-          class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow max-w-md"
-        />
+        <input v-model="search" type="text" placeholder="Search student..."
+          class="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 flex-grow max-w-md" />
 
         <!-- Export Button aligned right -->
-        <button
-          @click="exportResults"
-          class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 px-4 rounded-md flex-shrink-0"
-        >
+        <button @click="exportResults"
+          class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 px-4 rounded-md flex-shrink-0">
           Export to Excel
         </button>
       </div>
@@ -76,26 +59,16 @@
             </thead>
 
             <tbody>
-              <tr
-                v-for="(result, index) in filteredResults"
-                :key="result.id"
-                class="hover:bg-gray-50 border-b"
-              >
+              <tr v-for="(result, index) in filteredResults" :key="result.id" class="hover:bg-gray-50 border-b">
                 <td class="py-3 px-4">{{ index + 1 }}</td>
                 <td class="py-3 px-4 font-semibold">{{ result.studentName }}</td>
                 <td class="py-3 px-4">{{ result.score }}</td>
-                <td
-                  class="py-3 px-4 font-semibold"
-                  :class="result.score >= 50 ? 'text-green-600' : 'text-red-600'"
-                >
+                <td class="py-3 px-4 font-semibold" :class="result.score >= 50 ? 'text-green-600' : 'text-red-600'">
                   {{ result.score >= 50 ? 'Pass' : 'Fail' }}
                 </td>
                 <td class="py-3 px-4">{{ formatDate(result.submittedAt) }}</td>
                 <td class="py-3 px-4">
-                  <button
-                    @click="viewResult(result)"
-                    class="text-blue-600 text-sm hover:underline"
-                  >
+                  <button @click="viewResult(result)" class="text-blue-600 text-sm hover:underline">
                     View
                   </button>
                 </td>
@@ -111,10 +84,7 @@
       </div>
 
       <!-- Result Modal -->
-      <div
-        v-if="selectedResult"
-        class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50"
-      >
+      <div v-if="selectedResult" class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
         <div class="bg-white rounded-lg shadow-lg max-w-xl w-full p-6 space-y-4">
           <h3 class="text-xl font-semibold text-gray-800">📄 Result Details</h3>
           <p><strong>Student:</strong> {{ selectedResult.studentName }}</p>
@@ -132,10 +102,8 @@
           </div>
 
           <div class="text-right">
-            <button
-              @click="selectedResult = null"
-              class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md"
-            >
+            <button @click="selectedResult = null"
+              class="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-md">
               Close
             </button>
           </div>
@@ -146,28 +114,18 @@
 </template>
 
 <script>
+import { API_BASE_URL } from '@/config/useWebSocket';
+import axios from 'axios';
+import { useUserStore } from '@/store/store';
+import { useToast } from 'vue-toastification';
+const toast = useToast();
+import { useRouter } from "vue-router";
 export default {
   data() {
     return {
+      API_BASE_URL,
+      userStore : null,
       assignments: [
-        {
-          id: 1,
-          batch: 8,
-          year: 2,
-          major: "Computer Science",
-          location: "Kok Slaket",
-          shiftName: "Morning",
-          shiftTime: "7:00 AM - 11:00 AM",
-        },
-        {
-          id: 2,
-          batch: 7,
-          year: 1,
-          major: "Fintech",
-          location: "Angkor Wat",
-          shiftName: "Evening",
-          shiftTime: "5:00 PM - 9:00 PM",
-        },
       ],
       exams: [
         { id: 1, title: "Java Basics" },
@@ -197,19 +155,36 @@ export default {
   },
   computed: {
     filteredResults() {
-      return this.results
+         return this.results
         .filter((r) => r.studentName.toLowerCase().includes(this.search.toLowerCase()))
         .filter((r) => {
           if (this.selectedAssignment && r.examId !== this.selectedAssignment.id)
-            return false;
+              return false;
           if (this.selectedExamId && r.examId !== this.selectedExamId) return false;
           return true;
         });
     },
   },
+     setup() {
+        const router = useRouter();
+        const userStore = useUserStore()
+        return { userStore, router };
+    },
   methods: {
-    formatAssignment(assign) {
-      return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} - (${assign.shiftTime})`;
+    async getAssignment() {
+      try {
+        const teacherId = this.userStore?.user.id;
+        console.log(`teacherId: `,teacherId)
+        const response = await axios.get(`${API_BASE_URL}/api/assignments/teacher/${teacherId}`, {
+          withCredentials: true
+        })
+        this.assignments = response.data;    
+      } catch (err) {
+        toast.error(err?.message);
+      }
+    },
+    formatAssignment(assign){
+       return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} (${assign.shiftTime})`;
     },
     formatDate(datetime) {
       const date = new Date(datetime);
@@ -222,6 +197,9 @@ export default {
       alert("Export to Excel triggered (implement later)");
     },
   },
+  mounted(){
+    this.getAssignment();
+  }
 };
 </script>
 
@@ -273,6 +251,7 @@ tbody tr.group:hover .popup-container {
 .edit-btn {
   background-color: #2563eb;
 }
+
 .edit-btn:hover {
   background-color: #1d4ed8;
   transform: scale(1.05);

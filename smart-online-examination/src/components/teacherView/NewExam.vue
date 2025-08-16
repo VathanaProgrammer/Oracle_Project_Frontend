@@ -411,9 +411,8 @@ export default {
             withCredentials: true,
           }
         );
-
         this.assignments = response.data;
-        console.log(this.assignments);
+        console.table(this.assignments);
       } catch (e) {
         console.log(e);
       }
@@ -598,7 +597,7 @@ export default {
           assignTo: this.assignedId,
           startTime: this.startTime,
           endTime: this.endTime,
-          status: this.status,
+          status: this.status.toLowerCase() == 'published' ? 'coming' : this.status,
           type: this.type,
           duration: this.getDurationInMinutes(),
           durationUnit: "minutes",
