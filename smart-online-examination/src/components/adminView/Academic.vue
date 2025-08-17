@@ -106,19 +106,19 @@
 
               <td class="py-2 px-3">{{ subject.name }}</td>
 
-              <td class="py-2 px-3 space-x-2">
-                <button
-                  class="text-yellow-500"
+              <td class="py-2 px-3 space-x-2 flex">
+                <EditSolidIcon
+                  class="text-yellow-500 w-6 h-6 me-1 cursor-pointer"
                   @click="openEditSubjectPanel(subject)"
                 >
                   Edit
-                </button>
-                <button
+                </EditSolidIcon>
+                <DeleteIcon
                   @click="deletesSubject(subject.id)"
-                  class="text-red-500"
+                  class="text-red-500 cursor-pointer"
                 >
                   Delete
-                </button>
+                </DeleteIcon>
               </td>
             </tr>
           </tbody>
@@ -220,21 +220,23 @@
               </td>
               <td class="py-2 px-3">{{ major.name }}</td>
               <td class="py-2 px-3">{{ major.departmentName }}</td>
-              <td class="py-2 px-3 space-x-2">
-                <button
-                  class="text-yellow-500"
+              <td class="py-2 px-3 space-x-2 flex">
+                <EditSolidIcon
+                  class="text-yellow-500 w-6 h-6"
                   @click="openEditMajorPanel(major)"
                 >
                   Edit
-                </button>
-                <button class="text-red-500" @click="deleteMajor(major.id)">
+                </EditSolidIcon>
+                <DeleteIcon class="text-red-500 w-6 h-6" @click="deleteMajor(major.id)">
                   Delete
-                </button>
+                </DeleteIcon>
               </td>
             </tr>
           </tbody>
         </table>
       </div>
+      <Academic1 />
+      <Academic2 />
       <Assignment />
     </div>
   </div>
@@ -301,21 +303,20 @@
 
           <!-- Push button to bottom -->
           <div class="mt-auto mb-20 flex justify-between items-center">
-            <RippleButton
+            <button
               label="Cancel"
               bg-color="bg-gray-600"
               icon="CloseIcon"
               @click.prevent="showPanel = false"
               class="w-full bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mr-2"
-            />
-
-            <RippleButton
+            >Close</button>
+            <button
               label="Save Subject"
               @click.prevent="submitSubjectForm()"
               class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
             >
               Save Subject
-            </RippleButton>
+            </button>
           </div>
         </form>
       </div>
@@ -410,19 +411,18 @@
 
           <!-- Buttons -->
           <div class="mt-auto mb-20 flex justify-between items-center">
-            <RippleButton
+            <button
               label="Cancel"
               bg-color="bg-gray-600"
               :icon="CloseIcon"
               @click.prevent="showDepartmentPanel = false"
               class="w-full bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mr-2"
-            />
+            >Close</button>
 
-            <RippleButton
+            <button
               label="Save Department"
               class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              type="submit"
-            />
+              type="submit" >Save</button>
           </div>
         </form>
       </div>
@@ -500,19 +500,19 @@
 
           <!-- Buttons -->
           <div class="mt-auto mb-20 flex justify-between items-center">
-            <RippleButton
+            <button
               label="Cancel"
               bg-color="bg-gray-600"
               :icon="CloseIcon"
               @click.prevent="showMajorPanel = false"
               class="w-full bg-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-400 mr-2"
-            />
+            >Save</button>
 
-            <RippleButton
+            <button
               label="Save Major"
               class="w-full bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
               type="submit"
-            />
+            >Close</button>
           </div>
         </form>
       </div>
@@ -525,6 +525,9 @@ import RippleButton from "../Custom/RippleButton.vue";
 import DepartmentIcon from "../icons/DepartmentIcon.vue";
 import BookIcon from "../icons/BookIcon.vue";
 import AcademicIcon from "../icons/AcademicIcon.vue";
+import EditIcon from "../icons/EditIcon.vue";
+import DeleteIcon from "../icons/DeleteIcon.vue";
+import EditSolidIcon from "../icons/EditSolidIcon.vue";
 import AcademicInAcademicIcon from "../icons/AcademicInAcademicIcon.vue";
 import axios from "axios";
 import { useToast } from "vue-toastification";
@@ -533,6 +536,8 @@ import CloseIcon from "../icons/CloseIcon.vue";
 import Button from "../Custom/Button.vue";
 import Swal from "sweetalert2";
 import Assignment from "./Assignment.vue";
+import Academic1 from "./Academic1.vue";
+import Academic2 from "./Academic2.vue";
 const toast = useToast();
 
 export default {
@@ -542,9 +547,14 @@ export default {
     AcademicIcon,
     AcademicInAcademicIcon,
     CloseIcon,
+    EditSolidIcon,
     RippleButton,
     Button,
-    Assignment
+    Assignment,
+    Academic1,
+    Academic2,
+    EditIcon,
+    DeleteIcon,
   },
   name: "AcademicManagement",
   data() {
@@ -585,11 +595,7 @@ export default {
       formAssignmentTitle: "Add New Assignment",
 
       API_BASE_URL,
-      tabs: [
-        "Subjects",
-        "Departments",
-        "Majors",
-      ],
+      tabs: ["Subjects", "Departments", "Majors"],
       currentTab: "Subjects",
 
       // data sources

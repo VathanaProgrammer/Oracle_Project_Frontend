@@ -1,4 +1,4 @@
-import AdminDashborad from "@/components/adminView/AdminDashborad.vue"
+import AdminDashborad from "@/components/adminView/AdminDashborad.vue";
 import AdminViewBody from "@/components/adminView/AdminViewBody.vue";
 import ExamDetailsAndEdit from "@/components/adminView/ExamDetailsAndEdit.vue";
 import AdminEditExamPage from "@/components/adminView/AdminEditExamPage.vue";
@@ -7,8 +7,13 @@ import UserManagement from "@/components/adminView/UserManagement.vue";
 import StudentDetail from "@/components/adminView/StudentDetail.vue";
 import AdminDetail from "@/components/adminView/AdminDetail.vue";
 import Academic from "@/components/adminView/Academic.vue";
-export default[
-    
+import ActivityLog from "@/components/adminView/ActivityLog.vue";
+import PrivateChat from "@/components/adminView/PrivateChat.vue";
+import Notification from "@/components/adminView/Notification.vue";
+import Settings from "@/components/adminView/Settings.vue";
+import SettingAccount from "@/components/adminView/SettingAccount.vue";
+import SettingSecurity from "@/components/adminView/SettingSecurity.vue";
+export default [
   {
     path: "/admin-dashboard",
     name: "adminDashboard",
@@ -53,7 +58,36 @@ export default[
         path: "academic",
         name: "academic",
         component: Academic,
-      }
+      },
+      {
+        path: "activity-long",
+        name: "activityLog",
+        component: ActivityLog,
+      },
+      {
+        path: "notification",
+        name: "notification",
+        component: Notification,
+      },
+      {
+        path: "notification-private-chat",
+        name: "privateChat",
+        component: PrivateChat,
+      },
+      {
+        path: "settings",
+        component: Settings,
+        children: [
+          {
+            path: "account",
+            component: SettingAccount,
+          },
+          {
+            path: "security",
+            component: SettingSecurity,
+          },
+        ],
+      },
     ],
   },
-]
+];

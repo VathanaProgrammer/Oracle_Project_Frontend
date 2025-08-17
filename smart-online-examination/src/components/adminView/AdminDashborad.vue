@@ -83,23 +83,76 @@
             to="/admin-dashboard/academic"
             class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
-              <AcademicIcon class="text-white w-5 h-5"></AcademicIcon>
-              <span class="text-lg text-white font-normal ps-2">Academic</span>
-              <RightPointerIcon
-                :class="
-                  showDashboardMenu
-                    ? [
-                        'fill-white',
-                        'ms-auto',
-                        'w-7',
-                        'h-7',
-                        'rotate-90',
-                        'transition-transform',
-                        'duration-300',
-                      ]
-                    : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-                "
-              />
+            <AcademicIcon class="text-white w-5 h-5"></AcademicIcon>
+            <span class="text-lg text-white font-normal ps-2">Academic</span>
+            <RightPointerIcon
+              :class="
+                showDashboardMenu
+                  ? [
+                      'fill-white',
+                      'ms-auto',
+                      'w-7',
+                      'h-7',
+                      'rotate-90',
+                      'transition-transform',
+                      'duration-300',
+                    ]
+                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+              "
+            />
+          </RouterLink>
+          <RouterLink
+            to="/admin-dashboard/activity-long"
+            class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+          >
+            <UserActivityWhiteIcon
+              class="text-white w-5 h-5"
+            ></UserActivityWhiteIcon>
+            <span class="text-lg text-white font-normal ps-2"
+              >Activity Log</span
+            >
+            <RightPointerIcon
+              :class="
+                showDashboardMenu
+                  ? [
+                      'fill-white',
+                      'ms-auto',
+                      'w-7',
+                      'h-7',
+                      'rotate-90',
+                      'transition-transform',
+                      'duration-300',
+                    ]
+                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+              "
+            />
+          </RouterLink>
+
+          <RouterLink
+            to="/admin-dashboard/notification"
+            class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+          >
+            <MessageSolidWhiteIcon
+              class="text-white w-5 h-5"
+            ></MessageSolidWhiteIcon>
+            <span class="text-lg text-white font-normal ps-2"
+              >Notification</span
+            >
+            <RightPointerIcon
+              :class="
+                showDashboardMenu
+                  ? [
+                      'fill-white',
+                      'ms-auto',
+                      'w-7',
+                      'h-7',
+                      'rotate-90',
+                      'transition-transform',
+                      'duration-300',
+                    ]
+                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+              "
+            />
           </RouterLink>
 
           <!-- <transition
@@ -234,6 +287,62 @@
         </RouterLink>
 
         <RouterLink
+          to="/admin-dashboard/activity-long"
+          class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+        >
+          <UserActivityWhiteIcon
+            class="text-white w-5 h-5"
+          ></UserActivityWhiteIcon>
+          <span class="text-lg text-white font-normal ps-2">Activity Log</span>
+          <RightPointerIcon
+            :class="
+              showDashboardMenu
+                ? [
+                    'fill-white',
+                    'ms-auto',
+                    'w-7',
+                    'h-7',
+                    'rotate-90',
+                    'transition-transform',
+                    'duration-300',
+                  ]
+                : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+            "
+          />
+        </RouterLink>
+
+        <RouterLink
+          to="/admin-dashboard/notification"
+          class="w-full px-4 pb-2 mt-1"
+        >
+          <div
+            class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+          >
+            <MessageSolidWhiteIcon
+              class="text-white w-5 h-5"
+            ></MessageSolidWhiteIcon>
+            <span class="text-lg text-white font-normal ps-2"
+              >Notification</span
+            >
+            <RightPointerIcon
+              :class="
+                showDashboardMenu
+                  ? [
+                      'fill-white',
+                      'ms-auto',
+                      'w-7',
+                      'h-7',
+                      'rotate-90',
+                      'transition-transform',
+                      'duration-300',
+                    ]
+                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+              "
+            />
+          </div>
+        </RouterLink>
+
+        <RouterLink
           to="/student-dashboard/view-materails"
           class="w-full px-4 pb-2 mt-1"
         >
@@ -263,7 +372,7 @@
         </RouterLink>
 
         <RouterLink
-          to="/student-dashboard/settings/account"
+          to="/admin-dashboard/settings/account"
           class="w-full px-4 pb-2 mt-1"
         >
           <div
@@ -303,7 +412,6 @@
     </aside>
 
     <div class="w-full px-3 overflow-y-auto h-screen">
-      <!-- Header -->
       <header
         class="flex items-center justify-between bg-white shadow-md rounded-md px-4 py-3 my-4 sticky top-[16px]"
       >
@@ -334,14 +442,90 @@
             <span class="ml-2 text-gray-500">Search</span>
           </div>
         </div>
+
         <!-- Right: Notifications + Profile -->
-        <div class="flex items-center gap-4">
-          <button class="relative p-2 rounded hover:bg-gray-200">
-            <NotifIcon class="w-5 h-5 text-gray-600" />
-            <span
-              class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
-            ></span>
-          </button>
+        <div class="flex items-center gap-4 relative">
+          <!-- Notifications -->
+          <div class="relative">
+            <button
+              @click="toggleNotif"
+              class="relative p-2 rounded hover:bg-gray-200"
+            >
+              <NotifIcon class="w-5 h-5 text-gray-600" />
+              <span
+                v-if="notifications.length > 0"
+                class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
+              ></span>
+            </button>
+
+            <!-- Dropdown -->
+            <transition name="fade">
+              <div
+                v-if="showNotif"
+                class="absolute right-0 mt-2 w-96 bg-white border rounded-lg shadow-lg z-50"
+              >
+                <!-- Header -->
+                <div
+                  class="flex justify-between items-center px-4 py-2 border-b"
+                >
+                  <span class="font-semibold text-gray-600">Notifications</span>
+                  <div class="flex">
+                    <p
+                      class=" flex justify-center text-md font-medium py-[2px] px-2 rounded-md me-2 items-center bg-blue-600 bg-opacity-10 text-blue-700"
+                    >
+                      4 New
+                    </p>
+                    <p class="p-2 bg-gray-700 bg-opacity-15 rounded-full">
+                      <MailIcon class="h-6 w-6" />
+                    </p>
+                  </div>
+                </div>
+
+                <!-- Notifications List -->
+                <ul class="max-h-80 overflow-y-auto divide-y">
+                  <li
+                    v-for="(notif, index) in notifications"
+                    :key="index"
+                    class="flex items-start gap-3 px-4 py-3 hover:bg-gray-50 relative"
+                  >
+                    <!-- Avatar -->
+                    <img
+                      :src="notif.avatar"
+                      class="w-10 h-10 rounded-full border"
+                      alt="User Avatar"
+                    />
+
+                    <!-- Content -->
+                    <div class="flex-1">
+                      <p class="text-sm text-gray-700">
+                        <span class="font-semibold">{{ notif.sender }}</span>
+                        {{ notif.message }}
+                      </p>
+                      <p class="text-xs text-gray-400">{{ notif.time }}</p>
+                    </div>
+
+                    <!-- Close -->
+                    <button
+                      @click="removeNotif(index)"
+                      class="absolute top-3 right-3 text-gray-400 hover:text-gray-600"
+                    >
+                      ✖
+                    </button>
+                  </li>
+                </ul>
+
+                <!-- Empty State -->
+                <div
+                  v-if="notifications.length === 0"
+                  class="p-4 text-center text-gray-500 text-sm"
+                >
+                  No notifications
+                </div>
+              </div>
+            </transition>
+          </div>
+
+          <!-- Profile -->
           <img
             :src="API_BASE_PROFILE_URL + '/' + userStore.user?.profile"
             alt="Profile"
@@ -373,8 +557,12 @@ import UserIcon from "../icons/UserIcon.vue";
 import { useUserStore } from "@/store/store";
 import axios from "axios";
 import { API_BASE_URL, API_BASE_PROFILE_URL } from "@/config/useWebSocket";
-import { useRouter } from "vue-router"; // ✅ Add this
+import { useRouter } from "vue-router";
 import AcademicIcon from "../icons/AcademicIcon.vue";
+import UserActivityWhiteIcon from "../icons/UserActivityWhiteIcon.vue";
+import MessageSolidWhiteIcon from "../icons/MessageSolidWhiteIcon.vue";
+import MailIcon from "../icons/MailIcon.vue";
+
 export default {
   components: {
     EduIcon,
@@ -391,10 +579,13 @@ export default {
     LogoutIcon,
     UserIcon,
     AcademicIcon,
+    UserActivityWhiteIcon,
+    MessageSolidWhiteIcon,
+    MailIcon,
   },
   setup() {
     const userStore = useUserStore();
-    const router = useRouter(); // ✅ Use this instead of this.$router
+    const router = useRouter(); // Use this instead of this.$router
 
     // Fix the logic also
     if (!userStore.user || userStore.user.role !== "ADMIN") {
@@ -404,6 +595,28 @@ export default {
   },
   data() {
     return {
+      showNotif: false,
+      notifications: [
+        {
+          sender: "Admin",
+          message: " sent an announcement to all students.",
+          time: "2h ago",
+          avatar: "https://i.pravatar.cc/40?img=1",
+        },
+        {
+          sender: "Teacher John",
+          message: " uploaded a new assignment.",
+          time: "Yesterday",
+          avatar: "https://i.pravatar.cc/40?img=2",
+        },
+        {
+          sender: "System",
+          message: " scheduled maintenance tonight at 10PM.",
+          time: "3 days ago",
+          avatar: "https://i.pravatar.cc/40?img=3",
+        },
+      ],
+
       API_BASE_URL,
       API_BASE_PROFILE_URL,
       sidebarVisible: false,
@@ -411,6 +624,12 @@ export default {
     };
   },
   methods: {
+    toggleNotif() {
+      this.showNotif = !this.showNotif;
+    },
+    removeNotif(index) {
+      this.notifications.splice(index, 1);
+    },
     toggleDashboardMenu() {
       this.showDashboardMenu = !this.showDashboardMenu;
     },
@@ -487,5 +706,15 @@ export default {
   max-height: 10rem;
   opacity: 1;
   transform: translateY(0);
+}
+
+/* notif css */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s;
+}
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -2,6 +2,7 @@
 export const API_BASE_URL = 'http://localhost:8080'
 export const API_BASE_FILE_URL = `${API_BASE_URL}/api/files`
 export const API_BASE_PROFILE_URL = `${API_BASE_URL}/api/upload/profile`
+export const API_BASE_FILE_MESSAGE_URL = `${API_BASE_URL}/api/files/messages/`;
 // src/composables/useWebSocketHandler.js
 import { Client } from '@stomp/stompjs'
 import SockJS from 'sockjs-client'

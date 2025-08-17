@@ -264,13 +264,21 @@
           </Listbox>
 
           <!-- Add New Button -->
-          <RippleButton
-            label="Add new user"
-            bg-color="bg-green-600"
-            hover-color="hover:bg-green-700"
-            @click="openAddUserPanel()"
-          >
-          </RippleButton>
+          <div class="flex">
+            <button
+              @click="showExportOverlay = true"
+              class="bg-[#8C09F4] inline-flex text-white me-2 items-center gap-2 px-4 py-2 text-md font-medium rounded-md shadow focus:outline-none transition relative overflow-hidden"
+            >
+              <ExportWhiteSolidIcon class="w-6 h-6" /> Export
+            </button>
+            <RippleButton
+              label="Add new user"
+              bg-color="bg-green-600"
+              hover-color="hover:bg-green-700"
+              @click="openAddUserPanel()"
+            >
+            </RippleButton>
+          </div>
         </div>
         <div
           @click.self="openedUserId = null"
@@ -317,6 +325,8 @@
                 <tr v-for="user in users" :key="user.id">
                   <td class="px-4 py-3">
                     <input
+                      :checked="selectedUserIds.includes(user.id)"
+                      @click="toggleUserSelection(user.id, $event)"
                       type="checkbox"
                       class="w-4 h-4 text-blue-600 text-left border-gray-300 rounded focus:ring-2 focus:ring-blue-500"
                     />
@@ -866,6 +876,96 @@
       </div>
     </div>
   </transition>
+
+  <div>
+    <!-- Export Overlay -->
+    <transition name="fade">
+      <div
+        v-if="showExportOverlay"
+        class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50"
+        @click.self="showExportOverlay = false"
+      >
+        <div
+          class="bg-white rounded-lg p-6 shadow-lg min-w-[300px] md:w-[550px]"
+        >
+          <h2 class="text-lg font-semibold text-gray-700 mb-4">Export Users</h2>
+
+          <!-- Scope: All / Role / Selected -->
+          <div class="mb-4">
+            <label class="block text-gray-600 mb-1">Export scope:</label>
+            <select
+              v-model="exportScope"
+              class="w-full border rounded-md px-3 py-2"
+            >
+              <option value="all">All Users</option>
+              <option value="role">By Role</option>
+              <option value="selected">Selected Users</option>
+            </select>
+          </div>
+
+          <!-- Role selector if 'role' scope -->
+          <div v-if="exportScope === 'role'" class="mb-4">
+            <label class="block text-gray-600 mb-1">Select role:</label>
+            <select
+              v-model="selectedRole"
+              class="w-full border rounded-md px-3 py-2"
+            >
+              <option value="ADMIN">All Admin</option>
+              <option value="TEACHER">All Teacher</option>
+              <option value="STUDENT">All Student</option>
+            </select>
+          </div>
+
+          <!-- Limit selector if 'limit' or any scope supports it -->
+          <div v-if="exportScope !== 'selected'" class="mb-4">
+            <label class="block text-gray-600 mb-1">Limit:</label>
+            <input
+              type="number"
+              v-model.number="exportLimit"
+              min="1"
+              placeholder="Enter limit or leave blank"
+              class="w-full border rounded-md px-3 py-2"
+            />
+          </div>
+
+          <!-- Format -->
+          <div class="mb-4">
+            <label class="block text-gray-600 mb-1">Format:</label>
+            <select
+              v-model="exportFormat"
+              class="w-full border rounded-md px-3 py-2"
+            >
+              <option value="pdf">PDF</option>
+              <option value="excel">Excel</option>
+            </select>
+          </div>
+
+          <!-- Selected users info -->
+          <div v-if="exportScope === 'selected'" class="mb-4">
+            <p class="text-sm text-gray-500">
+              {{ selectedUserIds.length }} users selected.
+            </p>
+          </div>
+
+          <!-- Buttons -->
+          <div class="flex justify-end gap-3">
+            <button
+              @click="showExportOverlay = false"
+              class="px-4 py-2 rounded-md bg-gray-300 hover:bg-gray-400"
+            >
+              Cancel
+            </button>
+            <button
+              @click="exportUsers"
+              class="px-4 py-2 rounded-md bg-[#8C09F4] text-white hover:bg-[#7207c2]"
+            >
+              Export
+            </button>
+          </div>
+        </div>
+      </div>
+    </transition>
+  </div>
 </template>
 <script>
 import CloseIcon from "../icons/CloseIcon.vue";
@@ -878,6 +978,8 @@ import RippleButton from "../Custom/RippleButton.vue";
 import RigularEyeIcon from "../icons/RigularEyeIcon.vue";
 import RigularTrashIcon from "../icons/RigularTrashIcon.vue";
 import OptionIcon from "../icons/OptionIcon.vue";
+import ExportWhiteSolidIcon from "../icons/ExportWhiteSolidIcon.vue";
+
 import { useToast } from "vue-toastification";
 import AdminDisplayInTheTableIcon from "../icons/AdminDisplayInTheTableIcon.vue";
 import StudentDisplayInTheTableIcon from "../icons/StudentDisplayInTheTableIcon.vue";
@@ -916,6 +1018,7 @@ export default {
     AdminDisplayInTheTableIcon,
     TeacherDisplayInTheTableIcon,
     StudentDisplayInTheTableIcon,
+    ExportWhiteSolidIcon,
   },
   setup() {
     const userStore = useUserStore();
@@ -981,6 +1084,13 @@ export default {
       selectedLimit: "10",
       searchQuery: "",
       openedUserId: null,
+
+      showExportOverlay: false,
+      exportFormat: "pdf",
+      exportScope: "all", // all / role / selected
+      selectedRole: "ADMIN",
+      exportLimit: 10,
+      selectedUserIds: [], // tracked by checkboxes in table
     };
   },
   watch: {
@@ -996,6 +1106,50 @@ export default {
     },
   },
   methods: {
+    async exportUsers() {
+      try {
+        const payload = {
+          ids: this.selectedUserIds.length ? this.selectedUserIds : null,
+          role: this.selectedRole === "All Roles" ? null : this.selectedRole,
+          limit: this.exportLimit,
+          format: this.exportFormat,
+        };
+
+        console.log("Export payload:", payload);
+
+        const response = await axios.post(
+          this.API_BASE_URL + "/api/reports/export/option",
+          payload,
+          { responseType: "blob", withCredentials: true }
+        );
+
+        const url = window.URL.createObjectURL(new Blob([response.data]));
+        const link = document.createElement("a");
+        link.href = url;
+        link.setAttribute(
+          "download",
+          `users.${this.exportFormat === "pdf" ? "pdf" : "xlsx"}`
+        );
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        this.showExportOverlay = false;
+      } catch (err) {
+        console.error("Export failed:", err);
+      }
+    },
+    toggleUserSelection(userId, event) {
+      if (event.target.checked) {
+        if (!this.selectedUserIds.includes(userId)) {
+          this.selectedUserIds.push(userId);
+        }
+      } else {
+        this.selectedUserIds = this.selectedUserIds.filter(
+          (id) => id !== userId
+        );
+      }
+    },
     formateShift(name, start, end) {
       return `${name} (${start} - ${end})`;
     },
@@ -1503,5 +1657,14 @@ export default {
     max-height: 350px; /* or any value you want */
     overflow-y: auto;
   }
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

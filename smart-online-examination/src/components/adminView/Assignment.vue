@@ -1,6 +1,6 @@
 <!-- TeachingAssignmentsTable.vue -->
 <template>
-  <div class="bg-white shadow rounded p-4">
+  <div class="bg-white shadow rounded p-4 mt-4">
     <div class="flex justify-between items-center mb-4">
       <h2 class="text-lg font-semibold">Teaching Assignments</h2>
       <button
