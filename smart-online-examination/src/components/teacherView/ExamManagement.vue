@@ -1,6 +1,6 @@
 <template>
   <div class="min-h-screen px-4 py-6 lg:px-8 lg:py-10 bg-gray-100">
-    <div class="max-w-6xl mx-auto p-6">
+    <div class="max-w-6xl mx-auto lg:p-6 p-0">
       <!-- Header -->
       <header class="flex items-center justify-between mb-6 space-x-4">
         <h2 class="text-2xl font-semibold text-gray-700 flex-shrink-0">
@@ -10,17 +10,18 @@
         <!-- Search input -->
         <input v-model="searchQuery" type="text" placeholder="Search title or description..."
           class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#57cc99] flex-grow max-w-md" />
-
-        <RouterLink to="/teacher-dashboard/exam-management/new">
-          <button
-            class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 px-4 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
-            New Exam
-          </button>
-        </RouterLink>
+        <div>
+          <RouterLink to="/teacher-dashboard/exam-management/new">
+            <button
+              class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 m-1 px-4 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
+              New exam
+            </button>
+          </RouterLink>
+        </div>
       </header>
 
-      <!-- Exam List -->
-      <div class="bg-white rounded-md p-4 shadow-[0_4px_20px_rgba(0,0,0,0.1)] overflow-x-visible min-h-56">
+      <!-- exam List -->
+      <div class="bg-white rounded-md lg:p-4 p-1 shadow-[0_4px_20px_rgba(0,0,0,0.1)] overflow-auto min-h-56">
         <table class="min-w-full table-auto border-collapse relative">
           <thead>
             <tr class="bg-gray-100 text-left text-sm font-medium text-gray-700">
@@ -37,7 +38,6 @@
                   :class="{ 'rotate-180': statusDropdownOpen }">
                   ▼
                 </span>
-
                 <!-- Dropdown menu -->
                 <div v-if="statusDropdownOpen"
                   class="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-300 rounded shadow-lg z-30">
@@ -55,24 +55,33 @@
                   </ul>
                 </div>
               </th>
+              <th class="py-2 px-4 text-gray-500 font-normal">Action</th>
             </tr>
           </thead>
 
           <tbody>
-            <tr v-for="(exam, index) in filteredExams" :key="exam.id"
+            <tr v-for="(exam, index) in filteredexams" :key="exam.id"
               :class="' group relative border-b hover:bg-gray-50 transition-colors duration-300'">
-              <td class="py-3 px-4 text-gray-600">{{ index + 1 }}</td>
+              <td class="py-3 px-4 text-gray-600 flex items-center">{{ index + 1 }}</td>
               <td class="py-3 px-4 whitespace-nowrap font-semibold text-blue-700">
                 {{ exam.title }}
               </td>
-              <td class="py-3 px-4 text-gray-500 whitespace-nowrap">
-                {{ exam.description }}
+              <td
+                class="relative group py-3 px-4 text-gray-500 max-w-[200px]  whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer">
+                <div class="truncate">
+                  {{ exam.description }}
+                </div>
+                <div
+                  class="absolute inset-0 p-2 bg-white text-gray-900 rounded shadow-lg hover:text-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50"
+                  style="white-space: normal; overflow-wrap: break-word;">
+                  {{ exam.description }}
+                </div>
               </td>
               <td class="py-3 px-4 text-gray-500 whitespace-nowrap">
-                {{ formatDate(exam.startTime) }}
+                {{ formatDate(exam.datetime) }}
               </td>
               <td class="py-3 px-4 text-gray-500 whitespace-nowrap">
-                {{ formatDate(exam.endTime) }}
+                {{ formatDate(exam.deadline) }}
               </td>
               <td class="py-3 px-4 text-gray-500 whitespace-nowrap">
                 {{ formatDuration(exam.duration) }}
@@ -80,21 +89,58 @@
               <td class="py-3 px-4 whitespace-nowrap capitalize">
                 {{ exam.status }}
               </td>
+              <td class="flex items-center">
 
-              <!-- Floating Popup Buttons -->
-              <td class="relative w-0">
-                <div class="popup-container py-2 px-2" style="white-space: nowrap">
-                  <button @click="editExam(exam.id)" class="popup-btn edit-btn">
-                    Edit
+                  <button @click="viewCompletedStudent(exam.id)"  v-if="exam.status.toLowerCase() === 'completed' " 
+                    class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-xs font-semibold py-2 m-1 px-2 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
+                    ViewAnswer
                   </button>
-                  <button @click="deleteExam(exam.id)" class="popup-btn delete-btn">
-                    Delete
-                  </button>
-                  <div class="popup-arrow"></div>
-                </div>
+                      <!-- Published -->
+                <button v-if="exam.status.toLowerCase() === 'published'" @click="endexam(exam.id)"
+                  class="hover:-translate-y-1 transform text-xs text-center bg-orange-400 h-7 w-16 text-white hover:duration-500">
+                  End
+                </button>
+
+                <!-- Ended -->
+                <button v-if="exam.status.toLowerCase() === 'ended'" @click="editexam(exam.id)"
+                  class="hover:-translate-y-1 transform bg-blue-400 py-1 m-[2px] px-4 text-white hover:duration-500">
+                  Recover
+                </button>
+
+                <!-- Coming -->
+                <button v-if="exam.status.toLowerCase() === 'coming'" @click="editexam(exam.id)"
+                  class="hover:-translate-y-1 transform bg-blue-400 py-1 m-[2px] px-4 text-white text-sm hover:duration-500">
+                  Edit
+                </button>
+                <button v-if="exam.status.toLowerCase() === 'coming'" @click="deleteexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white">
+                  Delete
+                </button>
+
+                <!-- Deleted -->
+                <button v-if="exam.status.toLowerCase() === 'deleted'" @click="recoverexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white">
+                  Recover
+                </button>
+
+                <!-- Expired -->
+                <button v-if="exam.status.toLowerCase() === 'expired'" @click="recoverexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white">
+                  Recover
+                </button>
+                <button v-if="exam.status.toLowerCase() === 'expired'" @click="deleteexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-red-400  m-[2px] text-xs text-center h-7 w-16 text-white">
+                  Delete
+                </button>
+
+                <!-- Draft -->
+                <button v-if="exam.status.toLowerCase() === 'draft'" @click="deleteexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-red-400 text-xs m-[2px] text-center h-7 w-16 text-white">
+                  Delete
+                </button>
               </td>
             </tr>
-            <tr v-if="filteredExams.length === 0">
+            <tr v-if="filteredexams.length === 0">
               <td colspan="8" class="text-center py-4 text-gray-500">
                 No exams found for selected filters.
               </td>
@@ -110,8 +156,12 @@
 import axios from 'axios';
 import dayjs from 'dayjs';
 import { API_BASE_URL } from '@/config/useWebSocket';
+import { useToast } from "vue-toastification";
+import "vue-toastification/dist/index.css";
+import { useUserStore } from '@/store/store';
+const toast = useToast();
 export default {
-  name: "ExamManagement",
+  name: "examManagement",
   data() {
     return {
       API_BASE_URL,
@@ -119,26 +169,44 @@ export default {
       statusDropdownOpen: false,
       searchQuery: "",
       statuses: [
-      { label: "Pending", value: "pending" },
-      { label: "Ongoing", value: "ongoing" },
-      { label: "Cancelled", value: "cancelled" },
-      { label: "Expired", value: "expired" },
-      { label: "Draft", value: "draft" },
-      { label: "Published", value: "published" },
-      { label: "Ended", value: "ended" },
+        { label: "Expired", value: "expired" },
+        { label: "Draft", value: "draft" },
+        { label: "Coming", value: "coming" },
+        { label: "Deleted", value: "deleted" },
+        { label: "Published", value: "published" },
+        { label: "Ended", value: "ended" },
       ],
       exams: [
       ],
+      recover: [
+
+      ],
     };
   },
+  setup() {
+    const userStore = useUserStore();
+    return {
+      userStore
+    }
+  },
+
   computed: {
-    filteredExams() {
+    filteredexams() {
       let filtered = this.exams;
 
+      // Filter by teacherId
+      if (filtered.length > 0 && this.userStore?.user?.id) {
+        filtered = filtered.filter(
+          (exam) => exam.teacherId === this.userStore.user.id
+        );
+      }
+
+      // Filter by status
       if (this.statusFilter) {
         filtered = filtered.filter((exam) => exam.status === this.statusFilter);
       }
 
+      // Search filter
       if (this.searchQuery) {
         const q = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
@@ -156,18 +224,28 @@ export default {
       this.statusDropdownOpen = !this.statusDropdownOpen;
     },
     selectStatus(status) {
-      this.statusFilter = status.toUpperCase();
+      const upperStatus = status.toUpperCase();
+      this.statusFilter = upperStatus;
       this.statusDropdownOpen = false;
-    },
-   formatDate(dateString) {
-      return dayjs(dateString).format('YYYY-MM-DD HH:mm A') // or 'MMM D, YYYY h:mm A'
-   },
+
+      if (upperStatus === 'DELETED') {
+        this.getRecover();
+      } else {
+        this.getAllexam();
+      }
+    }, formatDate(dateString) {
+      return dateString
+        ? dayjs(dateString).format("YYYY-MM-DD hh:mm A")
+        : "N/A";
+    }
+    ,
     formatDuration(durationStr) {
-  const totalMins = parseInt(durationStr); // e.g., "1425 mins" → 1425
-  const hours = Math.floor(totalMins / 60);
-  const minutes = totalMins % 60;
-  return `${hours} hrs ${minutes} mins`;
-  },
+      const totalMins = parseInt(durationStr); // e.g., "1425 mins" → 1425
+      const hours = Math.floor(totalMins / 60);
+      const minutes = totalMins % 60;
+
+      return `${hours} hrs ${minutes} mins`;
+    },
     calculateDuration(start, end) {
       const startTime = new Date(start);
       const endTime = new Date(end);
@@ -187,11 +265,11 @@ export default {
           return "bg-yellow-50";
         case "published":
           return "bg-blue-50";
-        case "pending":[]
+        case "pending":
           return "bg-green-50";
         case "expired":
           return "bg-red-50";
-        case "canceled":
+        case "deleted":
           return "bg-red-50";
         case "ended":
           return "bg-red-50";
@@ -199,51 +277,98 @@ export default {
           return "";
       }
     },
-    editExam(id) {
-        this.$router.push({ name: "editExams", params: { id: id } });
+    async endexam(id) {
+      const index = this.exams.findIndex(exam => exam.id === id);
+      if (index === -1) {
+        alert("exam not found.");
+        return;
+      }
+      if (confirm("Are you sure you want to stop this exam?")) {
+        axios.put(`${API_BASE_URL}/api/exams/${id}/end`, null, {
+          withCredentials: true,   // if backend uses session cookies
+          // headers: { Authorization: 'Bearer <token>' } // if using JWT
+        })
+          .then(() => {
+            this.exams[index].status = 'ENDED';
+            this.getAllexam();
+            toast.success("exam was successfully end!", {
+              position: 'bottom-center'
+            });
+          })
+          .catch(error => {
+            console.error("Failed to end exam:", error);
+            alert("Failed to end exam. Please try again.");
+          });
+      }
     },
-deleteExam(id) {
-  const index = this.exams.findIndex(exam => exam.id === id);
-  if (index === -1) {
-    alert("Exam not found.");
-    return;
-  }
+    editexam(id) {
+      this.$router.push({ name: "editexams", params: { id: id } });
+    },
+    viewCompletedStudent(id) {
+      this.$router.push({ name: "StudentCompleted", params: { id: id } });
+    },
+    recoverexam(id) {
+      this.$router.push({ name: "recoverexams", params: { id: id } });
+    },
+    deleteexam(id) {
+      const index = this.exams.findIndex(exam => exam.id === id);
+      if (index === -1) {
+        alert("exam not found.");
+        return;
+      }
 
-  if (confirm("Are you sure you want to cancel this exam?")) {
-    axios.put(`${API_BASE_URL}/api/exams/canceled/${id}`, null, {
-      withCredentials: true,   // if backend uses session cookies
-      // headers: { Authorization: 'Bearer <token>' } // if using JWT
-    })
-    .then(() => {
-      this.exams[index].status = 'CANCELED';
-      console.log(`Exam with id ${id} canceled`);
-    })
-    .catch(error => {
-      console.error("Failed to cancel exam:", error);
-      alert("Failed to cancel exam. Please try again.");
-    });
-  }
-},
+      if (confirm("Are you sure you want to cancel this exam?")) {
+        axios.put(`${API_BASE_URL}/api/exams/deleted/${id}`, null, {
+          withCredentials: true,   // if backend uses session cookies
+          // headers: { Authorization: 'Bearer <token>' } // if using JWT
+        })
+          .then(() => {
+            this.exams[index].status = 'DELETED';
+            this.getAllexam();
+            toast.success("Deleted successfully!", {
+              position: 'bottom-center'
+            });
+          })
+          .catch(error => {
+            console.error("Failed to cancel exam:", error);
+            alert("Failed to cancel exam. Please try again.");
+          });
+      }
+    },
     handleClickOutside(event) {
       const dropdown = this.$el.querySelector("th.relative");
       if (dropdown && !dropdown.contains(event.target)) {
         this.statusDropdownOpen = false;
       }
     },
-    async getAllExam(){
-      try{
+    async getAllexam() {
+      try {
         const response = await axios.get(API_BASE_URL + "/api/exams/all",
-          {withCredentials:true}
+          { withCredentials: true }
         );
         console.log(response)
         this.exams = response.data;
-      }catch(ex){
-            console.log(ex)
+        console.log("API exams:", response.data);
+
+      } catch (ex) {
+
       }
-    }
+    },
+    async getRecover() {
+      try {
+        const response = await axios.get(API_BASE_URL + "/api/exams/recover",
+          { withCredentials: true }
+        );
+        console.log(response);
+        this.exams = response.data;
+      } catch (err) {
+        toast.error("Fetch datas false!")
+        console.log("fetch false!", err)
+      }
+    },
   },
   mounted() {
-    this.getAllExam();
+    this.getAllexam();
     document.addEventListener("click", this.handleClickOutside);
   },
   beforeUnmount() {

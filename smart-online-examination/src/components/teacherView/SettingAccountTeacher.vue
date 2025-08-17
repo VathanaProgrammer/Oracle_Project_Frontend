@@ -1,32 +1,44 @@
 <template>
     <div class="w-full mt-6 h-full">
         <div class="bg-white rounded-md h-full shadow-[0_4px_20px_rgba(0,0,0,0.1)] p-4">
-            <div class="flex items-center">
-                <img :src="profilePreview || API_BASE_PROFILE_URL + '/' + userStore.user.profile" alt="userprofile"
-                    class="rounded-md w-24 h-24 object-cover cursor-pointer"
-                    @click="openImage(profilePreview || API_BASE_PROFILE_URL + '/' + userStore.user.profile)">
+            <div class="grid grid-cols-8 items-center">
+                <div class="grid min-w-40 col-span-1 grid-cols-1 gap-4 justify-items-center">
+                    <img :src="profilePreview || API_BASE_PROFILE_URL + '/' + userStore.user.profile" alt="userprofile"
+                        class="rounded-md w-24 h-24 object-fit cursor-pointer"
+                        @click="openImage(profilePreview || API_BASE_PROFILE_URL + '/' + userStore.user.profile)">
 
-                <input v-on:change="onFileChange" type="file" class="hidden" ref="fileInput"
-                    accept="image/png, image/jpg, image/jpng, image/wapg">
-                <div class="flex flex-col gap-2 items-start justify-start ms-2">
-                    <button v-on:click="triggerFileInput"
-                        class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md">
-                        Upload New Photo
-                    </button>
+                    <input v-on:change="onFileChange" type="file" class="hidden" ref="fileInput"
+                        accept="image/png, image/jpg, image/jpng, image/wapg">
+                    <div class="flex flex-col gap-2 items-start justify-start ms-2">
+                        <button v-on:click="triggerFileInput"
+                            class="px-4 py-2 bg-blue-500 text-white text-sm font-medium rounded-md">
+                            Upload New Photo
+                        </button>
+                    </div>
+                </div>
+
+                <div class="w-full flex col-span-4 col-start-3 flex-col justify-center gap-2">
+                    <p class=" text-center uppercase text-sm w-100 focus:ring-blue-500 text-gray-600 font-medium rounded-md px-4 py-1">Department </p>
+                    <div v-for="(dep, index) in Idepartment" :key="index"
+                        class="bg-gray-200 text-gray-800 px-3 py-1 rounded-md text-sm font-medium">
+                        <span class="flex flex-nowrap">
+                            {{ "\t" + dep.name + "\t" }}
+                        </span>
+                    </div>
                 </div>
             </div>
             <form @submit.prevent="updateUserPhoneORProfile()" class="mt-10 w-full">
                 <div class="w-full flex md:flex-row flex-col  justify-between gap-3 my-5">
                     <div class="w-full">
                         <label for="firstname" class="text-gray-500 font-sm block mb-1">First name</label>
-                        <input type="text" :value="user.firstname" class="px-3 py-1 w-full text-gray-600 font-sm font-normal
+                        <input type="text" :value="user?.firstName" class="px-3 py-1 w-full text-gray-600 font-sm font-normal
                                     placeholder:text-gray-400 focus:outline-none 
                                     focus:ring-2 focus:ring-blue-500 border 
                                     border-gray-300 rounded-md focus:shadow-lg  shadow-blue-500">
                     </div>
                     <div class="w-full">
                         <label for="firstname" class="text-gray-500 font-sm block mb-1">Last name</label>
-                        <input type="text" :value="user.lastname" class="px-3 py-1 w-full text-gray-600 font-sm font-normal
+                        <input type="text" :value="user?.lastName" class="px-3 py-1 w-full text-gray-600 font-sm font-normal
                                     placeholder:text-gray-400 focus:outline-none 
                                     focus:ring-2 focus:ring-blue-500 border 
                                     border-gray-300 rounded-md focus:shadow-lg
@@ -50,64 +62,6 @@
                                     shadow-blue-500">
                     </div>
                 </div>
-
-
-
-
-                <div class="w-full flex  md:flex-row flex-col justify-between gap-2 my-5">
-                    <div class="w-full">
-                        <label for="firstname" class="text-gray-500 font-sm block mb-1">Department</label>
-                        <input type="text" :value="user.department" disabled class="px-3 py-1 w-full text-gray-600 font-sm font-normal
-                                    placeholder:text-gray-400 focus:outline-none 
-                                    focus:ring-2 focus:ring-blue-500 border 
-                                    border-gray-300 rounded-md focus:shadow-lg
-                                    shadow-blue-500">
-                    </div>
-                    <div class="w-full">
-                        <label for="firstname" class="text-gray-500 font-sm block mb-1">Major</label>
-                        <input type="text" :value="user.major + ' ' + user.shiftTime" disabled class="px-3 py-1 w-full text-gray-600 font-sm font-normal
-                                    placeholder:text-gray-400 focus:outline-none 
-                                    focus:ring-2 focus:ring-blue-500 border 
-                                    border-gray-300 rounded-md focus:shadow-lg  shadow-blue-500">
-                    </div>
-                </div>
-
-
-                <div class="w-full flex  md:flex-row flex-col justify-between gap-2 my-5">
-                    <div class="w-full">
-                        <label for="firstname" class="text-gray-500 font-sm block mb-1">ClassRoom</label>
-                        <input type="text" :value="user.location" disabled class="px-3 py-1 w-full text-gray-600 font-sm font-normal
-                                    placeholder:text-gray-400 focus:outline-none 
-                                    focus:ring-2 focus:ring-blue-500 border 
-                                    border-gray-300 rounded-md focus:shadow-lg
-                                    shadow-blue-500">
-                    </div>
-                    <div class="w-full">
-                        <label for="firstname" class="text-gray-500 font-sm block mb-1">Shift</label>
-                        <input type="text" :value="user.shiftName + ' ' + user.shiftTime" disabled class="px-3 py-1 w-full text-gray-600 font-sm font-normal
-                                    placeholder:text-gray-400 focus:outline-none 
-                                    focus:ring-2 focus:ring-blue-500 border 
-                                    border-gray-300 rounded-md focus:shadow-lg  shadow-blue-500">
-                    </div>
-                </div>
-                <div class="w-full flex  md:flex-row flex-col justify-between gap-2 my-5">
-                    <div class="w-full">
-                        <label for="firstname" class="text-gray-500 font-sm block mb-1">Batch</label>
-                        <input type="text" :value="user.batch" disabled class="px-3 py-1 w-full text-gray-600 font-sm font-normal
-                                    placeholder:text-gray-400 focus:outline-none 
-                                    focus:ring-2 focus:ring-blue-500 border 
-                                    border-gray-300 rounded-md focus:shadow-lg  shadow-blue-500">
-                    </div>
-                    <div class="w-full">
-                        <label for="firstname" class="text-gray-500 font-sm block mb-1">Year of Education</label>
-                        <input type="text" :value="user.year" disabled class="px-3 py-1 w-full text-gray-600 font-sm font-normal
-                                    placeholder:text-gray-400 focus:outline-none 
-                                    focus:ring-2 focus:ring-blue-500 border 
-                                    border-gray-300 rounded-md focus:shadow-lg
-                                    shadow-blue-500">
-                    </div>
-                </div>
-
                 <div class="flex justify-start gap-3">
                     <button type="submit"
                         class="text-white bg-blue-500 px-4 py-2 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)]shadow-md">Save
@@ -134,6 +88,9 @@ export default {
             profilePicture: null,
             profilePreview: null, // <-- add this
             user: [],
+            Idepartment: {
+
+            },
         }
     },
     mounted() {
@@ -152,10 +109,12 @@ export default {
         async loadStudentIfo() {
             try {
                 const response = await axios.get(
-                    API_BASE_URL + "/api/students/" + this.userStore.user.id,
+                    API_BASE_URL + "/api/teachers/" + this.userStore.user.id,
                     { withCredentials: true }
                 );
                 this.user = response.data.data;
+                this.Idepartment = response.data.data.departments;
+
                 console.log(response.data);
             } catch (e) {
                 console.log(e);
@@ -176,7 +135,7 @@ export default {
         async updateUserPhoneORProfile() {
             try {
                 const formData = new FormData();
-                formData.append('phone', this.user.phone);                  
+                formData.append('phone', this.user.phone);
                 if (this.profilePicture) {
                     formData.append('profilePicture', this.profilePicture);
                 }

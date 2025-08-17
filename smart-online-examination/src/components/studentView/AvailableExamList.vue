@@ -84,7 +84,7 @@
               ]"
             >
              {{ exam.type.toLowerCase() === 'final' ? 'Start Final' :
-                exam.type.toLowerCase() === 'mid' ? 'Start Midterm':
+                exam.type.toLowerCase() === 'midterm' ? 'Start Midterm':
                 'Start quiz'
               }}
             </button>
@@ -119,7 +119,6 @@
 </template>
 
 <script>
-import { AwardIcon } from 'lucide-vue-next';
 import { API_BASE_URL } from '@/config/useWebSocket';
 import { API_BASE_PROFILE_URL } from '@/config/useWebSocket';
 import axios from 'axios';

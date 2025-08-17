@@ -39,8 +39,8 @@
 </template>
 
 <script>
-import PasswordInput from './PasswordInput.vue';
-import TextInput from './TextInput.vue';
+import PasswordInput from './PasswordInputTeacher.vue';
+import TextInput from './TextInputTeacher.vue';
 import axios from 'axios';
 import { API_BASE_URL } from '@/config/useWebSocket';
 import { useToast } from 'vue-toastification';

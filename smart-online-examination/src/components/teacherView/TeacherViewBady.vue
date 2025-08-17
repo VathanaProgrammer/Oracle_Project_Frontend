@@ -107,12 +107,12 @@
       <StudentChat :progressData="studentProgress" />
     </div>
     <div
-      class="upcoming-exam 2xl:w-3/5 w-full md:w-5/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-2 xl:mt-2 2xl:mt-0 2xl:ms-2 p-4"
+      class="upcoming-exam 2xl:w-3/5 w-full md:w-5/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-2 xl:mt-2 2xl:mt-0 2xl:ms-2 p-4 "
     >
-      <header class="h-10 mb-4 flex items-center">
-        <p class="text-lg font-normal text-gray-600">Upcoming exam</p>
+      <header class="h-10 p-6 flex items-center bg-blue-100">
+        <p class="text-lg font-normal text-gray-600 ">Upcoming exam</p>
       </header>
-      <div class="overflow-x-auto">
+      <div class="overflow-x-auto ">
         <table
           class="w-full divide-y divide-gray-200 sm:text-center md:text-center"
         >
@@ -139,13 +139,13 @@
                 {{ exam.datetime }}
               </td>
               <td class="py-2 px-4 whitespace-nowrap text-gray-500">
-                {{ exam.batch }}
+                {{ exam.batchId }}
               </td>
               <td class="py-2 px-4 whitespace-nowrap text-gray-500">
                 {{ exam.year }}
               </td>
               <td class="py-2 px-4 whitespace-nowrap text-gray-500">
-                {{ exam.class }}
+                {{ exam.location }}
               </td>
               <td class="py-2 px-4 whitespace-nowrap text-gray-500">
                 {{ exam.major }}
@@ -165,7 +165,11 @@ import TimeSpentChart from "../studentView/TimeSpentChart.vue";
 import Multiselect from "@vueform/multiselect";
 import DropDownHover from "./DropDownHover.vue";
 import StudentChat from "./StudentChat.vue";
+import { useToast } from "vue-toastification";
+import { API_BASE_URL } from "@/config/useWebSocket";
+const toast = useToast();
 import { useUserStore } from "@/store/store";
+import axios from "axios";
 
 export default {
   components: {
@@ -184,7 +188,7 @@ export default {
   },
   data() {
     return {
-      
+      API_BASE_URL,    
       selectedAssignment: "",
       assignments: [
         {
@@ -217,51 +221,27 @@ export default {
         ],
       },
       exams: [
-        {
-          subject: "C# OOP",
-          teacher: "Mr. Bunthan",
-          teacherImage: "https://randomuser.me/api/portraits/men/45.jpg",
-          batch: "Batch 8",
-          year: "Year 2",
-          class: "12A",
-          major: "Computer Science",
-          datetime: "2025-06-01 09:00 AM",
-        },
-        {
-          subject: "Advanced CSS",
-          teacher: "Mr. Bunthan",
-          teacherImage: "https://randomuser.me/api/portraits/men/45.jpg",
-          batch: "Batch 7",
-          year: "Year 3",
-          class: "12B",
-          major: "Computer Science",
-          datetime: "2025-06-03 10:30 AM",
-        },
-        {
-          subject: "JavaScript DOM",
-          teacher: "Mr. Bunthan",
-          teacherImage: "https://randomuser.me/api/portraits/men/45.jpg",
-          batch: "Batch 6",
-          year: "Year 1",
-          class: "10A",
-          major: "Fintech",
-          datetime: "2025-06-05 01:00 PM",
-        },
-        {
-          subject: "JavaScript APIs",
-          teacher: "Mr. Bunthan",
-          teacherImage: "https://randomuser.me/api/portraits/men/45.jpg",
-          batch: "Batch 8",
-          year: "Year 2",
-          class: "12C",
-          major: "Computer Science",
-          datetime: "2025-06-07 03:15 PM",
-        },
+      
       ],
     };
   },
   computed: {},
   methods: {
+      async getComing(){
+  try{
+   const response = await axios.get(`${API_BASE_URL}/api/exams/coming`,{
+    withCredentials : true,
+   }
+  )
+  console.log(response);
+  this.exams = response.data || [];
+   if (!response.data || response.data.length === 0) {
+      console.warn("No upcoming exams found.");
+    }
+  }catch(err){
+    toast.error(err?.message || "Failed to fetch exams");
+  }
+},
     formatAssignment(assign) {
       
       return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} - (${assign.shiftTime})`;
@@ -270,6 +250,10 @@ export default {
       console.log("Selected role:", role);
     },
   },
+  mounted(){
+     console.table(this.userStore?.user.phone)
+     this.getComing();
+  }
 };
 </script>
 

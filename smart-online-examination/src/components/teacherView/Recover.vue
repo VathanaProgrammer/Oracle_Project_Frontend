@@ -422,6 +422,7 @@ export default {
           withCredentials: true,
         });
         this.assignments = res.data;
+        console.log(assignments);
       } catch (err) {
         console.error("Failed to fetch assignments:", err);
       }
@@ -632,31 +633,26 @@ export default {
 
         // 1. Build exam metadata to match your Spring Boot DTO
         const examMeta = {
-          id: this.examId || null, // 👈 Use null for new exams
-          assignTo: this.assignedId, // 👈 AssignedTo ID
+          assignTo: this.assignedId,
           startTime: this.startTime,
           endTime: this.endTime,
-          status: this.status || "DRAFT", // 👈 You can change to "DRAFT" if needed
-          type: this.type, // 👈 "quiz", "midterm", etc.
-          duration: this.getDurationInMinutes(), // 👈 e.g. 60
+          status: this.status.toLowerCase() == 'published' ? 'coming' : this.status,
+          type: this.type,
+          duration: this.getDurationInMinutes(),
           durationUnit: "minutes",
           title: this.examTitle,
           description: this.examDescription,
-          createdBy: this.currentTeacherId || 1, // 👈 Optional: dynamic user ID
+          createdBy: this.currentTeacherId || 1,
           questions: this.questions.map((q) => ({
             ...q,
             fileExams: (q.fileExams || []).map((f) => ({
               title: f.title,
               description: f.description,
-              fileUrl: f.fileUrl.name || f.fileUrl, // 👈 Handles File or existing string
+              fileUrl: f.fileUrl.name || f.fileUrl,
             })),
           })),
         };
-
-        // 2. Append the examMeta JSON as text
         formData.append("examMeta", JSON.stringify(examMeta));
-
-        // 3. Append each real file used in file_exam questions
         this.questions.forEach((q) => {
           if (q.type === "file_exam") {
             (q.fileExams || []).forEach((fileObj) => {
@@ -666,10 +662,8 @@ export default {
             });
           }
         });
-
-        // 4. Submit via axios
-        const response = await axios.put(
-          `${API_BASE_URL}/api/exams/${this.examId}`,
+        const response = await axios.post(
+          `${API_BASE_URL}/api/exams`,
           formData,
           {
             headers: {
@@ -678,7 +672,6 @@ export default {
             withCredentials: true,
           }
         );
-
         console.log("✅ Exam Saved:", response.data);
         alert("✅ Exam saved successfully!");
       } catch (error) {
