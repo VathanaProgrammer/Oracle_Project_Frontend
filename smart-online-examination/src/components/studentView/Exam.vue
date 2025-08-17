@@ -18,7 +18,7 @@
                     <p class="font-semibold text-lg mb-3">
                         {{ index + 1 }}.
                         <span v-if="q.type === 'file_exam'">File Exam (<span style="color: green">{{ q.score
-                        }}pt</span>)</span>
+                                }}pt</span>)</span>
                         <span v-else>{{ q.content }} (<span style="color: green">{{ q.score }}pt</span>)</span>
                     </p>
 
@@ -95,7 +95,6 @@ import { API_BASE_URL, API_BASE_FILE_URL } from "../../config/useWebSocket";
 import { parseISO, format } from "date-fns";
 import { useUserStore } from "@/store/store";
 import { useToast } from "vue-toastification";
-import { showConfirmDialog } from "../utils/confirmDialog";
 import { useRouter } from "vue-router";
 
 const toast = useToast();
@@ -138,7 +137,7 @@ export default {
         },
     },
     mounted() {
-        console.log(this.userStore.user?.lastname);
+        console.log(this.userStore.user?.id);
         this.fetchExamDetails();
     },
     methods: {
@@ -165,109 +164,77 @@ export default {
             }
         },
         async submitAnswers() {
-            if (!this.userStore.user.id || !this.userStore.user.id) {
-                toast.error("Student information not found.", {
-                    position: "bottom-center",
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                });
+            if (!this.userStore.user?.id) {
+                toast.error("Student information not found.");
                 return;
             }
 
-            console.log("Submitting answers for student ID:", this.userStore.user.id);
-
-            const answersPayload = this.questions.map((question, index) => {
-                const userAnswer = this.answers[question.id]; // use question.id as key (not index)
-
-                let answerContent = null;
-                let answerTrueFalse = null;
-                let answerIndex = index;
-                let answerFilePath = null;
-
-                if (question.type === "short_answer") {
-                    answerContent = userAnswer || "";
-                } else if (question.type === "true_false") {
-                    // If you stored true/false as string, convert to boolean
-                    answerTrueFalse = userAnswer === "true" ? true : (userAnswer === "false" ? false : null);
-                } else if (question.type === "multiple_choice") {
-                    // If your answers[q.id] stores selected choice index or value, assign it here
-                    answerIndex = userAnswer || 0;
-                }
-                // For file_exam, file is handled separately
-
-                return {
-                    answerContent,
-                    answerTrueFalse,
-                    answerIndex,
-                    answerFilePath,
-                    studentDTO: { id: this.userStore.user.id },
-                    questionDTO: { id: question.id },
-                };
-            });
             const formData = new FormData();
-            //   files.forEach(file => {
-            //   formData.append("files", file, `${file.questionId}_${file.name}`);
-            // });
-            formData.append("answers", JSON.stringify(answersPayload));
-            answersPayload.forEach((item, index) => {
-                console.log(index, item);
-            });
-            formData.forEach((value, key) => {
-                console.log("Key:", key);
-                console.log("Value:", value);
-            });
-            for (const q of this.questions) {
+            const answersPayload = [];
+
+            for (let index = 0; index < this.questions.length; index++) {
+                const q = this.questions[index];
                 const userAnswer = this.answers[q.id];
                 const file = this.uploadedFiles[q.id];
 
+                // Validation
                 switch (q.type) {
                     case "multiple_choice":
-                        if (!userAnswer) {
+                        if (userAnswer == null) {
                             toast.error(`Please select an option for question ${q.id}.`);
                             return;
                         }
                         break;
-
                     case "true_false":
                         if (userAnswer !== "true" && userAnswer !== "false") {
                             toast.error(`Please select True or False for question ${q.id}.`);
                             return;
                         }
                         break;
-
                     case "short_answer":
-                        if (!userAnswer || userAnswer.trim() === "") {
+                        if (!userAnswer?.trim()) {
                             toast.error(`Please provide an answer for question ${q.id}.`);
                             return;
                         }
                         break;
-
                     case "file_exam":
                         if (!file) {
                             toast.error(`Please upload a file for question ${q.id}.`);
                             return;
                         }
                         break;
-
-                    default:
-                        toast.error(`Unknown question type for question ${q.id}.`);
-                        return;
                 }
+
+                // Prepare payload
+                const payloadItem = {
+                    answerContent: q.type === "short_answer" ? userAnswer : null,
+                    answerTrueFalse: q.type === "true_false" ? (userAnswer === "true") : null,
+                    answerIndex: q.type === "multiple_choice" ? userAnswer : index,
+                    answerFilePath: null,
+                    studentDTO: { id: this.userStore.user.id },
+                    questionDTO: { id: q.id },
+                };
+                answersPayload.push(payloadItem);
 
                 if (file) {
                     formData.append("files", file, `${q.id}_${file.name}`);
                 }
             }
 
+            formData.append("answers", JSON.stringify(answersPayload));
+
             try {
-                const response = await axios.post(`${API_BASE_URL}/api/answers`, formData, {
+                await axios.post(`${API_BASE_URL}/api/answers`, formData, { withCredentials: true });
+
+                const payload = { userId: this.userStore.user.id, examId: this.exam.id };
+                const response2 = await axios.post(`${API_BASE_URL}/api/complete-exams/insert`, payload, {
                     withCredentials: true,
                 });
+
                 toast.success("Answers submitted successfully!");
-                console.log("Submission response:", response.data);
+                console.log("Submission response:", response2.data);
             } catch (error) {
                 toast.error(`Submit error: ${error.response?.data || error.message}`);
-                console.error("Submit error:", error);
             }
         },
         formatDuration(durationStr) {

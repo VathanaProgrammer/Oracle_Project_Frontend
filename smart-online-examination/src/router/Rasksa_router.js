@@ -14,6 +14,12 @@ import StudentResult from "@/components/teacherView/StudentResult.vue";
 import EditExam from "@/components/teacherView/EditExam.vue";
 import Exam from "@/components/studentView/Exam.vue";
 import UnauthorizedPage from "@/components/Auth/UnauthorizedPage.vue";
+import Recover from "@/components/teacherView/Recover.vue";
+import SettingTeacher from "@/components/teacherView/SettingTeacher.vue";
+import SettingAccountTeacher from "@/components/teacherView/SettingAccountTeacher.vue";
+import SettingSecurityTeacher from "@/components/teacherView/SettingSecurityTeacher.vue";
+import ViewAnswer from "@/components/teacherView/ViewAnswer.vue";
+import ViewStudentCompleted from "@/components/teacherView/ViewStudentCompleted.vue";
 export default [
       {
     path: "/",
@@ -88,15 +94,45 @@ export default [
         component: NewExam,
       },
       {
+        path: "exam-management/ViewAnswer",
+        name: "viewAnswer",
+        component: ViewAnswer,
+      },
+      {
+        path: "exam-management/:id/StudentCompleted",
+        name: "StudentCompleted",
+        component: ViewStudentCompleted,
+      },
+      {
         path: "student-results",
         name: "studentResults",
         component: StudentResult,
       },
       {
         path: "edit/:id",
-        name: "editExams",
+        name: "editexams",
         component: EditExam,
-      }
+      },
+        {
+        path: "recover/:id",
+        name: "recoverexams",
+        component: Recover,
+      },
+         {
+        path: "setting",
+        component: SettingTeacher,
+        children: [
+          {
+            path: "teacher-account",
+            component: SettingAccountTeacher,
+          },
+          {
+            path: "security",
+            component: SettingSecurityTeacher,
+          },
+
+        ],
+      },
     ],
   },
 ]

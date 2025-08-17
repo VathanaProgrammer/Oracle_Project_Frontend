@@ -17,12 +17,6 @@
               New exam
             </button>
           </RouterLink>
-           <RouterLink to="/teacher-dashboard/exam-management/viewAnswer">
-            <button
-              class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 m-1 px-4 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
-              ViewAnswer
-            </button>
-          </RouterLink>
         </div>
       </header>
 
@@ -96,7 +90,12 @@
                 {{ exam.status }}
               </td>
               <td class="flex items-center">
-                <!-- Published -->
+
+                  <button @click="viewCompletedStudent(exam.id)"  v-if="exam.status.toLowerCase() === 'completed' " 
+                    class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-xs font-semibold py-2 m-1 px-2 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
+                    ViewAnswer
+                  </button>
+                      <!-- Published -->
                 <button v-if="exam.status.toLowerCase() === 'published'" @click="endexam(exam.id)"
                   class="hover:-translate-y-1 transform text-xs text-center bg-orange-400 h-7 w-16 text-white hover:duration-500">
                   End
@@ -159,7 +158,7 @@ import dayjs from 'dayjs';
 import { API_BASE_URL } from '@/config/useWebSocket';
 import { useToast } from "vue-toastification";
 import "vue-toastification/dist/index.css";
-import { errorMessages } from '@vue/compiler-core';
+import { useUserStore } from '@/store/store';
 const toast = useToast();
 export default {
   name: "examManagement",
@@ -184,14 +183,30 @@ export default {
       ],
     };
   },
+  setup() {
+    const userStore = useUserStore();
+    return {
+      userStore
+    }
+  },
+
   computed: {
     filteredexams() {
       let filtered = this.exams;
 
+      // Filter by teacherId
+      if (filtered.length > 0 && this.userStore?.user?.id) {
+        filtered = filtered.filter(
+          (exam) => exam.teacherId === this.userStore.user.id
+        );
+      }
+
+      // Filter by status
       if (this.statusFilter) {
         filtered = filtered.filter((exam) => exam.status === this.statusFilter);
       }
 
+      // Search filter
       if (this.searchQuery) {
         const q = this.searchQuery.toLowerCase();
         filtered = filtered.filter(
@@ -288,6 +303,9 @@ export default {
     },
     editexam(id) {
       this.$router.push({ name: "editexams", params: { id: id } });
+    },
+    viewCompletedStudent(id) {
+      this.$router.push({ name: "StudentCompleted", params: { id: id } });
     },
     recoverexam(id) {
       this.$router.push({ name: "recoverexams", params: { id: id } });
