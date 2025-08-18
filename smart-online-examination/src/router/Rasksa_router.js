@@ -20,6 +20,8 @@ import SettingAccountTeacher from "@/components/teacherView/SettingAccountTeache
 import SettingSecurityTeacher from "@/components/teacherView/SettingSecurityTeacher.vue";
 import ViewAnswer from "@/components/teacherView/ViewAnswer.vue";
 import ViewStudentCompleted from "@/components/teacherView/ViewStudentCompleted.vue";
+import Notification from "@/components/studentView/Notification.vue";
+import TNotification from "@/components/teacherView/TNotification.vue";
 export default [
       {
     path: "/",
@@ -37,6 +39,11 @@ export default [
     component: StudentDashboard,
     meta: { layout: "dashboard" },
     children: [
+      {
+        path: "notification",
+        name: "student-notif",
+        component: Notification
+      },
       {
         path: "",
         name: "studentViewBody",
@@ -107,6 +114,11 @@ export default [
         path: "student-results",
         name: "studentResults",
         component: StudentResult,
+      },
+      {
+        path: "notification",
+        name: "teacher-notif",
+        component: TNotification
       },
       {
         path: "edit/:id",

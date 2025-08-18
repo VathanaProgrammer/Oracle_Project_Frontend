@@ -13,12 +13,18 @@ import Notification from "@/components/adminView/Notification.vue";
 import Settings from "@/components/adminView/Settings.vue";
 import SettingAccount from "@/components/adminView/SettingAccount.vue";
 import SettingSecurity from "@/components/adminView/SettingSecurity.vue";
+import Materil from "@/components/adminView/Materil.vue";
 export default [
   {
     path: "/admin-dashboard",
     name: "adminDashboard",
     component: AdminDashborad,
     children: [
+      {
+        path: "materials",
+        name: "materails",
+        component: Materil,
+      },
       {
         path: "",
         name: "adminBody",
@@ -74,12 +80,14 @@ export default [
         name: "privateChat",
         component: PrivateChat,
       },
+
       {
         path: "settings",
+        name: "ad-setting",
         component: Settings,
         children: [
           {
-            path: "account",
+            path: "",
             component: SettingAccount,
           },
           {
