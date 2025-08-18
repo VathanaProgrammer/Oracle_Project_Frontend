@@ -1532,6 +1532,8 @@ export default {
           toast.error("failed to fetch batchs!", {
             position: "bottom-center",
           });
+
+          console.log(res.data)
         }
       } catch (e) {
         console.log(e);

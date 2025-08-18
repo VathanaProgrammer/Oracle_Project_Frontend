@@ -1,7 +1,7 @@
 <template>
   <div class="mt-7 w-full">
     <RouterLink
-    to="/admin-dashboard/settings/account"
+    to="/admin-dashboard/settings"
       @click="selected = 'account'"
       class="inline-flex items-center gap-2 px-4 py-2 rounded transition-colors shadow-[0_4px_20px_rgba(0,0,0,0.1)]"
       :class="selected === 'account' ? ' bg-blue-500 text-white font-medium' : 'text-gray-700 hover:text-violet-600 hover:bg-gray-200'"

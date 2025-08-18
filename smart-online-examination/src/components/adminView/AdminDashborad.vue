@@ -37,21 +37,6 @@
           >
             <DashboardIcon class="text-white w-5 h-5"></DashboardIcon>
             <span class="text-lg text-white font-normal ps-2">Dashboard</span>
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </RouterLink>
 
           <RouterLink
@@ -63,21 +48,6 @@
             <span class="text-lg text-white font-normal ps-2"
               >User Management</span
             >
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </RouterLink>
           <RouterLink
             to="/admin-dashboard/academic"
@@ -85,21 +55,6 @@
           >
             <AcademicIcon class="text-white w-5 h-5"></AcademicIcon>
             <span class="text-lg text-white font-normal ps-2">Academic</span>
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </RouterLink>
           <RouterLink
             to="/admin-dashboard/activity-long"
@@ -111,21 +66,6 @@
             <span class="text-lg text-white font-normal ps-2"
               >Activity Log</span
             >
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </RouterLink>
 
           <RouterLink
@@ -138,21 +78,18 @@
             <span class="text-lg text-white font-normal ps-2"
               >Notification</span
             >
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
+          </RouterLink>
+
+                    <RouterLink
+            :to = "{ name: 'ad-setting'}"
+            class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+          >
+            <SettingIcon
+              class="text-white w-5 h-5"
+            ></SettingIcon>
+            <span class="text-lg text-white font-normal ps-2"
+              >Settings</span
+            >
           </RouterLink>
 
           <!-- <transition
@@ -212,21 +149,6 @@
           >
             <DashboardIcon class="text-white w-5 h-5"></DashboardIcon>
             <span class="text-lg text-white font-normal ps-2">Dashboard</span>
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </div>
         </RouterLink>
 
@@ -241,21 +163,6 @@
             <span class="text-lg text-white font-normal ps-2"
               >User Management</span
             >
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </div>
         </RouterLink>
 
@@ -268,21 +175,6 @@
           >
             <AcademicIcon class="text-white w-5 h-5"></AcademicIcon>
             <span class="text-lg text-white font-normal ps-2">Academic</span>
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </div>
         </RouterLink>
 
@@ -294,21 +186,6 @@
             class="text-white w-5 h-5"
           ></UserActivityWhiteIcon>
           <span class="text-lg text-white font-normal ps-2">Activity Log</span>
-          <RightPointerIcon
-            :class="
-              showDashboardMenu
-                ? [
-                    'fill-white',
-                    'ms-auto',
-                    'w-7',
-                    'h-7',
-                    'rotate-90',
-                    'transition-transform',
-                    'duration-300',
-                  ]
-                : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-            "
-          />
         </RouterLink>
 
         <RouterLink
@@ -324,28 +201,10 @@
             <span class="text-lg text-white font-normal ps-2"
               >Notification</span
             >
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </div>
         </RouterLink>
 
-        <RouterLink
-          to="/student-dashboard/view-materails"
-          class="w-full px-4 pb-2 mt-1"
-        >
+        <RouterLink :to="{ name: 'materails' }" class="w-full px-4 pb-2 mt-1">
           <div
             class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
@@ -353,26 +212,11 @@
             <span class="text-lg text-white font-normal ps-2"
               >View Materails</span
             >
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </div>
         </RouterLink>
 
         <RouterLink
-          to="/admin-dashboard/settings/account"
+          to="/admin-dashboard/settings"
           class="w-full px-4 pb-2 mt-1"
         >
           <div
@@ -380,21 +224,6 @@
           >
             <SettingIcon class="text-white w-5 h-5"></SettingIcon>
             <span class="text-lg text-white font-normal ps-2">Settings</span>
-            <RightPointerIcon
-              :class="
-                showDashboardMenu
-                  ? [
-                      'fill-white',
-                      'ms-auto',
-                      'w-7',
-                      'h-7',
-                      'rotate-90',
-                      'transition-transform',
-                      'duration-300',
-                    ]
-                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
-              "
-            />
           </div>
         </RouterLink>
       </div>
@@ -471,7 +300,7 @@
                   <span class="font-semibold text-gray-600">Notifications</span>
                   <div class="flex">
                     <p
-                      class=" flex justify-center text-md font-medium py-[2px] px-2 rounded-md me-2 items-center bg-blue-600 bg-opacity-10 text-blue-700"
+                      class="flex justify-center text-md font-medium py-[2px] px-2 rounded-md me-2 items-center bg-blue-600 bg-opacity-10 text-blue-700"
                     >
                       4 New
                     </p>

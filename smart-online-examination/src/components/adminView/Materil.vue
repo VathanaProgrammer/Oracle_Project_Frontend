@@ -169,9 +169,7 @@ export default {
       ];
 
       if (!allowed.includes(file.type)) {
-        toast.error("Only PDF, Word, Excel, and PPT files are allowed!", {
-          position: "bottom-center"
-        });
+        alert("Only PDF, Word, Excel, and PPT files are allowed!");
         e.target.value = "";
         return;
       }
