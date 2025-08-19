@@ -101,7 +101,7 @@ export default [
         component: NewExam,
       },
       {
-        path: "exam-management/ViewAnswer",
+        path: "exam-management/ViewAnswer/:id/:userId",
         name: "viewAnswer",
         component: ViewAnswer,
       },

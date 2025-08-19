@@ -1,40 +1,62 @@
 <template>
   <div class="h-full">
     <section
-      class="filter-search-role-export-add-new-user section-limit-height mb-24 rounded-md py-6 px-8 table-l bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-5 md:min-h-[280px]">
+      class="filter-search-role-export-add-new-user section-limit-height mb-24 rounded-md py-6 px-8 table-l bg-white shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-5 md:min-h-[280px]"
+    >
       <div class="mt-4 py-4">
-          <h1 class=" font-semibold text-gray-600 text-xl">All Students completed the exam</h1>
-        <div @click.self="openedUserId = null" class="mt-4 border-t-2 border-gray-200 rounded-md shadow-sm">
+        <h1 class="font-semibold text-gray-600 text-xl">
+          All Students completed the exam
+        </h1>
+        <div
+          @click.self="openedUserId = null"
+          class="mt-4 border-t-2 border-gray-200 rounded-md shadow-sm"
+        >
           <div class="overflow-y-auto table-limit-height">
             <table class="min-w-full divide-y divide-gray-200 bg-white">
               <thead class="bg-gray-50 sticky top-0 z-10">
-                <tr> 
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                <tr>
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+                  >
                     User
                   </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+                  >
                     Email
                   </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+                  >
                     Role
                   </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+                  >
                     Phone
                   </th>
-                  <th class="px-4 py-3 text-left text-sm font-semibold text-gray-600">
+                  <th
+                    class="px-4 py-3 text-left text-sm font-semibold text-gray-600"
+                  >
                     Action
                   </th>
                 </tr>
               </thead>
               <tbody class="divide-y divide-gray-200">
-                <tr v-for="user in users" :key="user.id">
+                <tr v-for="user in users" :key="user.userId">
                   <td class="px-4 py-3 flex items-center space-x-3">
-                    <img :src="API_BASE_PROFILE_URL + '/' + user.profile" alt="Profile"
-                      class="h-10 w-10 rounded-full object-cover" />
+                    <img
+                      :src="API_BASE_PROFILE_URL + '/' + user.profile"
+                      alt="Profile"
+                      class="h-10 w-10 rounded-full object-cover"
+                    />
                     <div>
                       <p class="font-medium text-gray-700">
                         {{ user.firstName }} {{ user.lastName }}
-                        <span v-if="user.id === userStore.user.id" class="text-blue-500">
+                        <span
+                          v-if="user.id === userStore.user.id"
+                          class="text-blue-500"
+                        >
                           (You)
                         </span>
                       </p>
@@ -46,13 +68,19 @@
                   <td class="px-4 py-3 text-sm font-medium text-gray-500">
                     <div class="flex items-center space-x-1">
                       <template v-if="user.role === 'ADMIN'">
-                        <AdminDisplayInTheTableIcon class="w-6 h-6 text-white" />
+                        <AdminDisplayInTheTableIcon
+                          class="w-6 h-6 text-white"
+                        />
                       </template>
                       <template v-else-if="user.role === 'TEACHER'">
-                        <TeacherDisplayInTheTableIcon class="w-6 h-6 text-white" />
+                        <TeacherDisplayInTheTableIcon
+                          class="w-6 h-6 text-white"
+                        />
                       </template>
                       <template v-else-if="user.role === 'STUDENT'">
-                        <StudentDisplayInTheTableIcon class="w-6 h-6 text-white" />
+                        <StudentDisplayInTheTableIcon
+                          class="w-6 h-6 text-white"
+                        />
                       </template>
                       <span class="leading-none">{{ user.role }}</span>
                     </div>
@@ -60,9 +88,16 @@
                   <td class="px-4 py-3 text-sm font-medium text-gray-500">
                     {{ formatPhone(user.phone) }}
                   </td>
-                  <td class="relative px-4 py-3 text-sm font-medium text-gray-700">
+                  <td
+                    class="relative px-4 py-3 text-sm font-medium text-gray-700"
+                  >
                     <div class="flex items-center space-x-3">
-                      <button @click="handeCheck()" class="bg-green-400 px-2 py-1 rounded cursor-pointer text-white">Check</button>
+                      <button
+                        @click="handeCheck(user.examId, user.userId)"
+                        class="bg-green-400 px-2 py-1 rounded cursor-pointer text-white"
+                      >
+                        Check
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -135,7 +170,7 @@ export default {
       API_BASE_PROFILE_URL,
       API_BASE_URL,
       users: [],
-      Subject:[],
+      Subject: [],
       selectedLimit: "",
       searchQuery: "",
       openedUserId: null,
@@ -148,9 +183,9 @@ export default {
   },
   computed: {
     selectedSubjectsNames() {
-      return this.Subjects
-        .filter((dp) => this.selectedSubjects.includes(dp.id))
-        .map((dp) => dp.name);
+      return this.Subjects.filter((dp) =>
+        this.selectedSubjects.includes(dp.id)
+      ).map((dp) => dp.name);
     },
   },
   methods: {
@@ -174,25 +209,28 @@ export default {
       if (!phone) return "-";
       return phone.startsWith("0") ? "+855" + phone.substring(1) : phone;
     },
-async getSubject() {
-    const response = await axios.get(`${API_BASE_URL}/api/teacherSubject`, {
+    async getSubject() {
+      const response = await axios.get(`${API_BASE_URL}/api/teacherSubject`, {
         withCredentials: true,
-    });
+      });
 
-    if (response.status === 200) {
+      if (response.status === 200) {
         this.Subject = response.data.data; // this is likely an array
         console.log("Subjects:", this.Subject);
 
         // If you want the first subject's name
         if (this.Subject.length > 0) {
-            console.log("First subject name:", this.Subject[0].name);
+          console.log("First subject name:", this.Subject[0].name);
         }
-    }
-},
+      }
+    },
     async getAllStudentCompleted() {
-      const response = await axios.get(API_BASE_URL + `/api/complete-exams/${this.id}/submitted-students`, {
-        withCredentials: true,
-      });
+      const response = await axios.get(
+        API_BASE_URL + `/api/complete-exams/${this.id}/submitted-students`,
+        {
+          withCredentials: true,
+        }
+      );
 
       if (response.status === 200) {
         this.users = response.data.data;
@@ -203,11 +241,12 @@ async getSubject() {
     toggleMenu(id) {
       this.openedUserId = this.openedUserId === id ? null : id;
     },
-       handeCheck() {
-  this.$router.push({ 
-    name: "viewAnswer", 
-  });
-}
+    handeCheck(id, uId) {
+      this.$router.push({
+        name: "viewAnswer",
+        params: { id: id, userId: uId },
+      });
+    },
   },
   mounted() {
     this.getAllStudentCompleted();
@@ -221,7 +260,6 @@ async getSubject() {
       this.getAllStudentCompleted();
     },
   },
-
 };
 </script>
 <style scoped>

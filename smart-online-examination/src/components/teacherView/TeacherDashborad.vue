@@ -25,7 +25,7 @@
             class="text-gray-700 hover:text-gray-900 focus:outline-none"
             title="Close sidebar"
           >
-            <CloseIcon class="w-6 h-6 opacity-70"/>
+            <CloseIcon class="w-6 h-6 opacity-70" />
           </button>
         </div>
 
@@ -36,9 +36,19 @@
             <DashboardIcon class="text-white w-5 h-5"></DashboardIcon>
             <span class="text-lg text-white font-normal ps-2">Dashboard</span>
             <RightPointerIcon
-              :class="showDashboardMenu
-                ? ['fill-white', 'ms-auto', 'w-7', 'h-7', 'rotate-90', 'transition-transform', 'duration-300']
-                : ['fill-white', 'ms-auto', 'w-7', 'h-7']"
+              :class="
+                showDashboardMenu
+                  ? [
+                      'fill-white',
+                      'ms-auto',
+                      'w-7',
+                      'h-7',
+                      'rotate-90',
+                      'transition-transform',
+                      'duration-300',
+                    ]
+                  : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+              "
             />
           </div>
         </div>
@@ -57,7 +67,9 @@
     </transition>
 
     <!-- Permanent Sidebar for xl+ screens -->
-    <aside class="hidden xl:flex bg-white shadow-lg w-96 h-screen flex flex-col">
+    <aside
+      class="hidden xl:flex bg-white shadow-lg w-96 h-screen flex flex-col"
+    >
       <div class="p-4 flex justify-between w-full">
         <div class="flex items-center justify-center">
           <EduIcon class="w-11 h-11 text-[#8C09F4]" />
@@ -76,38 +88,87 @@
           <span class="text-lg text-white font-[500] ps-2">Dashboard</span>
           <RightPointerIcon
             @click="toggleDashboardMenu()"
-            :class="showDashboardMenu
-              ? ['fill-white', 'ms-auto', 'w-7', 'h-7', 'rotate-90', 'transition-transform', 'duration-300']
-              : ['fill-white', 'ms-auto', 'w-7', 'h-7']"
+            :class="
+              showDashboardMenu
+                ? [
+                    'fill-white',
+                    'ms-auto',
+                    'w-7',
+                    'h-7',
+                    'rotate-90',
+                    'transition-transform',
+                    'duration-300',
+                  ]
+                : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+            "
           />
         </div>
       </RouterLink>
 
-      <RouterLink to="/teacher-dashboard/ExamManagement" class="w-full px-4 pb-2 mt-1">
+      <RouterLink
+        to="/teacher-dashboard/ExamManagement"
+        class="w-full px-4 pb-2 mt-1"
+      >
         <div
           class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
         >
           <ListIcon class="text-white w-5 h-5"></ListIcon>
-          <span class="text-lg text-white font-[500] ps-2">Exam Management</span>
+          <span class="text-lg text-white font-[500] ps-2"
+            >Exam Management</span
+          >
           <RightPointerIcon
-            :class="showDashboardMenu
-              ? ['fill-white', 'ms-auto', 'w-7', 'h-7', 'rotate-90', 'transition-transform', 'duration-300']
-              : ['fill-white', 'ms-auto', 'w-7', 'h-7']"
+            :class="
+              showDashboardMenu
+                ? [
+                    'fill-white',
+                    'ms-auto',
+                    'w-7',
+                    'h-7',
+                    'rotate-90',
+                    'transition-transform',
+                    'duration-300',
+                  ]
+                : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+            "
           />
         </div>
       </RouterLink>
 
-      <RouterLink to="/teacher-dashboard/student-results" class="w-full px-4 pb-2 mt-1">
+      <RouterLink
+        to="/teacher-dashboard/student-results"
+        class="w-full px-4 pb-2 mt-1"
+      >
         <div
           class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
         >
           <ResultIcon class="text-white w-5 h-5"></ResultIcon>
-          <span class="text-lg text-white font-[500] ps-2">Student Results</span>
+          <span class="text-lg text-white font-[500] ps-2"
+            >Student Results</span
+          >
           <RightPointerIcon
-            :class="showDashboardMenu
-              ? ['fill-white', 'ms-auto', 'w-7', 'h-7', 'rotate-90', 'transition-transform', 'duration-300']
-              : ['fill-white', 'ms-auto', 'w-7', 'h-7']"
+            :class="
+              showDashboardMenu
+                ? [
+                    'fill-white',
+                    'ms-auto',
+                    'w-7',
+                    'h-7',
+                    'rotate-90',
+                    'transition-transform',
+                    'duration-300',
+                  ]
+                : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+            "
           />
+        </div>
+      </RouterLink>
+
+      <RouterLink :to="{ name: 'teacher-notif' }" class="w-full px-4 pb-2 mt-1">
+        <div
+          class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+        >
+          <MessageSolidWhiteIcon class="text-white w-5 h-5"></MessageSolidWhiteIcon>
+          <span class="text-lg text-white font-normal ps-2">Notification</span>
         </div>
       </RouterLink>
 
@@ -118,23 +179,48 @@
           <MaterrialsIcon class="text-white w-5 h-5"></MaterrialsIcon>
           <span class="text-lg text-white font-[500] ps-2">View Materails</span>
           <RightPointerIcon
-            :class="showDashboardMenu
-              ? ['fill-white', 'ms-auto', 'w-7', 'h-7', 'rotate-90', 'transition-transform', 'duration-300']
-              : ['fill-white', 'ms-auto', 'w-7', 'h-7']"
+            :class="
+              showDashboardMenu
+                ? [
+                    'fill-white',
+                    'ms-auto',
+                    'w-7',
+                    'h-7',
+                    'rotate-90',
+                    'transition-transform',
+                    'duration-300',
+                  ]
+                : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+            "
           />
         </div>
       </RouterLink>
 
-      <RouterLink to="/teacher-dashboard/setting/teacher-account" class="w-full px-4 pb-2 mt-1">
+      <RouterLink
+        to="/teacher-dashboard/setting/teacher-account"
+        class="w-full px-4 pb-2 mt-1"
+      >
         <div
           class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
         >
           <SettingIcon class="text-white w-5 h-5"></SettingIcon>
-          <span class="text-lg text-white font-[500] ps-2">Profile Settings</span>
+          <span class="text-lg text-white font-[500] ps-2"
+            >Profile Settings</span
+          >
           <RightPointerIcon
-            :class="showDashboardMenu
-              ? ['fill-white', 'ms-auto', 'w-7', 'h-7', 'rotate-90', 'transition-transform', 'duration-300']
-              : ['fill-white', 'ms-auto', 'w-7', 'h-7']"
+            :class="
+              showDashboardMenu
+                ? [
+                    'fill-white',
+                    'ms-auto',
+                    'w-7',
+                    'h-7',
+                    'rotate-90',
+                    'transition-transform',
+                    'duration-300',
+                  ]
+                : ['fill-white', 'ms-auto', 'w-7', 'h-7']
+            "
           />
         </div>
       </RouterLink>
@@ -154,12 +240,28 @@
     <!-- Main Content Area -->
     <div class="w-full px-3 overflow-y-auto h-screen">
       <!-- Header -->
-      <header class="flex items-center justify-between bg-white shadow-md rounded-md px-4 py-3 my-4 sticky top-3">
+      <header
+        class="flex items-center justify-between bg-white shadow-md rounded-md px-4 py-3 my-4 sticky top-3"
+      >
         <!-- Left: Hamburger + Search -->
         <div class="flex items-center gap-2">
-          <button @click="sidebarVisible = true" class="xl:hidden p-2 rounded hover:bg-gray-200">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          <button
+            @click="sidebarVisible = true"
+            class="xl:hidden p-2 rounded hover:bg-gray-200"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-6 w-6 text-gray-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6h16M4 12h16M4 18h16"
+              />
             </svg>
           </button>
 
@@ -173,9 +275,15 @@
         <div class="flex items-center gap-4">
           <button class="relative p-2 rounded hover:bg-gray-200">
             <NotifIcon class="w-5 h-5 text-gray-600" />
-            <span class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
+            <span
+              class="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"
+            ></span>
           </button>
-          <img :src="API_BASE_PROFILE_URL + '/' +userStore.user.profile" alt="Profile" class="w-8 h-8 rounded-full object-cover" />
+          <img
+            :src="API_BASE_PROFILE_URL + '/' + userStore.user.profile"
+            alt="Profile"
+            class="w-8 h-8 rounded-full object-cover"
+          />
         </div>
       </header>
 
@@ -186,24 +294,24 @@
   </div>
 </template>
 
-
 <script>
-import EduIcon from '../icons/EduIcon.vue';
-import ExpaneIcon from '../icons/ExpaneIcon.vue';
-import DashboardIcon from '../icons/DashboardIcon.vue';
-import RightPointerIcon from '../icons/RightPointerIcon.vue';
-import SearchBarIcon from '../icons/SearchBarIcon.vue';
-import NotifIcon from '../icons/NotifIcon.vue';
-import CloseIcon  from '../icons/CloseIcon.vue';
-import ListIcon from '../icons/ListIcon.vue';
-import MaterrialsIcon from '../icons/MaterrialsIcon.vue';
-import ResultIcon from '../icons/ResultIcon.vue';
-import SettingIcon from '../icons/SettingIcon.vue';
-import LogoutIcon from '../icons/LogoutIcon.vue';
-import axios from 'axios';
-import { API_BASE_URL } from '@/config/useWebSocket';
-import { API_BASE_PROFILE_URL } from '@/config/useWebSocket';
-import { useUserStore } from '@/store/store';
+import EduIcon from "../icons/EduIcon.vue";
+import ExpaneIcon from "../icons/ExpaneIcon.vue";
+import DashboardIcon from "../icons/DashboardIcon.vue";
+import RightPointerIcon from "../icons/RightPointerIcon.vue";
+import SearchBarIcon from "../icons/SearchBarIcon.vue";
+import NotifIcon from "../icons/NotifIcon.vue";
+import CloseIcon from "../icons/CloseIcon.vue";
+import ListIcon from "../icons/ListIcon.vue";
+import MaterrialsIcon from "../icons/MaterrialsIcon.vue";
+import ResultIcon from "../icons/ResultIcon.vue";
+import SettingIcon from "../icons/SettingIcon.vue";
+import LogoutIcon from "../icons/LogoutIcon.vue";
+import axios from "axios";
+import { API_BASE_URL } from "@/config/useWebSocket";
+import { API_BASE_PROFILE_URL } from "@/config/useWebSocket";
+import { useUserStore } from "@/store/store";
+import MessageSolidWhiteIcon from "../icons/MessageSolidWhiteIcon.vue";
 export default {
   components: {
     EduIcon,
@@ -217,7 +325,8 @@ export default {
     MaterrialsIcon,
     ResultIcon,
     SettingIcon,
-    LogoutIcon
+    LogoutIcon,
+    MessageSolidWhiteIcon
   },
   data() {
     return {
@@ -227,7 +336,7 @@ export default {
       showDashboardMenu: true,
     };
   },
-    setup(){
+  setup() {
     const userStore = useUserStore();
     return {
       userStore,
@@ -249,7 +358,7 @@ export default {
           this.$router.push("/");
           this.userStore.user = null; // Clear user from store
           console.log("Logout successful:", this.userStore.user);
-          console.log("Logout response:", response.data); 
+          console.log("Logout response:", response.data);
         } catch (error) {
           console.error("Logout failed:", error);
         }
@@ -258,9 +367,9 @@ export default {
       }
     },
   },
-  mounted(){
+  mounted() {
     console.table(this.userStore.user);
-  }
+  },
 };
 </script>
 
@@ -278,7 +387,6 @@ export default {
 .overlay-fade-leave-from {
   opacity: 1;
 }
-
 
 .fade-slide-enter-active,
 .fade-slide-leave-active {
@@ -308,8 +416,8 @@ export default {
 }
 .slide-fade-enter-to,
 .slide-fade-leave-from {
-max-height: 10rem;
-opacity: 1;
-transform: translateY(0);
+  max-height: 10rem;
+  opacity: 1;
+  transform: translateY(0);
 }
 </style>

@@ -907,7 +907,7 @@
           <div v-if="exportScope === 'role'" class="mb-4">
             <label class="block text-gray-600 mb-1">Select role:</label>
             <select
-              v-model="selectedRole"
+              v-model="selectedRoleForExport"
               class="w-full border rounded-md px-3 py-2"
             >
               <option value="ADMIN">All Admin</option>
@@ -1088,7 +1088,7 @@ export default {
       showExportOverlay: false,
       exportFormat: "pdf",
       exportScope: "all", // all / role / selected
-      selectedRole: "ADMIN",
+      selectedRoleForExport: "ADMIN",
       exportLimit: 10,
       selectedUserIds: [], // tracked by checkboxes in table
     };
@@ -1110,7 +1110,7 @@ export default {
       try {
         const payload = {
           ids: this.selectedUserIds.length ? this.selectedUserIds : null,
-          role: this.selectedRole === "All Roles" ? null : this.selectedRole,
+          role: this.selectedRoleForExport === "All Roles" ? null : this.selectedRoleForExport,
           limit: this.exportLimit,
           format: this.exportFormat,
         };
