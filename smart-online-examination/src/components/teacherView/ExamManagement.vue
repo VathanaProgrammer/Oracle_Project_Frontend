@@ -237,15 +237,30 @@ export default {
       return dateString
         ? dayjs(dateString).format("YYYY-MM-DD hh:mm A")
         : "N/A";
-    }
-    ,
-    formatDuration(durationStr) {
-      const totalMins = parseInt(durationStr); // e.g., "1425 mins" → 1425
-      const hours = Math.floor(totalMins / 60);
-      const minutes = totalMins % 60;
-
-      return `${hours} hrs ${minutes} mins`;
     },
+   formatDuration(durationStr) {
+  if (!durationStr) return "0s";
+
+  let hours = 0, minutes = 0, seconds = 0;
+
+  // Extract hours, minutes, seconds using regex
+  const hMatch = durationStr.match(/(\d+)h/);
+  const mMatch = durationStr.match(/(\d+)m/);
+  const sMatch = durationStr.match(/(\d+)s/);
+
+  if (hMatch) hours = parseInt(hMatch[1]);
+  if (mMatch) minutes = parseInt(mMatch[1]);
+  if (sMatch) seconds = parseInt(sMatch[1]);
+
+  // Format output cleanly
+  const parts = [];
+  if (hours) parts.push(`${hours}h`);
+  if (minutes) parts.push(`${minutes}m`);
+  if (seconds) parts.push(`${seconds}s`);
+
+  return parts.join(" ") || "0s";
+}
+,
     calculateDuration(start, end) {
       const startTime = new Date(start);
       const endTime = new Date(end);

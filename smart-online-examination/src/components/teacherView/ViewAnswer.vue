@@ -1,16 +1,10 @@
 <template>
-  <div
-    class="p-6 rounded-md min-h-[500px] w-full bg-white mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
-  >
+  <div class="p-6 rounded-md min-h-[500px] w-full bg-white mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.08)]">
     <div v-if="exam">
       <!-- Student Info -->
       <div class="flex items-center mb-6 space-x-4">
-        <img
-          v-if="exam.student?.profile"
-          :src="`${API_BASE_PROFILE_URL}/${exam.student.profile}`"
-          alt="Profile"
-          class="w-16 h-16 rounded-full object-cover border"
-        />
+        <img v-if="exam.student?.profile" :src="`${API_BASE_PROFILE_URL}/${exam.student.profile}`" alt="Profile"
+          class="w-16 h-16 rounded-full object-cover border" />
         <div>
           <p class="font-semibold text-xl">
             {{ exam.student.firstName }} {{ exam.student.lastName }}
@@ -22,23 +16,17 @@
       <!-- Exam Title -->
       <header class="flex justify-between mb-6">
         <h2 class="text-3xl font-bold text-gray-800">{{ exam.exam.title }}</h2>
-        <span
-          class="font-semibold px-2 py-1 rounded"
-          :class="{
-            'bg-yellow-100 text-yellow-700': exam.exam.type === 'QUIZ',
-            'bg-purple-100 text-purple-700': exam.exam.type === 'MIDTERM',
-            'bg-green-100 text-green-700': exam.exam.type === 'FINAL',
-          }"
-        >
+        <span class="font-semibold px-2 py-1 rounded" :class="{
+          'bg-yellow-100 text-yellow-700': exam.exam.type === 'QUIZ',
+          'bg-purple-100 text-purple-700': exam.exam.type === 'MIDTERM',
+          'bg-green-100 text-green-700': exam.exam.type === 'FINAL',
+        }">
           {{ exam.exam.type }}
         </span>
       </header>
 
-      <div
-        v-for="(answer, index) in exam.answers"
-        :key="answer.questionDTO.id"
-        class="mb-6 p-4 rounded-md border border-gray-200 shadow-sm"
-      >
+      <div v-for="(answer, index) in exam.answers" :key="answer.questionDTO.id"
+        class="mb-6 p-4 rounded-md border border-gray-200 shadow-sm">
         <p class="font-semibold text-lg mb-2">
           {{ index + 1 }}.
           <span v-if="answer.questionDTO.type === 'file_exam'">File Exam</span>
@@ -54,8 +42,8 @@
               answer.answerTrueFalse === true
                 ? "True"
                 : answer.answerTrueFalse === false
-                ? "False"
-                : "No answer"
+                  ? "False"
+                  : "No answer"
             }}
           </span>
           <span v-else-if="answer.questionDTO.type === 'multiple_choice'">
@@ -69,12 +57,8 @@
             {{ answer.answerContent || "No answer" }}
           </span>
           <span v-else-if="answer.questionDTO.type === 'file_exam'">
-            <a
-              v-if="answer.answerFilePath"
-              :href="`${API_BASE_FILE_URL}/${answer.answerFilePath}`"
-              target="_blank"
-              class="text-blue-600 underline"
-            >
+            <a v-if="answer.answerFilePath" :href="`${API_BASE_FILE_URL}/${answer.answerFilePath}`" target="_blank"
+              class="text-blue-600 underline">
               Download Your File
             </a>
             <span v-else>No file submitted</span>
@@ -91,8 +75,8 @@
             {{
               answer.questionDTO.correctAnswerIndex !== null
                 ? answer.questionDTO.options[
-                    answer.questionDTO.correctAnswerIndex
-                  ]
+                answer.questionDTO.correctAnswerIndex
+                ]
                 : "Not available"
             }}
           </span>
@@ -109,29 +93,15 @@
           <span class="font-semibold">Score:</span>
 
           <!-- File exam manual score -->
-          <input
-            v-if="
-              !answer.questionDTO.autoScore &&
-              answer.questionDTO.type === 'file_exam'
-            "
-            type="number"
-            min="0"
-            :max="answer.questionDTO.score"
-            v-model.number="answer.reviewScore"
-            class="w-20 border rounded p-1"
-            placeholder="0"
-          />
+          <input v-if="
+            !answer.questionDTO.autoScore &&
+            answer.questionDTO.type === 'file_exam'
+          " type="number" min="0" :max="answer.questionDTO.score" v-model.number="answer.reviewScore"
+            class="w-20 border rounded p-1" placeholder="0" />
 
           <!-- Other manual score -->
-          <input
-            v-else-if="!answer.questionDTO.autoScore"
-            type="number"
-            min="0"
-            :max="answer.questionDTO.score"
-            v-model.number="answer.reviewScore"
-            class="w-20 border rounded p-1"
-            placeholder="0"
-          />
+          <input v-else-if="!answer.questionDTO.autoScore" type="number" min="0" :max="answer.questionDTO.score"
+            v-model.number="answer.reviewScore" class="w-20 border rounded p-1" placeholder="0" />
 
           <!-- Auto score (including file_exam) -->
           <span v-else class="text-green-600 font-semibold">
@@ -141,25 +111,16 @@
 
         <!-- Correctness Badge -->
         <p class="mt-2">
-          <span
-            v-if="answer.questionDTO.autoScore && isAnswerCorrect(answer)"
-            class="text-green-600 font-semibold"
-            >✔ Correct</span
-          >
-          <span
-            v-else-if="answer.questionDTO.autoScore && !isAnswerCorrect(answer)"
-            class="text-red-600 font-semibold"
-            >✖ Wrong</span
-          >
+          <span v-if="answer.questionDTO.autoScore && isAnswerCorrect(answer)" class="text-green-600 font-semibold">✔
+            Correct</span>
+          <span v-else-if="answer.questionDTO.autoScore && !isAnswerCorrect(answer)"
+            class="text-red-600 font-semibold">✖ Wrong</span>
           <span v-else class="text-gray-500 font-semibold">Needs review</span>
         </p>
       </div>
 
       <!-- Teacher Feedback Submit Button -->
-      <button
-        @click="submitFeedback"
-        class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
+      <button @click="submitFeedback" class="mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
         Save Feedback
       </button>
     </div>
@@ -195,7 +156,7 @@ export default {
       examId: this.$route.params.id,
       exam: null,
       files: [],
-      answers: {},
+      answers: [],
       answersPayload: [],
       uploadedFiles: {},
     };
@@ -209,6 +170,14 @@ export default {
     id() {
       return this.$route.params.id;
     },
+    totalScore() {
+      if (!this.exam || !this.exam.answers) return 0;
+      return this.exam.answers.reduce((sum, answer) => sum + this.autoCalculateScore(answer), 0);
+    },
+    totalPossible() {
+      if (!this.exam || !this.exam.answers) return 0;
+      return this.exam.answers.reduce((sum, answer) => sum + answer.questionDTO.score, 0);
+    },
     questions() {
       return this.exam ? this.exam.questions : [];
     },
@@ -218,33 +187,51 @@ export default {
   },
   mounted() {
     this.fetchExamDetails();
+    console.log("Total Score:", this.totalScore);
+    console.log("Total Possible Score:", this.totalPossible);
   },
   methods: {
     isAnswerCorrect(answer) {
       const q = answer.questionDTO;
       if (q.type === "file_exam" && q.autoScore) return true;
       if (q.type === "true_false")
-        return answer.answerTrueFalse === (q.correctAnswer === "true");
+        return answer.answerTrueFalse != null && answer.answerTrueFalse === (q.correctAnswer === "true");
       if (q.type === "multiple_choice")
-        return answer.answerIndex === q.correctAnswerIndex;
+        return answer.answerIndex != null && answer.answerIndex === q.correctAnswerIndex;
       if (q.type === "short_answer")
-        return answer.answerContent === q.correctAnswer;
+        return answer.answerContent != null && answer.answerContent === q.correctAnswer;
       return false;
     },
-
     autoCalculateScore(answer) {
       const q = answer.questionDTO;
-      if (q.type === "file_exam" && q.autoScore) return q.score;
-      return this.isAnswerCorrect(answer) ? q.score : 0;
-    },
+      if (!q.autoScore) return 0;
 
-    logAnswerChange(questionId) {
-      console.log(
-        `Question ${questionId} selected value:`,
-        this.answers[questionId]
+      switch (q.type) {
+        case "true_false":
+          return answer.answerTrueFalse === (q.correctAnswer === "true") ? q.score : 0;
+        case "multiple_choice":
+          return answer.answerIndex === q.correctAnswerIndex ? q.score : 0;
+        case "short_answer":
+          return answer.answerContent === q.correctAnswer ? q.score : 0;
+        default:
+          return 0;
+      }
+    },
+    autoTotalScore() {
+      if (!this.exam || !this.exam.answers) return 0;
+      return this.exam.answers.reduce(
+        (sum, answer) => sum + this.autoCalculateScore(answer),
+        0
       );
     },
-
+    totalPossibleScore() {
+      if (!this.exam || !this.exam.answers) return 0;
+      return this.exam.answers.reduce((sum, answer) => sum + answer.questionDTO.score, 0);
+    },
+    logAnswerChange(questionId) {
+      const answer = this.exam.answers.find(a => a.questionDTO.id === questionId);
+      console.log(`Question ${questionId} selected value:`, answer);
+    },
     async fetchExamDetails() {
       try {
         const response = await axios.get(
@@ -257,70 +244,80 @@ export default {
         console.error("Error fetching exam details:", error);
       }
     },
-
     handleFileUpload(event, questionId) {
       const file = event.target.files[0];
       if (file) {
-        this.uploadedFiles = { ...this.uploadedFiles, [questionId]: file };
+        this.uploadedFiles = {
+          ...this.uploadedFiles,
+          [questionId]: file,
+        };
         console.log(`File uploaded for question ${questionId}:`, file.name);
       }
     },
-
-    async submitAnswers() {
-      // Keep your full existing student submit logic
-    },
-
     async submitFeedback() {
       if (!this.exam || !this.exam.student?.id) {
         toast.error("Student information missing.");
         return;
       }
-
-      // Only include questions that require manual feedback
       const feedbackPayload = this.exam.answers
-        .filter((answer) => !answer.questionDTO.autoScore) // skip auto-scored questions
-        .map((answer) => ({
+        .filter(answer => {
+          if (answer.answerContent == null && !answer.answerFilePath) return false;
+          return !answer.questionDTO.autoScore;
+        })
+        .map(answer => ({
           score: answer.reviewScore || 0,
           userId: this.exam.student.id,
           examId: this.exam.exam.id,
           questionId: answer.questionDTO.id,
         }));
+      console.log("Feedback payload:", feedbackPayload);
 
-      if (feedbackPayload.length === 0) {
-        toast.info("No manual scoring required for this exam.");
+      const totalAutoScore = this.autoTotalScore(); // ✅ Fix: declare totalAutoScore
+      if (feedbackPayload.length === 0 && totalAutoScore === 0) {
+        toast.info("No questions to submit.");
         return;
       }
 
       const formData = new FormData();
-      formData.append("feedback", JSON.stringify(feedbackPayload));
-
-      for (const q of this.exam.answers) {
-        if (q.questionDTO.autoScore) continue; // skip auto-scored
-        const file = this.uploadedFiles[q.questionDTO.id];
-        if (file)
-          formData.append("files", file, `${q.questionDTO.id}_${file.name}`);
+      formData.append("feedbackList", JSON.stringify(feedbackPayload));
+      // Attach files for manual-scored questions
+      for (const answer of this.exam.answers) {
+        if (answer.questionDTO.autoScore) continue;
+        const file = this.uploadedFiles[answer.questionDTO.id];
+        if (file) {
+          formData.append("files", file, `${answer.questionDTO.id}_${file.name}`);
+        }
       }
 
-      try {
-        // Debug log
-        for (const [key, value] of formData.entries()) {
-          console.log("Key:", key, "Value:", value);
-        }
+      // Debug logs
+      console.log("Files to upload:", Object.keys(this.uploadedFiles).map(key => ({
+        questionId: key,
+        fileName: this.uploadedFiles[key]?.name
+      })));
 
-        // Uncomment to send to API
-        // const response = await axios.post(
-        //   `${API_BASE_URL}/api/answer-feedback`,
-        //   formData,
-        //   { withCredentials: true }
-        // );
-        // toast.success("Feedback saved successfully!");
-        // console.log("Feedback response:", response.data);
+      console.log("Total Auto Score:", totalAutoScore);
+
+      // Uncomment below to actually submit
+      /*
+      try {
+        const response = await axios.post(
+          `${this.API_BASE_URL}/answer-feedback/create`,
+          formData,
+          {
+            headers: { "Content-Type": "multipart/form-data" },
+            withCredentials: true,
+          }
+        );
+
+        console.table(response.data);
+        toast.success(`Feedback saved successfully! Total auto score: ${totalAutoScore}`);
       } catch (error) {
         toast.error(
-          `Error saving feedback: ${error.response?.data || error.message}`
+          `Error saving feedback: ${error.response?.data?.message || error.message}`
         );
         console.error("Save error:", error);
       }
+      */
     },
     formatDuration(durationStr) {
       if (!durationStr) return "";
@@ -332,7 +329,6 @@ export default {
       if (hrs > 0) return `${hrs}h`;
       return `${mins}m`;
     },
-
     formatDateTime(datetimeStr) {
       try {
         const dateObj = parseISO(datetimeStr.replace(" ", "T"));
