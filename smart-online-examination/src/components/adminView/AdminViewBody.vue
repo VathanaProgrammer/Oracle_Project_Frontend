@@ -38,7 +38,7 @@
           <p class="procent-and-text flex flex-col">
             <span class="text-sm font-medium text-gray-600">Students</span>
             <span class="text-2xl font-semibold text-[#8C09F4] mt-auto"
-              >1275</span
+              >{{ das_start.totalStudents }}</span
             >
           </p>
         </div>
@@ -50,7 +50,7 @@
           <p class="procent-and-text flex flex-col">
             <span class="text-sm font-medium text-gray-600">Teachers</span>
             <span class="text-2xl font-semibold text-[#8C09F4] mt-auto"
-              >125</span
+              >{{ das_start.totalTeachers }}</span
             >
           </p>
         </div>
@@ -73,7 +73,6 @@
           </p>
         </div>
       </div>
-      <TimeSpentChart :weeklyHours="weeklyHoursArray" />
     </div>
   </div>
   <div class="w-full mt-8 flex flex-col xl:flex-row gap-4">
@@ -101,31 +100,33 @@
         </thead>
         <tbody>
           <tr
-            v-for="(teacher_message, index) in teacher_messages"
+            v-for="(teacher_message, index) in announcements"
             :key="index"
             class="border-b border-gray-200"
           >
             <td class="py-3 px-4">
               <div class="flex items-start space-x-3">
                 <img
-                  :src="teacher_message.teacherImage"
+                  :src="
+                    API_BASE_PROFILE_URL + '/' + teacher_message.senderProfile
+                  "
                   alt="Teacher photo"
                   class="h-10 w-10 rounded-full object-cover mt-1"
                 />
                 <div class="flex flex-col">
                   <div class="flex items-center gap-2">
                     <span class="font-medium text-gray-800">{{
-                      teacher_message.teacher
+                      teacher_message.senderName
                     }}</span>
                     <span class="text-sm text-gray-500"
-                      >| {{ teacher_message.subject }}</span
+                      >| {{ teacher_message.senderRole }}</span
                     >
                   </div>
                   <p class="text-md text-gray-700 mt-1">
-                    {{ teacher_message.message }}
+                    {{ teacher_message.content }}
                   </p>
                   <span class="text-sm text-gray-500 mt-1">{{
-                    teacher_message.datetime
+                    formattedDateTime(teacher_message.timestamp)
                   }}</span>
                 </div>
               </div>
@@ -134,7 +135,7 @@
               <span
                 :class="[
                   'inline-block rounded-full px-3 py-1 text-sm font-medium',
-                  teacher_message.status.toLowerCase() === 'unread'
+                  teacher_message?.status?.toLowerCase() === 'unread'
                     ? 'bg-red-100 text-red-600'
                     : 'bg-green-100 text-green-600',
                 ]"
@@ -234,7 +235,7 @@
 
         <!-- optional “clear” or “see all” link -->
         <RouterLink
-          to="/audit-log"
+          :to="{ name: 'activityLog'}"
           class="text-sm text-primary-600 hover:underline"
           >view all</RouterLink
         >
@@ -342,7 +343,7 @@
             <td class="py-2 px-4 whitespace-nowrap text-gray-700">
               <div class="flex items-center space-x-3">
                 <img
-                  :src="API_BASE_PROFILE_URL+'/'+ exam.teacherImage"
+                  :src="API_BASE_PROFILE_URL + '/' + exam.teacherImage"
                   alt="Teacher photo"
                   class="h-10 w-10 rounded-full object-cover"
                 />
@@ -484,6 +485,7 @@ import { API_BASE_PROFILE_URL } from "@/config/useWebSocket";
 import AccountIcon from "../icons/AccountIcon.vue";
 import { connectWebSocket, registerHandler } from "@/config/useWebSocket";
 import ActionIcon from "../icons/ActionIcon.vue";
+
 export default {
   components: {
     LaptopIcon,
@@ -506,6 +508,8 @@ export default {
   },
   data() {
     return {
+      das_start: {},
+
       API_BASE_PROFILE_URL,
       API_BASE_FILE_URL,
       API_BASE_URL,
@@ -518,7 +522,7 @@ export default {
       draftExams: [],
       completedExams: [],
       weeklyHoursData: [12, 4, 3.5, 5, 7, 2.5, 4],
-      teacher_messages: [
+      announcements: [
         {
           teacher: "Mr. John Smith",
           subject: "Mathematics",
@@ -527,35 +531,34 @@ export default {
           status: "Unread",
           teacherImage: "https://randomuser.me/api/portraits/men/32.jpg",
         },
-        {
-          teacher: "Ms. Emily Johnson",
-          subject: "History",
-          message: "Please revise Chapter 4 before the exam this afternoon.",
-          datetime: "2025-07-08 09:45 AM",
-          status: "Read",
-          teacherImage: "https://randomuser.me/api/portraits/women/45.jpg",
-        },
-        {
-          teacher: "Mr. David Lee",
-          subject: "Physics",
-          message:
-            "The test is postponed to next Monday due to technical issues.",
-          datetime: "2025-07-07 04:10 PM",
-          status: "Read",
-          teacherImage: "https://randomuser.me/api/portraits/men/76.jpg",
-        },
-        {
-          teacher: "Mrs. Sophia Kim",
-          subject: "Chemistry",
-          message: "Lab session will be included in the upcoming quiz.",
-          datetime: "2025-07-07 06:20 PM",
-          status: "Unread",
-          teacherImage: "https://randomuser.me/api/portraits/women/66.jpg",
-        },
       ],
     };
   },
   computed: {
+    formattedDateTime() {
+      return (datetime) => {
+        // If datetime is a string, remove microseconds
+        let date;
+        if (typeof datetime === "string") {
+          const cleanDateStr = datetime.split(".")[0];
+          date = new Date(cleanDateStr);
+        } else if (datetime instanceof Date) {
+          date = datetime;
+        } else {
+          return ""; // invalid input
+        }
+
+        return date.toLocaleString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        });
+      };
+    },
     filterPublishedExam() {
       const query = this.searchPublishedQuery.trim().toLowerCase();
 
@@ -613,6 +616,36 @@ export default {
     },
   },
   methods: {
+    async loadDasborad() {
+      try {
+        const respose = await axios.get(
+          API_BASE_URL + "/api/admins/dashboard-stats",
+          { withCredentials: true }
+        );
+        this.das_start = respose.data;
+        console.log(respose);
+      } catch (e) {
+        console.log(e);
+      }
+    },
+    async loadAnnouncements() {
+      try {
+        const res = await axios.get(
+          `${API_BASE_URL}/api/admin-chat/ad-announcements`,
+          {
+            withCredentials: true,
+          }
+        );
+        // Filter out messages sent by yourself
+        this.announcements = res.data.filter(
+          (message) => message.senderId !== this.userStore.user.id
+        );
+
+        console.log(this.announcements);
+      } catch (err) {
+        console.error("Failed to load announcements", err);
+      }
+    },
     async fetchRecentActions() {
       try {
         const response = await axios.get(API_BASE_URL + "/api/actions/recent", {
@@ -701,6 +734,8 @@ export default {
     this.fetchRecentActions();
     this.fetchDraftExams();
     this.fetchCompletedExams();
+    this.loadAnnouncements();
+    this.loadDasborad();
     console.log(this.userStore.user);
 
     connectWebSocket(); // connect to WebSocket server
@@ -710,6 +745,15 @@ export default {
       if (this.userRecentActions.length > 10) {
         this.userRecentActions.pop(); // keep only the latest 10 actions
       }
+    });
+
+    // 2️⃣ Subscribe to announcements topic
+    registerHandler("/topic/ad-announcements", (message) => {
+      if (message.senderId !== this.userStore.user.id) {
+        // Update status locally immediately
+        const dto = { ...message, status: "READ" };
+        this.announcements.unshift(dto); // newest at top
+      } // newest messages at top
     });
   },
 };

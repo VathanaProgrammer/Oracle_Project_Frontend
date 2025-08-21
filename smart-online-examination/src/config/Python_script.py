@@ -2,7 +2,7 @@ import requests
 
 url = "http://localhost:8080/api/user/register"
 
-# Required fields
+# Required fields3
 data = {
     "firstName": "John",
     "lastName": "Doe",

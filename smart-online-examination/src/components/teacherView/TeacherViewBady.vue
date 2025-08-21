@@ -10,7 +10,9 @@
         <div class="flex flex-col">
           <p class="text-lg font-normal text-gray-600">
             Welcome back,
-            <span class="text-xl font-semibold text-gray-700">{{userStore.user.lastname}}!</span>
+            <span class="text-xl font-semibold text-gray-700"
+              >{{ userStore.user.lastname }}!</span
+            >
           </p>
           <p class="pt-2 text-sm font-normal text-gray-500">
             Your progress this week is Awesome. Let’s keep it up
@@ -107,12 +109,12 @@
       <StudentChat :progressData="studentProgress" />
     </div>
     <div
-      class="upcoming-exam 2xl:w-3/5 w-full md:w-5/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-2 xl:mt-2 2xl:mt-0 2xl:ms-2 p-4 "
+      class="upcoming-exam 2xl:w-3/5 w-full md:w-5/5 rounded-md shadow-[0_4px_20px_rgba(0,0,0,0.1)] mt-2 xl:mt-2 2xl:mt-0 2xl:ms-2 p-4"
     >
       <header class="h-10 p-6 flex items-center bg-blue-100">
-        <p class="text-lg font-normal text-gray-600 ">Upcoming exam</p>
+        <p class="text-lg font-normal text-gray-600">Upcoming exam</p>
       </header>
-      <div class="overflow-x-auto ">
+      <div class="overflow-x-auto">
         <table
           class="w-full divide-y divide-gray-200 sm:text-center md:text-center"
         >
@@ -151,6 +153,11 @@
                 {{ exam.major }}
               </td>
             </tr>
+            <tr v-if="exams.length === 0">
+              <td colspan="8" class="py-4 text-center text-gray-600">
+                No upcoming exam yet.
+              </td>
+            </tr>
           </tbody>
         </table>
       </div>
@@ -180,7 +187,7 @@ export default {
     DropDownHover,
     StudentChat,
   },
-  setup(){
+  setup() {
     const userStore = useUserStore();
     return {
       userStore,
@@ -188,7 +195,7 @@ export default {
   },
   data() {
     return {
-      API_BASE_URL,    
+      API_BASE_URL,
       selectedAssignment: "",
       assignments: [
         {
@@ -220,40 +227,36 @@ export default {
           "2025-04-15T00:00:00.000Z",
         ],
       },
-      exams: [
-      
-      ],
+      exams: [],
     };
   },
   computed: {},
   methods: {
-      async getComing(){
-  try{
-   const response = await axios.get(`${API_BASE_URL}/api/exams/coming`,{
-    withCredentials : true,
-   }
-  )
-  console.log(response);
-  this.exams = response.data || [];
-   if (!response.data || response.data.length === 0) {
-      console.warn("No upcoming exams found.");
-    }
-  }catch(err){
-    toast.error(err?.message || "Failed to fetch exams");
-  }
-},
+    async getComing() {
+      try {
+        const response = await axios.get(`${API_BASE_URL}/api/exams/coming`, {
+          withCredentials: true,
+        });
+        console.log(response);
+        this.exams = response.data || [];
+        if (!response.data || response.data.length === 0) {
+          console.warn("No upcoming exams found.");
+        }
+      } catch (err) {
+        toast.error(err?.message || "Failed to fetch exams");
+      }
+    },
     formatAssignment(assign) {
-      
       return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} - (${assign.shiftTime})`;
     },
     selectRole(role) {
       console.log("Selected role:", role);
     },
   },
-  mounted(){
-     console.table(this.userStore?.user.phone)
-     this.getComing();
-  }
+  mounted() {
+    console.table(this.userStore?.user.phone);
+    this.getComing();
+  },
 };
 </script>
 
@@ -268,5 +271,4 @@ option {
   overflow: hidden;
   text-overflow: ellipsis;
 }
-
 </style>

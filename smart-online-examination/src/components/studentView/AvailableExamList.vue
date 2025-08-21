@@ -1,21 +1,38 @@
 <template>
-  <div class="mt-12 px-4 xl:px-0 max-w-6xl mx-auto">
+  <div
+    class="mt-12 px-4 xl:px-0 max-w-6xl mx-auto bg-white shadow-md p-6 rounded-md"
+  >
     <!-- Title -->
-    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">Available Exams</h2>
+    <h2 class="text-3xl font-bold text-gray-800 mb-8 text-center">
+      Available Exams
+    </h2>
 
     <!-- Custom Search Bar -->
-    <div class="flex items-center justify-between bg-gray-100 p-4 rounded-xl shadow mb-10">
+    <div
+      class="flex items-center justify-between bg-gray-100 p-4 rounded-xl shadow mx-auto mb-10"
+    >
       <!-- Left Icon + Label -->
       <div class="flex items-center space-x-2 text-gray-600">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M12 14l9-5-9-5-9 5 9 5zm0 0v7"/>
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 14l9-5-9-5-9 5 9 5zm0 0v7"
+          />
         </svg>
         <span class="font-medium">My Subjects</span>
       </div>
 
       <!-- Center Search -->
-      <div class="flex items-center w-full max-w-lg bg-white rounded-full px-4 py-2 border border-gray-300 shadow-inner mx-4">
+      <div
+        class="flex items-center w-full max-w-lg bg-white rounded-full px-4 py-2 border border-gray-300 shadow-inner mx-4"
+      >
         <input
           v-model="searchQuery"
           type="text"
@@ -27,15 +44,24 @@
       <!-- Right Icon + Label -->
       <div class="flex items-center space-x-2 text-gray-600">
         <span class="font-medium">Filters</span>
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707l-6.414 6.414A1 1 0 0113 13v5a1 1 0 01-2 0v-5a1 1 0 01-.293-.707L4.293 6.707A1 1 0 014 6V4z"/>
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2a1 1 0 01-.293.707l-6.414 6.414A1 1 0 0113 13v5a1 1 0 01-2 0v-5a1 1 0 01-.293-.707L4.293 6.707A1 1 0 014 6V4z"
+          />
         </svg>
       </div>
     </div>
 
     <!-- Exam Cards -->
-    <div class="grid gap-6 xl:grid-cols-2">
+    <div class="grid gap-6 xl:grid-cols-2 p-4">
       <div
         v-for="(exam, index) in filteredExams"
         :key="index"
@@ -50,7 +76,9 @@
         <div class="flex-1">
           <div class="flex items-center justify-between">
             <div>
-              <p class="text-lg font-semibold text-gray-800">{{ exam.subject }}</p>
+              <p class="text-lg font-semibold text-gray-800">
+                {{ exam.subject }}
+              </p>
               <p class="text-sm text-gray-500">By {{ exam.teacher }}</p>
             </div>
 
@@ -59,10 +87,16 @@
               :class="{
                 'bg-blue-100 text-blue-700': exam.type === 'quiz',
                 'bg-green-100 text-green-700': exam.type === 'file',
-                'bg-purple-100 text-purple-700': exam.type === 'startable'
+                'bg-purple-100 text-purple-700': exam.type === 'startable',
               }"
             >
-              {{ exam.type === 'quiz' ? 'Quiz' : exam.type === 'file' ? 'File Exam' : 'Exam' }}
+              {{
+                exam.type === "quiz"
+                  ? "Quiz"
+                  : exam.type === "file"
+                  ? "File Exam"
+                  : "Exam"
+              }}
             </span>
           </div>
 
@@ -73,19 +107,24 @@
           </div>
 
           <div class="mt-6">
-
             <button
               v-if="exam.type"
               @click="startExam(exam.id)"
-              :class="['bg-blue-600 text-white px-4 py-2 rounded-lg transition',
-              exam.type.toLowerCase() === 'final' ? 'bg-blue-600 hover:bg-blue-500':
-              exam.type.toLowerCase() === 'mid' ? 'bg-green-600 hover:bg-green-500':
-                                                  'bg-red-600 hover:bg-red-500'
+              :class="[
+                'bg-blue-600 text-white px-4 py-2 rounded-lg transition',
+                exam.type.toLowerCase() === 'final'
+                  ? 'bg-blue-600 hover:bg-blue-500'
+                  : exam.type.toLowerCase() === 'midterm'
+                  ? 'bg-green-600 hover:bg-green-500'
+                  : 'bg-red-600 hover:bg-red-500',
               ]"
             >
-             {{ exam.type.toLowerCase() === 'final' ? 'Start Final' :
-                exam.type.toLowerCase() === 'midterm' ? 'Start Midterm':
-                'Start quiz'
+              {{
+                exam.type.toLowerCase() === "final"
+                  ? "Start Final"
+                  : exam.type.toLowerCase() === "midterm"
+                  ? "Start Midterm"
+                  : "Start quiz"
               }}
             </button>
 
@@ -119,53 +158,56 @@
 </template>
 
 <script>
-import { API_BASE_URL } from '@/config/useWebSocket';
-import { API_BASE_PROFILE_URL } from '@/config/useWebSocket';
-import axios from 'axios';
+import { API_BASE_URL } from "@/config/useWebSocket";
+import { API_BASE_PROFILE_URL } from "@/config/useWebSocket";
+import axios from "axios";
 
 export default {
   data() {
     return {
       API_BASE_URL,
       API_BASE_PROFILE_URL,
-      searchQuery: '',
-      availableExams: [
-       
-      ],
+      searchQuery: "",
+      availableExams: [],
     };
   },
-  mounted(){
-      this.getAllExam();
+  mounted() {
+    this.getAllExam();
   },
   computed: {
     filteredExams() {
       const query = this.searchQuery.toLowerCase();
-      return this.availableExams.filter((exam) =>
-        exam.subject.toLowerCase().includes(query) ||
-        exam.teacher.toLowerCase().includes(query)
+      return this.availableExams.filter(
+        (exam) =>
+          exam.subject.toLowerCase().includes(query) ||
+          exam.teacher.toLowerCase().includes(query)
       );
     },
   },
   methods: {
     startExam(id) {
-      console.log(id)
-      this.$router.push({name:"StartExam", params :{id:id}})
+      console.log(id);
+      this.$router.push({ name: "StartExam", params: { id: id } });
     },
     uploadAnswer(exam) {
       alert(`Uploading answer for: ${exam.subject}`);
     },
-   async getAllExam(){
-    try{
-       const response = await axios.get(`${API_BASE_URL}/api/exams/all`,{
-            withCredentials: true
-       });
-       this.exam = response.data;
-       this.availableExams = this.exam.filter(e => e.status.toLowerCase() ==='published')     
-    }catch(error){
-      console.error("Error fetching exams", error);
-    }
-   }
-
+    async getAllExam() {
+      try {
+        const response = await axios.get(
+          `${API_BASE_URL}/api/exams/take-exam`,
+          {
+            withCredentials: true,
+          }
+        );
+        this.exam = response.data;
+        this.availableExams = this.exam.filter(
+          (e) => e.status.toLowerCase() === "published"
+        );
+      } catch (error) {
+        console.error("Error fetching exams", error);
+      }
+    },
   },
 };
 </script>

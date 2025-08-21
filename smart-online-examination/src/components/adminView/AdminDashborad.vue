@@ -75,21 +75,15 @@
             <MessageSolidWhiteIcon
               class="text-white w-5 h-5"
             ></MessageSolidWhiteIcon>
-            <span class="text-lg text-white font-normal ps-2"
-              >Notification</span
-            >
+            <span class="text-lg text-white font-normal ps-2">Chat</span>
           </RouterLink>
 
-                    <RouterLink
-            :to = "{ name: 'ad-setting'}"
+          <RouterLink
+            :to="{ name: 'ad-setting' }"
             class="px-4 py-2 mt-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
           >
-            <SettingIcon
-              class="text-white w-5 h-5"
-            ></SettingIcon>
-            <span class="text-lg text-white font-normal ps-2"
-              >Settings</span
-            >
+            <SettingIcon class="text-white w-5 h-5"></SettingIcon>
+            <span class="text-lg text-white font-normal ps-2">Settings</span>
           </RouterLink>
 
           <!-- <transition
@@ -178,6 +172,15 @@
           </div>
         </RouterLink>
 
+        <RouterLink :to="{ name: 'ad-exam' }" class="w-full px-4 pb-2 mt-1">
+          <div
+            class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
+          >
+            <ResultIcon class="text-white w-5 h-5"></ResultIcon>
+            <span class="text-lg text-white font-normal ps-2">Exam</span>
+          </div>
+        </RouterLink>
+
         <RouterLink
           to="/admin-dashboard/activity-long"
           class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
@@ -198,9 +201,7 @@
             <MessageSolidWhiteIcon
               class="text-white w-5 h-5"
             ></MessageSolidWhiteIcon>
-            <span class="text-lg text-white font-normal ps-2"
-              >Notification</span
-            >
+            <span class="text-lg text-white font-normal ps-2">Chat</span>
           </div>
         </RouterLink>
 
@@ -273,9 +274,9 @@
         </div>
 
         <!-- Right: Notifications + Profile -->
-        <div class="flex items-center gap-4 relative">
+        <div class="flex items-center gap-4 relative z-[9999]">
           <!-- Notifications -->
-          <div class="relative">
+          <div class="relative z-[9999]">
             <button
               @click="toggleNotif"
               class="relative p-2 rounded hover:bg-gray-200"
@@ -302,7 +303,7 @@
                     <p
                       class="flex justify-center text-md font-medium py-[2px] px-2 rounded-md me-2 items-center bg-blue-600 bg-opacity-10 text-blue-700"
                     >
-                      4 New
+                      {{ notifications.length || 0 }} New
                     </p>
                     <p class="p-2 bg-gray-700 bg-opacity-15 rounded-full">
                       <MailIcon class="h-6 w-6" />
@@ -319,7 +320,7 @@
                   >
                     <!-- Avatar -->
                     <img
-                      :src="notif.avatar"
+                      :src="API_BASE_PROFILE_URL + '/' + notif.senderProfile"
                       class="w-10 h-10 rounded-full border"
                       alt="User Avatar"
                     />
@@ -327,10 +328,14 @@
                     <!-- Content -->
                     <div class="flex-1">
                       <p class="text-sm text-gray-700">
-                        <span class="font-semibold">{{ notif.sender }}</span>
-                        {{ notif.message }}
+                        <span class="font-semibold">{{
+                          notif.senderName
+                        }}</span>
+                        {{ notif.content }}
                       </p>
-                      <p class="text-xs text-gray-400">{{ notif.time }}</p>
+                      <p class="text-xs text-gray-400">
+                        {{ formattedDateTimeAgo(notif.timestamp) }}
+                      </p>
                     </div>
 
                     <!-- Close -->
@@ -391,6 +396,7 @@ import AcademicIcon from "../icons/AcademicIcon.vue";
 import UserActivityWhiteIcon from "../icons/UserActivityWhiteIcon.vue";
 import MessageSolidWhiteIcon from "../icons/MessageSolidWhiteIcon.vue";
 import MailIcon from "../icons/MailIcon.vue";
+import { registerHandler, connectWebSocket } from "@/config/useWebSocket";
 
 export default {
   components: {
@@ -452,7 +458,48 @@ export default {
       showDashboardMenu: true,
     };
   },
+  computed: {
+    formattedDateTime() {
+      return (datetime) => {
+        // If datetime is a string, remove microseconds
+        let date;
+        if (typeof datetime === "string") {
+          const cleanDateStr = datetime.split(".")[0];
+          date = new Date(cleanDateStr);
+        } else if (datetime instanceof Date) {
+          date = datetime;
+        } else {
+          return ""; // invalid input
+        }
+
+        return date.toLocaleString("en-US", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+          hour: "2-digit",
+          minute: "2-digit",
+          second: "2-digit",
+          hour12: true,
+        });
+      };
+    },
+  },
   methods: {
+    formattedDateTimeAgo(timestamp) {
+      const now = new Date();
+      const past = new Date(timestamp);
+      const diff = now - past; // difference in milliseconds
+
+      const seconds = Math.floor(diff / 1000);
+      const minutes = Math.floor(seconds / 60);
+      const hours = Math.floor(minutes / 60);
+      const days = Math.floor(hours / 24);
+
+      if (seconds < 60) return `${seconds} seconds ago`;
+      if (minutes < 60) return `${minutes} minutes ago`;
+      if (hours < 24) return `${hours} hours ago`;
+      return `${days} days ago`;
+    },
     toggleNotif() {
       this.showNotif = !this.showNotif;
     },
@@ -482,9 +529,41 @@ export default {
         console.log("Logout cancelled.");
       }
     },
+    async loadAnnouncements() {
+      try {
+        const res = await axios.get(
+          `${API_BASE_URL}/api/admin-chat/ad-announcements`,
+          {
+            withCredentials: true,
+          }
+        );
+        // Filter out messages sent by yourself
+        this.notifications = res.data.filter(
+          (message) => message.senderId !== this.userStore.user.id
+        );
+
+        console.log(this.announcements);
+      } catch (err) {
+        console.error("Failed to load announcements", err);
+      }
+    },
   },
   mounted() {
+    this.loadAnnouncements();
+    connectWebSocket();
+
     console.log(this.userStore.user);
+    // 2️⃣ Subscribe to announcements topic
+    registerHandler("/topic/ad-announcements", (message) => {
+      if (message.senderId !== this.userStore.user.id) {
+        // Update status locally immediately
+        const dto = { ...message, status: "READ" };
+        this.notifications.unshift(dto); // newest at top
+
+        // ✅ Open the notification dropdown automatically
+        this.showNotif = true;
+      } // newest messages at top
+    });
   },
 };
 </script>

@@ -8,12 +8,17 @@
         </h2>
 
         <!-- Search input -->
-        <input v-model="searchQuery" type="text" placeholder="Search title or description..."
-          class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#57cc99] flex-grow max-w-md" />
+        <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search title or description..."
+          class="border border-gray-300 rounded px-3 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-[#57cc99] flex-grow max-w-md"
+        />
         <div>
           <RouterLink to="/teacher-dashboard/exam-management/new">
             <button
-              class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 m-1 px-4 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
+              class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-md font-medium py-2 m-1 px-4 rounded-sm hover:bg-[#48b57f] flex-shrink-0"
+            >
               New exam
             </button>
           </RouterLink>
@@ -21,7 +26,9 @@
       </header>
 
       <!-- exam List -->
-      <div class="bg-white rounded-md lg:p-4 p-1 shadow-[0_4px_20px_rgba(0,0,0,0.1)] overflow-auto min-h-56">
+      <div
+        class="bg-white rounded-md lg:p-4 p-1 shadow-[0_4px_20px_rgba(0,0,0,0.1)] overflow-auto min-h-56"
+      >
         <table class="min-w-full table-auto border-collapse relative">
           <thead>
             <tr class="bg-gray-100 text-left text-sm font-medium text-gray-700">
@@ -31,25 +38,39 @@
               <th class="py-2 px-4 text-gray-500 font-normal">Start Time</th>
               <th class="py-2 px-4 text-gray-500 font-normal">End Time</th>
               <th class="py-2 px-4 text-gray-500 font-normal">Duration</th>
-              <th class="py-2 px-4 text-gray-500 font-normal relative cursor-pointer select-none"
-                @click="toggleStatusDropdown">
+              <th
+                class="py-2 px-4 text-gray-500 font-normal relative cursor-pointer select-none"
+                @click="toggleStatusDropdown"
+              >
                 Status
-                <span class="inline-block ml-1 text-gray-600 transition-transform duration-200"
-                  :class="{ 'rotate-180': statusDropdownOpen }">
+                <span
+                  class="inline-block ml-1 text-gray-600 transition-transform duration-200"
+                  :class="{ 'rotate-180': statusDropdownOpen }"
+                >
                   ▼
                 </span>
                 <!-- Dropdown menu -->
-                <div v-if="statusDropdownOpen"
-                  class="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-300 rounded shadow-lg z-30">
+                <div
+                  v-if="statusDropdownOpen"
+                  class="absolute top-full right-0 mt-1 w-40 bg-white border border-gray-300 rounded shadow-lg z-30"
+                >
                   <ul class="divide-y divide-gray-200 max-h-48 overflow-auto">
-                    <li class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                      :class="{ 'font-semibold': statusFilter === '' }" @click="selectStatus('')">
+                    <li
+                      class="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                      :class="{ 'font-semibold': statusFilter === '' }"
+                      @click="selectStatus('')"
+                    >
                       All
                     </li>
-                    <li v-for="status in statuses" :key="status.value"
-                      class="px-4 py-2 hover:bg-gray-100 cursor-pointer capitalize" :class="{
+                    <li
+                      v-for="status in statuses"
+                      :key="status.value"
+                      class="px-4 py-2 hover:bg-gray-100 cursor-pointer capitalize"
+                      :class="{
                         'font-semibold': statusFilter === status.value,
-                      }" @click="selectStatus(status.value)">
+                      }"
+                      @click="selectStatus(status.value)"
+                    >
                       {{ status.label }}
                     </li>
                   </ul>
@@ -60,20 +81,29 @@
           </thead>
 
           <tbody>
-            <tr v-for="(exam, index) in filteredexams" :key="exam.id"
-              :class="' group relative border-b hover:bg-gray-50 transition-colors duration-300'">
-              <td class="py-3 px-4 text-gray-600 flex items-center">{{ index + 1 }}</td>
-              <td class="py-3 px-4 whitespace-nowrap font-semibold text-blue-700">
+            <tr
+              v-for="(exam, index) in filteredexams"
+              :key="exam.id"
+              :class="' group relative border-b hover:bg-gray-50 transition-colors duration-300'"
+            >
+              <td class="py-3 px-4 text-gray-600 flex items-center">
+                {{ index + 1 }}
+              </td>
+              <td
+                class="py-3 px-4 whitespace-nowrap font-semibold text-blue-700"
+              >
                 {{ exam.title }}
               </td>
               <td
-                class="relative group py-3 px-4 text-gray-500 max-w-[200px]  whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer">
+                class="relative group py-3 px-4 text-gray-500 max-w-[200px] whitespace-nowrap overflow-hidden text-ellipsis cursor-pointer"
+              >
                 <div class="truncate">
                   {{ exam.description }}
                 </div>
                 <div
                   class="absolute inset-0 p-2 bg-white text-gray-900 rounded shadow-lg hover:text-nowrap opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity z-50"
-                  style="white-space: normal; overflow-wrap: break-word;">
+                  style="white-space: normal; overflow-wrap: break-word"
+                >
                   {{ exam.description }}
                 </div>
               </td>
@@ -90,53 +120,87 @@
                 {{ exam.status }}
               </td>
               <td class="flex items-center">
-
-                  <button @click="viewCompletedStudent(exam.id)"  v-if="exam.status.toLowerCase() === 'completed' " 
-                    class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-xs font-semibold py-2 m-1 px-2 rounded-sm hover:bg-[#48b57f] flex-shrink-0">
-                    ViewAnswer
-                  </button>
-                      <!-- Published -->
-                <button v-if="exam.status.toLowerCase() === 'published'" @click="endexam(exam.id)"
-                  class="hover:-translate-y-1 transform text-xs text-center bg-orange-400 h-7 w-16 text-white hover:duration-500">
+                <button
+                  @click="viewCompletedStudent(exam.id)"
+                  v-if="exam.status.toLowerCase() === 'completed'"
+                  class="bg-[#57cc99] hover:-translate-y-1 transform transition text-white text-xs font-semibold py-2 m-1 px-2 rounded-sm hover:bg-[#48b57f] flex-shrink-0"
+                >
+                  ViewAnswer
+                </button>
+                <!-- Published -->
+                <button
+                  v-if="exam.status.toLowerCase() === 'published'"
+                  @click="endexam(exam.id)"
+                  class="hover:-translate-y-1 transform text-xs text-center bg-orange-400 h-7 w-16 text-white hover:duration-500"
+                >
                   End
                 </button>
 
                 <!-- Ended -->
-                <button v-if="exam.status.toLowerCase() === 'ended'" @click="editexam(exam.id)"
-                  class="hover:-translate-y-1 transform bg-blue-400 py-1 m-[2px] px-4 text-white hover:duration-500">
+                <button
+                  v-if="exam.status.toLowerCase() === 'ended'"
+                  @click="editexam(exam.id)"
+                  class="hover:-translate-y-1 transform bg-blue-400 py-1 m-[2px] px-4 text-white hover:duration-500"
+                >
                   Recover
                 </button>
 
                 <!-- Coming -->
-                <button v-if="exam.status.toLowerCase() === 'coming'" @click="editexam(exam.id)"
-                  class="hover:-translate-y-1 transform bg-blue-400 py-1 m-[2px] px-4 text-white text-sm hover:duration-500">
+                <button
+                  v-if="exam.status.toLowerCase() === 'coming'"
+                  @click="editexam(exam.id)"
+                  class="hover:-translate-y-1 transform bg-blue-400 py-1 m-[2px] px-4 text-white text-sm hover:duration-500"
+                >
                   Edit
                 </button>
-                <button v-if="exam.status.toLowerCase() === 'coming'" @click="deleteexam(exam.id)"
-                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white">
+                <button
+                  v-if="exam.status.toLowerCase() === 'coming'"
+                  @click="deleteexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white"
+                >
                   Delete
                 </button>
 
                 <!-- Deleted -->
-                <button v-if="exam.status.toLowerCase() === 'deleted'" @click="recoverexam(exam.id)"
-                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white">
+                <button
+                  v-if="exam.status.toLowerCase() === 'deleted'"
+                  @click="recoverexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white"
+                >
                   Recover
                 </button>
 
                 <!-- Expired -->
-                <button v-if="exam.status.toLowerCase() === 'expired'" @click="recoverexam(exam.id)"
-                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white">
+                <button
+                  v-if="exam.status.toLowerCase() === 'expired'"
+                  @click="recoverexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-green-400 m-[2px] text-xs text-center h-7 w-16 text-white"
+                >
                   Recover
                 </button>
-                <button v-if="exam.status.toLowerCase() === 'expired'" @click="deleteexam(exam.id)"
-                  class="hover:-translate-y-1 transform hover:duration-500 bg-red-400  m-[2px] text-xs text-center h-7 w-16 text-white">
+                <button
+                  v-if="exam.status.toLowerCase() === 'expired'"
+                  @click="deleteexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-red-400 m-[2px] text-xs text-center h-7 w-16 text-white"
+                >
                   Delete
                 </button>
 
                 <!-- Draft -->
-                <button v-if="exam.status.toLowerCase() === 'draft'" @click="deleteexam(exam.id)"
-                  class="hover:-translate-y-1 transform hover:duration-500 bg-red-400 text-xs m-[2px] text-center h-7 w-16 text-white">
+                <button
+                  v-if="exam.status.toLowerCase() === 'draft'"
+                  @click="deleteexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-red-400 text-xs m-[2px] text-center h-7 w-16 text-white"
+                >
                   Delete
+                </button>
+                <!-- Draft -->
+                <button
+                  v-if="exam.status.toLowerCase() === 'draft'"
+                  @click="editexam(exam.id)"
+                  class="hover:-translate-y-1 transform hover:duration-500 bg-yellow-400 text-xs m-[2px] text-center h-7 w-16 text-white"
+                >
+                  Edit
                 </button>
               </td>
             </tr>
@@ -153,12 +217,12 @@
 </template>
 
 <script>
-import axios from 'axios';
-import dayjs from 'dayjs';
-import { API_BASE_URL } from '@/config/useWebSocket';
+import axios from "axios";
+import dayjs from "dayjs";
+import { API_BASE_URL } from "@/config/useWebSocket";
 import { useToast } from "vue-toastification";
 import "vue-toastification/dist/index.css";
-import { useUserStore } from '@/store/store';
+import { useUserStore } from "@/store/store";
 const toast = useToast();
 export default {
   name: "examManagement",
@@ -176,18 +240,15 @@ export default {
         { label: "Published", value: "published" },
         { label: "Ended", value: "ended" },
       ],
-      exams: [
-      ],
-      recover: [
-
-      ],
+      exams: [],
+      recover: [],
     };
   },
   setup() {
     const userStore = useUserStore();
     return {
-      userStore
-    }
+      userStore,
+    };
   },
 
   computed: {
@@ -228,39 +289,41 @@ export default {
       this.statusFilter = upperStatus;
       this.statusDropdownOpen = false;
 
-      if (upperStatus === 'DELETED') {
+      if (upperStatus === "DELETED") {
         this.getRecover();
       } else {
         this.getAllexam();
       }
-    }, formatDate(dateString) {
+    },
+    formatDate(dateString) {
       return dateString
         ? dayjs(dateString).format("YYYY-MM-DD hh:mm A")
         : "N/A";
     },
-   formatDuration(durationStr) {
-  if (!durationStr) return "0s";
+    formatDuration(durationStr) {
+      if (!durationStr) return "0s";
 
-  let hours = 0, minutes = 0, seconds = 0;
+      let hours = 0,
+        minutes = 0,
+        seconds = 0;
 
-  // Extract hours, minutes, seconds using regex
-  const hMatch = durationStr.match(/(\d+)h/);
-  const mMatch = durationStr.match(/(\d+)m/);
-  const sMatch = durationStr.match(/(\d+)s/);
+      // Extract hours, minutes, seconds using regex
+      const hMatch = durationStr.match(/(\d+)h/);
+      const mMatch = durationStr.match(/(\d+)m/);
+      const sMatch = durationStr.match(/(\d+)s/);
 
-  if (hMatch) hours = parseInt(hMatch[1]);
-  if (mMatch) minutes = parseInt(mMatch[1]);
-  if (sMatch) seconds = parseInt(sMatch[1]);
+      if (hMatch) hours = parseInt(hMatch[1]);
+      if (mMatch) minutes = parseInt(mMatch[1]);
+      if (sMatch) seconds = parseInt(sMatch[1]);
 
-  // Format output cleanly
-  const parts = [];
-  if (hours) parts.push(`${hours}h`);
-  if (minutes) parts.push(`${minutes}m`);
-  if (seconds) parts.push(`${seconds}s`);
+      // Format output cleanly
+      const parts = [];
+      if (hours) parts.push(`${hours}h`);
+      if (minutes) parts.push(`${minutes}m`);
+      if (seconds) parts.push(`${seconds}s`);
 
-  return parts.join(" ") || "0s";
-}
-,
+      return parts.join(" ") || "0s";
+    },
     calculateDuration(start, end) {
       const startTime = new Date(start);
       const endTime = new Date(end);
@@ -271,8 +334,9 @@ export default {
       const hours = Math.floor(minutes / 60);
       const remainingMin = minutes % 60;
 
-      return `${hours} hr${hours > 1 ? "s" : ""}${remainingMin ? ` ${remainingMin} min` : ""
-        }`;
+      return `${hours} hr${hours > 1 ? "s" : ""}${
+        remainingMin ? ` ${remainingMin} min` : ""
+      }`;
     },
     statusClass(status) {
       switch (status) {
@@ -293,24 +357,25 @@ export default {
       }
     },
     async endexam(id) {
-      const index = this.exams.findIndex(exam => exam.id === id);
+      const index = this.exams.findIndex((exam) => exam.id === id);
       if (index === -1) {
         alert("exam not found.");
         return;
       }
       if (confirm("Are you sure you want to stop this exam?")) {
-        axios.put(`${API_BASE_URL}/api/exams/${id}/end`, null, {
-          withCredentials: true,   // if backend uses session cookies
-          // headers: { Authorization: 'Bearer <token>' } // if using JWT
-        })
+        axios
+          .put(`${API_BASE_URL}/api/exams/${id}/end`, null, {
+            withCredentials: true, // if backend uses session cookies
+            // headers: { Authorization: 'Bearer <token>' } // if using JWT
+          })
           .then(() => {
-            this.exams[index].status = 'ENDED';
+            this.exams[index].status = "ENDED";
             this.getAllexam();
             toast.success("exam was successfully end!", {
-              position: 'bottom-center'
+              position: "bottom-center",
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to end exam:", error);
             alert("Failed to end exam. Please try again.");
           });
@@ -326,25 +391,26 @@ export default {
       this.$router.push({ name: "recoverexams", params: { id: id } });
     },
     deleteexam(id) {
-      const index = this.exams.findIndex(exam => exam.id === id);
+      const index = this.exams.findIndex((exam) => exam.id === id);
       if (index === -1) {
         alert("exam not found.");
         return;
       }
 
       if (confirm("Are you sure you want to cancel this exam?")) {
-        axios.put(`${API_BASE_URL}/api/exams/deleted/${id}`, null, {
-          withCredentials: true,   // if backend uses session cookies
-          // headers: { Authorization: 'Bearer <token>' } // if using JWT
-        })
+        axios
+          .put(`${API_BASE_URL}/api/exams/deleted/${id}`, null, {
+            withCredentials: true, // if backend uses session cookies
+            // headers: { Authorization: 'Bearer <token>' } // if using JWT
+          })
           .then(() => {
-            this.exams[index].status = 'DELETED';
+            this.exams[index].status = "DELETED";
             this.getAllexam();
             toast.success("Deleted successfully!", {
-              position: 'bottom-center'
+              position: "bottom-center",
             });
           })
-          .catch(error => {
+          .catch((error) => {
             console.error("Failed to cancel exam:", error);
             alert("Failed to cancel exam. Please try again.");
           });
@@ -358,27 +424,24 @@ export default {
     },
     async getAllexam() {
       try {
-        const response = await axios.get(API_BASE_URL + "/api/exams/all",
-          { withCredentials: true }
-        );
-        console.log(response)
+        const response = await axios.get(API_BASE_URL + "/api/exams/all", {
+          withCredentials: true,
+        });
+        console.log(response);
         this.exams = response.data;
         console.log("API exams:", response.data);
-
-      } catch (ex) {
-
-      }
+      } catch (ex) {}
     },
     async getRecover() {
       try {
-        const response = await axios.get(API_BASE_URL + "/api/exams/recover",
-          { withCredentials: true }
-        );
+        const response = await axios.get(API_BASE_URL + "/api/exams/recover", {
+          withCredentials: true,
+        });
         console.log(response);
         this.exams = response.data;
       } catch (err) {
-        toast.error("Fetch datas false!")
-        console.log("fetch false!", err)
+        toast.error("Fetch datas false!");
+        console.log("fetch false!", err);
       }
     },
   },

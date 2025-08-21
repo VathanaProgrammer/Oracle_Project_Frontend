@@ -93,11 +93,15 @@
                   >
                     <div class="flex items-center space-x-3">
                       <button
+                        v-if="!user.feedbackSubmitted"
                         @click="handeCheck(user.examId, user.userId)"
                         class="bg-green-400 px-2 py-1 rounded cursor-pointer text-white"
                       >
                         Check
                       </button>
+                      <span v-else class="bg-gray-500 text-white p-2 rounded-md italic"
+                        >Checked</span
+                      >
                     </div>
                   </td>
                 </tr>

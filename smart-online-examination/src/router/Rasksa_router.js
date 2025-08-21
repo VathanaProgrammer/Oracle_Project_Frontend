@@ -22,8 +22,9 @@ import ViewAnswer from "@/components/teacherView/ViewAnswer.vue";
 import ViewStudentCompleted from "@/components/teacherView/ViewStudentCompleted.vue";
 import Notification from "@/components/studentView/Notification.vue";
 import TNotification from "@/components/teacherView/TNotification.vue";
+import MyExamResult from "@/components/studentView/MyExamResult.vue";
 export default [
-      {
+  {
     path: "/",
     component: LoginView,
     meta: { layout: "auth" },
@@ -42,7 +43,7 @@ export default [
       {
         path: "notification",
         name: "student-notif",
-        component: Notification
+        component: Notification,
       },
       {
         path: "",
@@ -51,6 +52,7 @@ export default [
       },
       {
         path: "available-exam",
+        name: "st-available-exam",
         component: AvailableExamList,
       },
       {
@@ -59,8 +61,13 @@ export default [
       },
       {
         path: "exam/:id",
-        name:"StartExam",
+        name: "StartExam",
         component: Exam,
+      },
+      {
+        path: "result",
+        name: "st-result",
+        component: MyExamResult,
       },
       {
         path: "settings",
@@ -74,7 +81,6 @@ export default [
             path: "security",
             component: SettingSecurity,
           },
-
         ],
       },
     ],
@@ -118,19 +124,19 @@ export default [
       {
         path: "notification",
         name: "teacher-notif",
-        component: TNotification
+        component: TNotification,
       },
       {
         path: "edit/:id",
         name: "editexams",
         component: EditExam,
       },
-        {
+      {
         path: "recover/:id",
         name: "recoverexams",
         component: Recover,
       },
-         {
+      {
         path: "setting",
         component: SettingTeacher,
         children: [
@@ -142,9 +148,8 @@ export default [
             path: "security",
             component: SettingSecurityTeacher,
           },
-
         ],
       },
     ],
   },
-]
+];

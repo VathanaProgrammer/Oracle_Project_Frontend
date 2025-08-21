@@ -3,17 +3,17 @@ import axios from "axios";
 import { API_BASE_URL } from "@/config/useWebSocket";
 
 export async function fetchMetaData() {
-  const [maj, sem, yr, sh, bt, sub, lc] = await Promise.all([
+  const [maj, sem, yr, sh, bt, sub, lc, th, ex] = await Promise.all([
     axios.get(API_BASE_URL + "/api/majors/all", { withCredentials: true }),
     axios.get(API_BASE_URL + "/api/semesters", { withCredentials: true }),
     axios.get(API_BASE_URL + "/api/academic-years", { withCredentials: true }),
     axios.get(API_BASE_URL + "/api/shifts", { withCredentials: true }),
     axios.get(API_BASE_URL + "/api/batchs", { withCredentials: true }),
     axios.get(API_BASE_URL + "/api/subjects", { withCredentials: true }),
-    axios.get(API_BASE_URL+ "/api/locations", { withCredentials: true}),
+    axios.get(API_BASE_URL + "/api/locations", { withCredentials: true}),
+    axios.get(API_BASE_URL + "/api/admins/teacher/all", { withCredentials: true}),
+    axios.get(API_BASE_URL + "/api/admins/all-exams", { withCredentials: true})
   ]);
-
-
 
   return {
     majors: maj.data?.data || [],
@@ -22,7 +22,9 @@ export async function fetchMetaData() {
     shifts: sh.data?.data || [],
     batches: bt.data?.data || [],
     subjects: sub.data?.data || [],
-    locations: lc.data?.data || []
+    locations: lc.data?.data || [],
+    teachers: th.data?.data || [],
+    exams: ex.data.data || []
   };
   
 }

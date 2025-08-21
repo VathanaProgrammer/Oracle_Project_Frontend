@@ -1,10 +1,11 @@
 <template>
-  <div class="flex justify-center items-center p-6">
+  <div class="flex justify-center items-center p-6 z-10">
     <apexchart
       width="150"
       type="donut"
       :options="chartOptions"
       :series="series"
+       class="!transform-none"
     />
   </div>
 </template>

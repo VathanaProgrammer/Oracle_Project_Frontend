@@ -14,6 +14,7 @@ import Settings from "@/components/adminView/Settings.vue";
 import SettingAccount from "@/components/adminView/SettingAccount.vue";
 import SettingSecurity from "@/components/adminView/SettingSecurity.vue";
 import Materil from "@/components/adminView/Materil.vue";
+import Exam from "@/components/adminView/Exam.vue";
 export default [
   {
     path: "/admin-dashboard",
@@ -80,7 +81,11 @@ export default [
         name: "privateChat",
         component: PrivateChat,
       },
-
+      {
+        path: "exam",
+        name: "ad-exam",
+        component: Exam
+      },
       {
         path: "settings",
         name: "ad-setting",

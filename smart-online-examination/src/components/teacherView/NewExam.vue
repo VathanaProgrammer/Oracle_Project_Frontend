@@ -418,7 +418,7 @@ export default {
       }
     },
     formatAssignment(assign) {
-      return `Batch ${assign.batch} - Year ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} (${assign.shiftTime})`;
+      return `Batch ${assign.batch} - ${assign.year} - ${assign.major} - ${assign.location} - Shift: ${assign.shiftName} (${assign.shiftTime})`;
     },
     handleFileChange(e) {
       const files = Array.from(e.target.files);

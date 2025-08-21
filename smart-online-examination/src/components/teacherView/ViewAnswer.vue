@@ -349,6 +349,7 @@ export default {
           toast.success("Feedback saved!", {
             position: "bottom-center"
           })
+          this.$router.push({ name: 'ExamManagement' });
         }else{
           toast.error(response.data.message || "failed to save feedback", { position: "bottom-center"})
         }

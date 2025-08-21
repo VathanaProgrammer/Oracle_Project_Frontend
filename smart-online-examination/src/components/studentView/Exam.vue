@@ -3,27 +3,30 @@
     class="p-6 rounded-md min-h-[500px] w-full bg-white mx-auto shadow-[0_4px_20px_rgba(0,0,0,0.08)]"
   >
     <div v-if="exam">
-      <header class="flex justify-between">
-        <h2 class="text-3xl font-bold mb-6 text-center text-gray-800">
-          {{ exam.title }}
-        </h2>
-        <p class="text-gray-600 mb-6 text-center">
-          <span
-            v-if="exam.type === 'QUIZ'"
-            class="font-semibold text-yellow-500"
-            >{{ exam.type }}</span
-          >
-          <span
-            v-if="exam.type === 'MIDTERM'"
-            class="font-semibold text-purple-600"
-            >{{ exam.type }}</span
-          >
-          <span
-            v-if="exam.type === 'FINAL'"
-            class="font-semibold text-green-700"
-            >{{ exam.type }}</span
-          >
-        </p>
+      <header class="flex justify-between items-center mb-6">
+        <h2 class="text-3xl font-bold text-gray-800">{{ exam.title }}</h2>
+        <div class="text-right">
+          <p class="text-gray-600 mb-1">
+            <span
+              v-if="exam.type === 'QUIZ'"
+              class="font-semibold text-yellow-500"
+              >{{ exam.type }}</span
+            >
+            <span
+              v-if="exam.type === 'MIDTERM'"
+              class="font-semibold text-purple-600"
+              >{{ exam.type }}</span
+            >
+            <span
+              v-if="exam.type === 'FINAL'"
+              class="font-semibold text-green-700"
+              >{{ exam.type }}</span
+            >
+          </p>
+          <p class="font-semibold" :class="examFinished ? 'text-red-500' : 'text-blue-600'">
+            {{ examFinished ? 'Time is up!' : 'Time Remaining: ' + formatTime(remainingTime) }}
+          </p>
+        </div>
       </header>
 
       <div v-if="isMcqType">
@@ -35,13 +38,9 @@
           <p class="font-semibold text-lg mb-3">
             {{ index + 1 }}.
             <span v-if="q.type === 'file_exam'"
-              >File Exam (<span style="color: green">{{ q.score }}pt</span
-              >)</span
+              >File Exam (<span class="text-green-600">{{ q.score }}pt</span>)</span
             >
-            <span v-else
-              >{{ q.content }} (<span style="color: green">{{ q.score }}pt</span
-              >)</span
-            >
+            <span v-else>{{ q.content }} (<span class="text-green-600">{{ q.score }}pt</span>)</span>
           </p>
 
           <!-- multiple_choice -->
@@ -57,6 +56,7 @@
                   v-model="answers[q.id]"
                   @change="logAnswerChange(q.id)"
                   class="form-radio text-blue-600"
+                  :disabled="examFinished"
                 />
                 <span>{{ opt }}</span>
               </label>
@@ -75,6 +75,7 @@
                   :value="opt"
                   v-model="answers[q.id]"
                   class="form-radio text-blue-600"
+                  :disabled="examFinished"
                 />
                 <span class="capitalize">{{ opt }}</span>
               </label>
@@ -102,6 +103,7 @@
               type="file"
               class="mt-4"
               @change="handleFileUpload($event, q.id)"
+              :disabled="examFinished"
             />
           </div>
 
@@ -113,17 +115,15 @@
               class="w-full p-2 border rounded"
               rows="4"
               placeholder="Type your answer here..."
+              :disabled="examFinished"
             ></textarea>
           </div>
 
-          <div v-else class="text-red-500 font-medium">
-            Unknown question type.
-          </div>
+          <div v-else class="text-red-500 font-medium">Unknown question type.</div>
         </div>
 
         <button
-          v-if="userStore.user.role !== 'ADMIN'"
-          :disabled="userStore.user.role === 'ADMIN'"
+          v-if="!examFinished && userStore.user.role !== 'ADMIN'"
           class="w-full md:w-auto bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-md font-semibold transition"
           @click="submitAnswers"
         >
@@ -158,10 +158,11 @@ export default {
       API_BASE_FILE_URL,
       API_BASE_URL,
       exam: null,
-      files: [],
       answers: {},
-      answersPayload: [], // store user's answers, e.g. answers[questionId] = answerValue
-      uploadedFiles: {}, // questionId -> File object
+      uploadedFiles: {},
+      remainingTime: 0,
+      examFinished: false,
+      timerInterval: null,
     };
   },
   setup() {
@@ -184,158 +185,125 @@ export default {
     questions() {
       return this.exam ? this.exam.questions : [];
     },
-    student() {
-      return this.userStore.user;
-    },
   },
   mounted() {
-    console.log(this.userStore.user?.id);
     this.fetchExamDetails();
   },
   methods: {
     logAnswerChange(questionId) {
-      console.log(
-        `Question ${questionId} selected value:`,
-        this.answers[questionId]
-      );
+      console.log(`Question ${questionId} selected value:`, this.answers[questionId]);
     },
     async fetchExamDetails() {
       try {
-        const response = await axios.get(
-          `${API_BASE_URL}/api/exams/forAdmin/${this.id}`,
-          {
-            headers: { Accept: "application/json" },
-            withCredentials: true,
-          }
-        );
-        this.exam = response.data;
-        console.log("Fetched exam details:", this.exam);
+        const response = await axios.get(`${API_BASE_URL}/api/exams/forStudent/${this.id}`, {
+          withCredentials: true,
+        });
+        this.exam = response.data.exam;
+
+        const now = new Date();
+        const endTime = new Date(this.exam.endTime);
+
+        const diffSeconds = Math.floor((endTime - now) / 1000);
+        if (diffSeconds <= 0) {
+          this.remainingTime = 0;
+          this.examFinished = true;
+        } else {
+          this.remainingTime = diffSeconds;
+          this.startTimer();
+        }
       } catch (error) {
         console.error("Error fetching exam details:", error);
       }
+    },
+    startTimer() {
+      this.timerInterval = setInterval(() => {
+        if (this.remainingTime <= 0) {
+          clearInterval(this.timerInterval);
+          this.examFinished = true;
+          toast.info("Exam time is over. Auto-submitting your answers...", { position: "bottom-center"});
+          this.submitAnswers(); // auto-submit when time is up
+        } else {
+          this.remainingTime--;
+        }
+      }, 1000);
+    },
+    formatTime(seconds) {
+      const m = Math.floor(seconds / 60).toString().padStart(2, "0");
+      const s = (seconds % 60).toString().padStart(2, "0");
+      return `${m}:${s}`;
     },
     handleFileUpload(event, questionId) {
       const file = event.target.files[0];
       if (file) {
         this.uploadedFiles = { ...this.uploadedFiles, [questionId]: file };
-        console.log(`File uploaded for question ${questionId}:`, file.name);
       }
     },
     async submitAnswers() {
-      if (!this.userStore.user?.id) {
-        toast.error("Student information not found.");
-        return;
-      }
+      if (!this.userStore.user?.id) return;
 
       const formData = new FormData();
       const answersPayload = [];
 
-      for (let index = 0; index < this.questions.length; index++) {
-        const q = this.questions[index];
+      for (const q of this.questions) {
         const userAnswer = this.answers[q.id];
         const file = this.uploadedFiles[q.id];
 
         // Validation
-        switch (q.type) {
-          case "multiple_choice":
-            if (userAnswer == null) {
-              toast.error(`Please select an option for question ${q.id}.`);
-              return;
-            }
-            break;
-          case "true_false":
-            if (userAnswer !== "true" && userAnswer !== "false") {
-              toast.error(`Please select True or False for question ${q.id}.`);
-              return;
-            }
-            break;
-          case "short_answer":
-            if (!userAnswer?.trim()) {
-              toast.error(`Please provide an answer for question ${q.id}.`);
-              return;
-            }
-            break;
-          case "file_exam":
-            if (!file) {
-              toast.error(`Please upload a file for question ${q.id}.`);
-              return;
-            }
-            break;
+        if (!this.examFinished) {
+          switch (q.type) {
+            case "multiple_choice":
+              if (userAnswer == null) return toast.error(`Please select option for question ${q.id}`, { position: "bottom-center",});
+              break;
+            case "true_false":
+              if (userAnswer !== "true" && userAnswer !== "false")
+                return toast.error(`Please select True/False for question ${q.id}`, { position: "bottom-center",});
+              break;
+            case "short_answer":
+              if (!userAnswer?.trim())
+                return toast.error(`Please provide answer for question ${q.id}`, { position: "bottom-center",});
+              break;
+            case "file_exam":
+              if (!file) return toast.error(`Please upload file for question ${q.id}`, { position: "bottom-center",});
+              break;
+          }
         }
 
-        // Prepare payload
         const payloadItem = {
           examId: this.exam.id,
           answerContent: q.type === "short_answer" ? userAnswer : null,
-          answerTrueFalse:
-            q.type === "true_false" ? userAnswer === "true" : null,
-          answerIndex: q.type === "multiple_choice" ? userAnswer : index,
+          answerTrueFalse: q.type === "true_false" ? userAnswer === "true" : null,
+          answerIndex: q.type === "multiple_choice" ? userAnswer : null,
           answerFilePath: null,
-          userId:  this.userStore.user.id,
-          studentId: this.userStore.user.id, // <-- use this instead
+          userId: this.userStore.user.id,
+          studentId: this.userStore.user.id,
           questionDTO: { id: q.id },
         };
 
         answersPayload.push(payloadItem);
 
-        if (file) {
-          formData.append("files", file, `${q.id}_${file.name}`);
-        }
+        if (file) formData.append("files", file, `${q.id}_${file.name}`);
       }
 
       formData.append("answers", JSON.stringify(answersPayload));
 
       try {
-        await axios.post(`${API_BASE_URL}/api/answers`, formData, {
-          withCredentials: true,
-        });
+        await axios.post(`${API_BASE_URL}/api/answers`, formData, { withCredentials: true });
 
-        const payload = {
-          userId: this.userStore.user.id,
-          examId: this.exam.id,
-        };
-        const response2 = await axios.post(
-          `${API_BASE_URL}/api/complete-exams/insert`,
-          payload,
-          {
-            withCredentials: true,
-          }
-        );
+        const payload = { userId: this.userStore.user.id, examId: this.exam.id };
+        await axios.post(`${API_BASE_URL}/api/complete-exams/insert`, payload, { withCredentials: true });
 
-        toast.success("Answers submitted successfully!", {
-          position: "bottom-center",
-        });
-        console.log("answer submit: ");
-        for (const [key, value] of formData.entries()) {
-          console.log(key + ": " + value);
-        }
-        console.log("Submission response:", response2.data);
-      } catch (error) {
-        toast.error(`Submit error: ${error.response?.data || error.message}`);
-      }
-    },
-    formatDuration(durationStr) {
-      if (!durationStr) return "";
-      const minutes = parseInt(durationStr);
-      if (isNaN(minutes)) return "";
-      const hrs = Math.floor(minutes / 60);
-      const mins = minutes % 60;
-      if (hrs > 0 && mins > 0) return `${hrs}h ${mins}m`;
-      if (hrs > 0) return `${hrs}h`;
-      return `${mins}m`;
-    },
-    formatDateTime(datetimeStr) {
-      try {
-        const dateObj = parseISO(datetimeStr.replace(" ", "T"));
-        return format(dateObj, "EEE, MMM d, yyyy • hh:mm a");
-      } catch {
-        return datetimeStr;
+        this.examFinished = true;
+        toast.success("Answers submitted successfully!", { position: "bottom-center",});
+
+        this.$router.push({ name: 'st-available-exam' });
+
+      } catch (err) {
+        toast.error(`Submit error: ${err.response?.data || err.message}`, { position: "bottom-center",});
       }
     },
   },
+  beforeUnmount() {
+    clearInterval(this.timerInterval);
+  },
 };
 </script>
-
-<style scoped>
-/* Add any custom styles if needed */
-</style>

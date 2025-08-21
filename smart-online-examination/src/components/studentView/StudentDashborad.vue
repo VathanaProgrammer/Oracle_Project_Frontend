@@ -141,7 +141,7 @@
         </div>
       </RouterLink>
 
-      <RouterLink class="w-full px-4 pb-2 mt-1">
+      <RouterLink :to="{ name: 'st-result'}" class="w-full px-4 pb-2 mt-1">
         <div
           class="px-4 py-2 rounded-[5px] flex justify-start items-center bg-[#8c09f4] text-white cursor-pointer hover:bg-[#8c09f4]"
         >
